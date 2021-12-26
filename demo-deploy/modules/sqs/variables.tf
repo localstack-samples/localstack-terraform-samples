@@ -1,0 +1,9 @@
+variable "queue_name" {}
+variable "fifo_queue" {}
+variable "delay_seconds" {}
+variable "message_retention_seconds" {}
+variable "visibility_timeout_seconds" {}
+variable "dlq_enabled" {}
+variable "dlq_queue_name" {}
+variable "dlq_max_receive_count" {}
+variable "dlq_message_retention_seconds" {}
