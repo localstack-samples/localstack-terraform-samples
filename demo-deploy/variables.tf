@@ -33,6 +33,9 @@ variable "queue_dlq_max_receive_count" {
 }
 
 # s3
+variable "s3_enabled" {}
+variable "s3_force_path_style" {}
+
 variable "bucket_name" {}
 variable "bucket_acl" {}
 

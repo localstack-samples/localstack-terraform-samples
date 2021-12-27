@@ -31,6 +31,8 @@ module "sqs" {
 module "s3" {
   source = "./modules/s3"
 
+	count       = var.s3_enabled ? 1 : 0
+
   bucket_name = var.bucket_name
   bucket_acl  = var.bucket_acl
 

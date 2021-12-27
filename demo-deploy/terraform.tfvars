@@ -2,10 +2,13 @@ region = "eu-west-1"
 
 dynamodb_enabled       = false
 table_name             = "demo-table"
-point_in_time_recovery = true
+point_in_time_recovery = false
 
 sqs_enabled = false
 queue_name  = "demo-queue"
+
+s3_enabled  = true
+s3_force_path_style = true
 
 bucket_name = "demo-bucket"
 bucket_acl  = "private"
