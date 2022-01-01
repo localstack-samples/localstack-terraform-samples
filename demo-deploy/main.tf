@@ -39,3 +39,9 @@ module "s3" {
   bucket_log_name = var.bucket_log_name
   bucket_log_acl  = var.bucket_log_acl
 }
+
+module "apigateway" {
+	source = "./modules/apigateway"
+
+	apigw_name = var.apigw_v1_name
+}
