@@ -7,7 +7,7 @@ point_in_time_recovery = false
 sqs_enabled = false
 queue_name  = "demo-queue"
 
-s3_enabled          = true
+s3_enabled          = false
 s3_force_path_style = true
 
 bucket_name = "demo-bucket"

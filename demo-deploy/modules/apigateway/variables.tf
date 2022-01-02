@@ -1,1 +1,10 @@
 variable "apigw_name" {}
+variable "path_part" {}
+variable "http_method" {}
+variable "authorization" {}
+variable "request_parameters" {}
+variable "integration_type" {}
+variable "integration_http_method" {}
+variable "integration_uri" {}
+variable "integration_passthrough_behaviour" {}
+variable "integration_request_parameters" {}

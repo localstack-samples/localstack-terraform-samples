@@ -44,4 +44,48 @@ module "apigateway" {
 	source = "./modules/apigateway"
 
 	apigw_name = var.apigw_v1_name
+	path_part = "{proxy+}"
+
+	http_method = "ANY"
+	authorization = "NONE"
+
+	request_parameters = {
+		"method.request.path.proxy" = true
+	}
+
+	integration_type = "HTTP_PROXY"
+	integration_http_method = "ANY"
+
+	integration_uri = "https://httpbin.org/anything/{proxy}"
+	integration_passthrough_behaviour = "WHEN_NO_MATCH"
+
+	integration_request_parameters = {
+		"integration.request.path.proxy" = "method.request.path.proxy"
+	}
+}
+
+module "apigateway_http" {
+	source = "./modules/apigateway"
+
+	apigw_name = "demo-http"
+	path_part = "{pets}"
+
+	http_method = "GET"
+	authorization = "NONE"
+
+	request_parameters = {
+		"method.request.querystring.page" = true
+		"method.request.querystring.type" = true
+	}
+
+	integration_type = "HTTP"
+	integration_http_method = "GET"
+
+	integration_uri = "https://httpbin.org/anything/{pets}"
+	integration_passthrough_behaviour = "WHEN_NO_MATCH"
+
+	integration_request_parameters = {
+		"integration.request.querystring.page" = "method.request.querystring.page"
+		"integration.request.querystring.type" = "method.request.querystring.type"
+	}
 }
