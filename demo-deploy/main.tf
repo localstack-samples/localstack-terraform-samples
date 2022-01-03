@@ -40,52 +40,54 @@ module "s3" {
   bucket_log_acl  = var.bucket_log_acl
 }
 
-module "apigateway" {
-	source = "./modules/apigateway"
+module "apigateway_http_proxy" {
+  source = "./modules/apigateway"
 
-	apigw_name = var.apigw_v1_name
-	path_part = "{proxy+}"
+  apigw_name = var.apigw_v1_name
+  path_part  = "{proxy+}"
 
-	http_method = "ANY"
-	authorization = "NONE"
+  http_method   = "ANY"
+  authorization = "NONE"
 
-	request_parameters = {
-		"method.request.path.proxy" = true
-	}
+  request_parameters = {
+    "method.request.path.proxy" = true
+  }
 
-	integration_type = "HTTP_PROXY"
-	integration_http_method = "ANY"
+  integration_type        = "HTTP_PROXY"
+  integration_http_method = "ANY"
 
-	integration_uri = "https://httpbin.org/anything/{proxy}"
-	integration_passthrough_behaviour = "WHEN_NO_MATCH"
+  integration_uri                   = "https://httpbin.org/anything/{proxy}"
+  integration_passthrough_behaviour = "WHEN_NO_MATCH"
 
-	integration_request_parameters = {
-		"integration.request.path.proxy" = "method.request.path.proxy"
-	}
+  integration_request_parameters = {
+    "integration.request.path.proxy" = "method.request.path.proxy"
+  }
 }
 
 module "apigateway_http" {
-	source = "./modules/apigateway"
+  source = "./modules/apigateway"
 
-	apigw_name = "demo-http"
-	path_part = "{pets}"
+  count = var.apigateway_http_enabled ? 1 : 0
 
-	http_method = "GET"
-	authorization = "NONE"
+  apigw_name = "demo-http"
+  path_part  = "{pets}"
 
-	request_parameters = {
-		"method.request.querystring.page" = true
-		"method.request.querystring.type" = true
-	}
+  http_method   = "GET"
+  authorization = "NONE"
 
-	integration_type = "HTTP"
-	integration_http_method = "GET"
+  request_parameters = {
+    "method.request.querystring.page" = true
+    "method.request.querystring.type" = true
+  }
 
-	integration_uri = "https://httpbin.org/anything/{pets}"
-	integration_passthrough_behaviour = "WHEN_NO_MATCH"
+  integration_type        = "HTTP"
+  integration_http_method = "GET"
 
-	integration_request_parameters = {
-		"integration.request.querystring.page" = "method.request.querystring.page"
-		"integration.request.querystring.type" = "method.request.querystring.type"
-	}
+  integration_uri                   = "https://httpbin.org/anything/{pets}"
+  integration_passthrough_behaviour = "WHEN_NO_MATCH"
+
+  integration_request_parameters = {
+    "integration.request.querystring.page" = "method.request.querystring.page"
+    "integration.request.querystring.type" = "method.request.querystring.type"
+  }
 }

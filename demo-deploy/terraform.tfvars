@@ -16,4 +16,5 @@ bucket_acl  = "private"
 bucket_log_name = "demo-bucket-log"
 bucket_log_acl  = "log-delivery-write"
 
-apigw_v1_name = "apigwv1-demo"
+apigw_v1_name           = "apigwv1-demo"
+apigateway_http_enabled = false
