@@ -7,7 +7,7 @@ point_in_time_recovery = false
 sqs_enabled = false
 queue_name  = "demo-queue"
 
-s3_enabled          = false
+s3_enabled          = true
 s3_force_path_style = true
 
 bucket_name = "demo-bucket"
@@ -18,3 +18,4 @@ bucket_log_acl  = "log-delivery-write"
 
 apigw_v1_name           = "apigwv1-demo"
 apigateway_http_enabled = false
+apigw_authorizer_enabled = false

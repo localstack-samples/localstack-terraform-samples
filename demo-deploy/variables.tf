@@ -45,3 +45,4 @@ variable "bucket_log_acl" {}
 # API Gateway v1
 variable "apigw_v1_name" {}
 variable "apigateway_http_enabled" {}
+variable "apigw_authorizer_enabled" {}

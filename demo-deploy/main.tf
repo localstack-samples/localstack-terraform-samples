@@ -61,7 +61,12 @@ module "apigateway_http_proxy" {
 
   integration_request_parameters = {
     "integration.request.path.proxy" = "method.request.path.proxy"
-  }
+	}
+
+	authorizer_enabled = var.apigw_authorizer_enabled
+	authorizer_arn = module.lambda_authorizer.lambda_arn
+	authorizer_invoke_arn = module.lambda_authorizer.lambda_invoke_arn
+
 }
 
 module "apigateway_http" {
@@ -89,5 +94,16 @@ module "apigateway_http" {
   integration_request_parameters = {
     "integration.request.querystring.page" = "method.request.querystring.page"
     "integration.request.querystring.type" = "method.request.querystring.type"
-  }
+	}
+
+	authorizer_enabled = var.apigw_authorizer_enabled
+	authorizer_arn = module.lambda_authorizer.lambda_arn
+	authorizer_invoke_arn = module.lambda_authorizer.lambda_invoke_arn
+}
+
+
+module "lambda_authorizer" {
+	source = "./modules/lambda"
+
+
 }

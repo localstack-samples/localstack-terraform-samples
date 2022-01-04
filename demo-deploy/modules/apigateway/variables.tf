@@ -8,3 +8,6 @@ variable "integration_http_method" {}
 variable "integration_uri" {}
 variable "integration_passthrough_behaviour" {}
 variable "integration_request_parameters" {}
+variable "authorizer_arn" {}
+variable "authorizer_invoke_arn" {}
+variable "authorizer_enabled" {}
