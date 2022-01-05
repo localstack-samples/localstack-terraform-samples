@@ -47,7 +47,7 @@ module "apigateway_http_proxy" {
   path_part  = "{proxy+}"
 
   http_method   = "ANY"
-  authorization = "NONE"
+  authorization = var.apigw_authorization
 
   request_parameters = {
     "method.request.path.proxy" = true
@@ -61,11 +61,11 @@ module "apigateway_http_proxy" {
 
   integration_request_parameters = {
     "integration.request.path.proxy" = "method.request.path.proxy"
-	}
+  }
 
-	authorizer_enabled = var.apigw_authorizer_enabled
-	authorizer_arn = module.lambda_authorizer.lambda_arn
-	authorizer_invoke_arn = module.lambda_authorizer.lambda_invoke_arn
+  authorizer_enabled    = var.apigw_authorizer_enabled
+  authorizer_arn        = module.lambda_authorizer.lambda_arn
+  authorizer_invoke_arn = module.lambda_authorizer.lambda_invoke_arn
 
 }
 
@@ -78,7 +78,7 @@ module "apigateway_http" {
   path_part  = "{pets}"
 
   http_method   = "GET"
-  authorization = "NONE"
+  authorization = var.apigw_authorization
 
   request_parameters = {
     "method.request.querystring.page" = true
@@ -94,16 +94,16 @@ module "apigateway_http" {
   integration_request_parameters = {
     "integration.request.querystring.page" = "method.request.querystring.page"
     "integration.request.querystring.type" = "method.request.querystring.type"
-	}
+  }
 
-	authorizer_enabled = var.apigw_authorizer_enabled
-	authorizer_arn = module.lambda_authorizer.lambda_arn
-	authorizer_invoke_arn = module.lambda_authorizer.lambda_invoke_arn
+  authorizer_enabled    = var.apigw_authorizer_enabled
+  authorizer_arn        = module.lambda_authorizer.lambda_arn
+  authorizer_invoke_arn = module.lambda_authorizer.lambda_invoke_arn
 }
 
 
 module "lambda_authorizer" {
-	source = "./modules/lambda"
+  source = "./modules/lambda"
 
 
 }
