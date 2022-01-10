@@ -11,3 +11,5 @@ variable "integration_request_parameters" {}
 variable "authorizer_arn" {}
 variable "authorizer_invoke_arn" {}
 variable "authorizer_enabled" {}
+variable "cognito_authorizer_enabled" {}
+variable "cognito_pool_arn" {}

@@ -7,7 +7,8 @@ module "dynamo" {
   source = "./modules/dynamodb"
 
   count                  = var.dynamodb_enabled ? 1 : 0
-  table_name             = var.table_name
+
+	table_name             = var.table_name
   point_in_time_recovery = var.point_in_time_recovery
 }
 
@@ -40,23 +41,25 @@ module "s3" {
   bucket_log_acl  = var.bucket_log_acl
 }
 
-module "apigateway_http_proxy" {
+module "apigateway" {
   source = "./modules/apigateway"
 
-  apigw_name = var.apigw_v1_name
+	count = var.apigw_enabled ? 1: 0
+
+	apigw_name = var.apigw_v1_name
   path_part  = "{proxy+}"
 
-  http_method   = "ANY"
+  http_method   = var.apigw_http_method
   authorization = var.apigw_authorization
 
   request_parameters = {
     "method.request.path.proxy" = true
   }
 
-  integration_type        = "HTTP_PROXY"
-  integration_http_method = "ANY"
+  integration_type        = var.apigw_integration_type
+  integration_http_method = var.apigw_http_integration_method
 
-  integration_uri                   = "https://httpbin.org/anything/{proxy}"
+  integration_uri                   = "https://httpbin.org/api/{proxy}"
   integration_passthrough_behaviour = "WHEN_NO_MATCH"
 
   integration_request_parameters = {
@@ -64,46 +67,21 @@ module "apigateway_http_proxy" {
   }
 
   authorizer_enabled    = var.apigw_authorizer_enabled
-  authorizer_arn        = module.lambda_authorizer.lambda_arn
-  authorizer_invoke_arn = module.lambda_authorizer.lambda_invoke_arn
+	authorizer_arn        = var.apigw_authorizer_enabled ? module.lambda_authorizer[0].lambda_arn: ""
+	authorizer_invoke_arn = var.apigw_authorizer_enabled ? module.lambda_authorizer[0].lambda_invoke_arn: ""
 
+	cognito_authorizer_enabled  = var.cognito_authorizer_enabled
+	cognito_pool_arn = var.cognito_enabled ? module.cognito_authorizer[0].pool_arn: ""
 }
 
-module "apigateway_http" {
-  source = "./modules/apigateway"
+module "cognito_authorizer" {
+	source = "./modules/cognito"
 
-  count = var.apigateway_http_enabled ? 1 : 0
-
-  apigw_name = "demo-http"
-  path_part  = "{pets}"
-
-  http_method   = "GET"
-  authorization = var.apigw_authorization
-
-  request_parameters = {
-    "method.request.querystring.page" = true
-    "method.request.querystring.type" = true
-  }
-
-  integration_type        = "HTTP"
-  integration_http_method = "GET"
-
-  integration_uri                   = "https://httpbin.org/anything/{pets}"
-  integration_passthrough_behaviour = "WHEN_NO_MATCH"
-
-  integration_request_parameters = {
-    "integration.request.querystring.page" = "method.request.querystring.page"
-    "integration.request.querystring.type" = "method.request.querystring.type"
-  }
-
-  authorizer_enabled    = var.apigw_authorizer_enabled
-  authorizer_arn        = module.lambda_authorizer.lambda_arn
-  authorizer_invoke_arn = module.lambda_authorizer.lambda_invoke_arn
+	count = var.cognito_enabled ? 1: 0
 }
-
 
 module "lambda_authorizer" {
-  source = "./modules/lambda"
+	source = "./modules/lambda"
 
-
+	count = var.lambda_authorizer_enabled ? 1: 0
 }

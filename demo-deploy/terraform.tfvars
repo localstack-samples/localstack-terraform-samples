@@ -16,7 +16,17 @@ bucket_acl  = "private"
 bucket_log_name = "demo-bucket-log"
 bucket_log_acl  = "log-delivery-write"
 
+apigw_enabled = true
+# if true lambda authorizer will be used
+apigw_authorizer_enabled = false
 apigw_v1_name            = "apigwv1-demo"
-apigateway_http_enabled  = false
-apigw_authorizer_enabled = true
-apigw_authorization      = "CUSTOM"
+# CUSTOM or COGNITO_USER_POOLS
+apigw_authorization      = "COGNITO_USER_POOLS"
+apigw_integration_type   = "HTTP_PROXY"
+apigw_http_method = "ANY"
+apigw_http_integration_method = "ANY"
+
+cognito_enabled = false
+cognito_authorizer_enabled = false
+
+lambda_authorizer_enabled = false

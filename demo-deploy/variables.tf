@@ -43,7 +43,16 @@ variable "bucket_log_name" {}
 variable "bucket_log_acl" {}
 
 # API Gateway v1
+variable "apigw_enabled" {}
 variable "apigw_v1_name" {}
 variable "apigw_authorization" {}
-variable "apigateway_http_enabled" {}
+variable "apigw_integration_type" {}
 variable "apigw_authorizer_enabled" {}
+variable "apigw_http_method" {}
+variable "apigw_http_integration_method" {}
+# Cognito
+variable "cognito_enabled" {}
+variable "cognito_authorizer_enabled" {}
+
+# Lambda authorizer
+variable "lambda_authorizer_enabled" {}
