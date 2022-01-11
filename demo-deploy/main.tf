@@ -59,7 +59,7 @@ module "apigateway" {
   integration_type        = var.apigw_integration_type
   integration_http_method = var.apigw_http_integration_method
 
-  integration_uri                   = "https://httpbin.org/api/{proxy}"
+  integration_uri                   = "https://httpbin.org/anything/{proxy}"
   integration_passthrough_behaviour = "WHEN_NO_MATCH"
 
   integration_request_parameters = {

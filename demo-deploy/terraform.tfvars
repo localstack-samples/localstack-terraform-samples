@@ -21,7 +21,7 @@ apigw_enabled = true
 apigw_authorizer_enabled = false
 apigw_v1_name            = "apigwv1-demo"
 # CUSTOM or COGNITO_USER_POOLS
-apigw_authorization      = "COGNITO_USER_POOLS"
+apigw_authorization      = "NONE"
 apigw_integration_type   = "HTTP_PROXY"
 apigw_http_method = "ANY"
 apigw_http_integration_method = "ANY"
