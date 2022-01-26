@@ -6,12 +6,12 @@ resource "aws_apigatewayv2_api" "example" {
 }
 
 resource "aws_apigatewayv2_integration" "example" {
-  api_id           = aws_apigatewayv2_api.example.id
-  integration_type = "AWS_PROXY"
-	payload_format_version = "2.0"
-	description               = "Lambda example"
-	integration_method = "ANY"
-  integration_uri           = aws_lambda_function.lambda.invoke_arn
+  api_id                 = aws_apigatewayv2_api.example.id
+  integration_type       = "AWS_PROXY"
+  payload_format_version = "2.0"
+  description            = "Lambda example"
+  integration_method     = "ANY"
+  integration_uri        = aws_lambda_function.lambda.invoke_arn
 }
 
 resource "aws_apigatewayv2_route" "example" {

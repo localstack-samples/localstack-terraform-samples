@@ -6,9 +6,9 @@ locals {
 module "dynamo" {
   source = "./modules/dynamodb"
 
-  count                  = var.dynamodb_enabled ? 1 : 0
+  count = var.dynamodb_enabled ? 1 : 0
 
-	table_name             = var.table_name
+  table_name             = var.table_name
   point_in_time_recovery = var.point_in_time_recovery
 }
 
@@ -44,9 +44,9 @@ module "s3" {
 module "apigateway" {
   source = "./modules/apigateway"
 
-	count = var.apigw_enabled ? 1: 0
+  count = var.apigw_enabled ? 1 : 0
 
-	apigw_name = var.apigw_v1_name
+  apigw_name = var.apigw_v1_name
   path_part  = "{proxy+}"
 
   http_method   = var.apigw_http_method
@@ -67,21 +67,21 @@ module "apigateway" {
   }
 
   authorizer_enabled    = var.apigw_authorizer_enabled
-	authorizer_arn        = var.apigw_authorizer_enabled ? module.lambda_authorizer[0].lambda_arn: ""
-	authorizer_invoke_arn = var.apigw_authorizer_enabled ? module.lambda_authorizer[0].lambda_invoke_arn: ""
+  authorizer_arn        = var.apigw_authorizer_enabled ? module.lambda_authorizer[0].lambda_arn : ""
+  authorizer_invoke_arn = var.apigw_authorizer_enabled ? module.lambda_authorizer[0].lambda_invoke_arn : ""
 
-	cognito_authorizer_enabled  = var.cognito_authorizer_enabled
-	cognito_pool_arn = var.cognito_enabled ? module.cognito_authorizer[0].pool_arn: ""
+  cognito_authorizer_enabled = var.cognito_authorizer_enabled
+  cognito_pool_arn           = var.cognito_enabled ? module.cognito_authorizer[0].pool_arn : ""
 }
 
 module "cognito_authorizer" {
-	source = "./modules/cognito"
+  source = "./modules/cognito"
 
-	count = var.cognito_enabled ? 1: 0
+  count = var.cognito_enabled ? 1 : 0
 }
 
 module "lambda_authorizer" {
-	source = "./modules/lambda"
+  source = "./modules/lambda"
 
-	count = var.lambda_authorizer_enabled ? 1: 0
+  count = var.lambda_authorizer_enabled ? 1 : 0
 }

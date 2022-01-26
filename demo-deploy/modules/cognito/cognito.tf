@@ -1,6 +1,6 @@
 # cognito authorizer
 resource "aws_cognito_user_pool" "pool" {
-	name = "cognito-demo-pool"
+  name = "cognito-demo-pool"
 }
 
 resource "aws_cognito_user_pool_client" "client" {
@@ -8,9 +8,9 @@ resource "aws_cognito_user_pool_client" "client" {
 
   user_pool_id = aws_cognito_user_pool.pool.id
 
-  generate_secret     = true
+  generate_secret = true
 
-	explicit_auth_flows = [
+  explicit_auth_flows = [
     "ALLOW_REFRESH_TOKEN_AUTH",
     "ALLOW_USER_PASSWORD_AUTH",
     "ALLOW_ADMIN_USER_PASSWORD_AUTH"
@@ -29,5 +29,5 @@ resource "aws_cognito_user_pool_client" "client" {
 # }
 
 output "pool_arn" {
-	value = aws_cognito_user_pool.pool.arn
+  value = aws_cognito_user_pool.pool.arn
 }
