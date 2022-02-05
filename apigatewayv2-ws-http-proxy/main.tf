@@ -18,9 +18,9 @@ resource "aws_apigatewayv2_integration" "example" {
   integration_method = "POST"
   integration_uri    = "http://httpbin.org/anything/{proxy}"
 
-  request_parameters = {
-    "connectionId" : "$context.connectionId",
-    "payload" : "$util.escapeJavaScript($input.json('$.message'))",
-    "userAgent" : "$context.identity.userAgent"
-  }
+	template_selection_expression = "application/json"
+	request_templates = {
+		"application/json" = file("${path.module}/template.json")
+	}
+
 }

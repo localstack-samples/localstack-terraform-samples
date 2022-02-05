@@ -1,0 +1,5 @@
+{
+    "connectionId":"$context.connectionId",
+    "payload": "$util.escapeJavaScript($input.json('$.message'))",
+    "userAgent": "$context.identity.userAgent"
+}
