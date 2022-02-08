@@ -38,7 +38,7 @@ resource "aws_api_gateway_request_validator" "validator" {
   name                        = "demo-validator"
   rest_api_id                 = aws_api_gateway_rest_api.rest.id
   validate_request_body       = true
-  validate_request_parameters = false
+  validate_request_parameters = true
 }
 
 resource "aws_api_gateway_integration" "integration" {
@@ -57,7 +57,7 @@ resource "aws_api_gateway_integration" "integration" {
     "application/json" = <<EOT
        {
         "Data": "$util.base64Encode($input.body)",
-        "PartitionKey1": "$util.escapeJavaScript($input.params('ingest'))",
+        "PartitionKey": $util.escapeJavaScript($input.params('ingest')),
         "StreamName": "timeseries-ingest-stream"
        }
     EOT
