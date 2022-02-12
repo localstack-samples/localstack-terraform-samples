@@ -17,7 +17,7 @@ from base64 import b64encode
 
 
 def handler(event, context):
-    print(event)
+    print(JSON.stringify(event, null, 2))
     # For demo purposes only - define whether plain text response in base64 encoded
     demo64Flag = int(event.get("queryStringParameters", {}).get("demo64Flag", 0))
 
