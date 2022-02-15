@@ -1,10 +1,8 @@
-# Run Terraform
+## Run Terraform
 
-```
-terraform init; terraform plan; terraform apply --auto-approve
-```
+`terraform init; terraform plan; terraform apply --auto-approve`
 
-# Create Cognito users
+## Create Cognito users
 
 Using the outputs run the following commands,
 
