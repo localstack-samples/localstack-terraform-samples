@@ -3,7 +3,7 @@
 ### Requirements
 
 - [x] Community
-- [] Pro
+- [ ] Pro
 
 ## Run
 
