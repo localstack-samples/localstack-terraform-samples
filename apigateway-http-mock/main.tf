@@ -18,11 +18,11 @@ resource "aws_api_gateway_method" "method" {
 }
 
 resource "aws_api_gateway_integration" "integration" {
-  rest_api_id             = aws_api_gateway_rest_api.mock.id
-  resource_id             = aws_api_gateway_resource.mock.id
-  http_method             = aws_api_gateway_method.method.http_method
-	type                    = "MOCK"
-	passthrough_behavior    = "WHEN_NO_MATCH"
+  rest_api_id          = aws_api_gateway_rest_api.mock.id
+  resource_id          = aws_api_gateway_resource.mock.id
+  http_method          = aws_api_gateway_method.method.http_method
+  type                 = "MOCK"
+  passthrough_behavior = "WHEN_NO_MATCH"
   request_templates = {
     "application/json" = <<EOF
 {
@@ -36,11 +36,11 @@ resource "aws_api_gateway_method_response" "response_200" {
   rest_api_id = aws_api_gateway_rest_api.mock.id
   resource_id = aws_api_gateway_resource.mock.id
   http_method = aws_api_gateway_method.method.http_method
-	status_code = "200"
+  status_code = "200"
 
-	response_models = {
-		"application/json" = "Empty2"
-	}
+  response_models = {
+    "application/json" = "Empty2"
+  }
 }
 
 
@@ -52,7 +52,7 @@ resource "aws_api_gateway_integration_response" "integration" {
 
   response_templates = {
     "application/json" = <<EOF
-{"statusCode": 200,"id2": $input.params().path.id}
+{"statusCode": 200,"id": $input.params().path.id}
 EOF
   }
 }
@@ -68,5 +68,5 @@ resource "aws_api_gateway_deployment" "example" {
 resource "aws_api_gateway_stage" "example" {
   deployment_id = aws_api_gateway_deployment.example.id
   rest_api_id   = aws_api_gateway_rest_api.mock.id
-	stage_name    = "test"
+  stage_name    = "test"
 }
