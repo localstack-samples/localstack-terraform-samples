@@ -64,6 +64,22 @@ resource "aws_api_gateway_integration" "integration" {
   }
 }
 
+resource "aws_kinesis_stream" "mod" {
+  name             = "timeseries-ingest-stream"
+  shard_count      = "1"
+
+  shard_level_metrics = [
+    "IncomingBytes",
+    "OutgoingBytes",
+    "OutgoingRecords",
+    "ReadProvisionedThroughputExceeded",
+    "WriteProvisionedThroughputExceeded",
+    "IncomingRecords",
+    "IteratorAgeMilliseconds",
+  ]
+
+}
+
 resource "aws_iam_role" "role" {
   name = "myrole"
 	path = "/"
