@@ -1,5 +1,5 @@
 variable "region" {
-	default = "eu-west-1"
+  default = "eu-west-1"
 }
 
 resource "aws_api_gateway_rest_api" "rest" {
@@ -16,11 +16,11 @@ resource "aws_api_gateway_method" "method" {
   rest_api_id   = aws_api_gateway_rest_api.rest.id
   resource_id   = aws_api_gateway_resource.ingest.id
   http_method   = "POST"
-	authorization = "NONE"
-	request_models = {
-		"application/json" = aws_api_gateway_model.model.name
-	}
-	request_validator_id = aws_api_gateway_request_validator.validator.id
+  authorization = "NONE"
+  request_models = {
+    "application/json" = aws_api_gateway_model.model.name
+  }
+  request_validator_id = aws_api_gateway_request_validator.validator.id
 }
 
 resource "aws_api_gateway_model" "model" {
@@ -47,10 +47,10 @@ resource "aws_api_gateway_integration" "integration" {
   http_method             = aws_api_gateway_method.method.http_method
   integration_http_method = "POST"
   type                    = "AWS"
-	credentials = ""
-	uri                     = "arn:aws:apigateway:${var.region}:kinesis:action/PutRecord"
+  credentials             = ""
+  uri                     = "arn:aws:apigateway:${var.region}:kinesis:action/PutRecord"
 
- request_parameters = {
+  request_parameters = {
     "integration.request.header.Content-Type" = "'application/x-amz-json-1.1'"
   }
   request_templates = {
@@ -65,8 +65,8 @@ resource "aws_api_gateway_integration" "integration" {
 }
 
 resource "aws_kinesis_stream" "mod" {
-  name             = "timeseries-ingest-stream"
-  shard_count      = "1"
+  name        = "timeseries-ingest-stream"
+  shard_count = "1"
 
   shard_level_metrics = [
     "IncomingBytes",
@@ -81,10 +81,10 @@ resource "aws_kinesis_stream" "mod" {
 }
 
 resource "aws_iam_role" "role" {
-  name = "myrole"
-	path = "/"
-	managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonKinesisFullAccess"]
-  assume_role_policy = <<POLICY
+  name                = "myrole"
+  path                = "/"
+  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonKinesisFullAccess"]
+  assume_role_policy  = <<POLICY
 {
   "Version": "2012-10-17",
   "Statement": [

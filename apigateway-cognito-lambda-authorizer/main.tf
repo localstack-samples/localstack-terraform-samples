@@ -94,13 +94,13 @@ resource "aws_cognito_user_pool_client" "client" {
 }
 
 output "rest_api_id" {
-	value = aws_api_gateway_rest_api.demo.id
+  value = aws_api_gateway_rest_api.demo.id
 }
 
 output "user_pool_client_id" {
-	value = aws_cognito_user_pool_client.client.id
+  value = aws_cognito_user_pool_client.client.id
 }
 
 output "user_pool_id" {
-	value = aws_cognito_user_pool.pool.id
+  value = aws_cognito_user_pool.pool.id
 }

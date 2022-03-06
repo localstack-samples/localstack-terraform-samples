@@ -24,7 +24,7 @@ resource "aws_api_gateway_integration" "integration" {
   http_method             = aws_api_gateway_method.method.http_method
   integration_http_method = "ANY"
   type                    = "AWS"
-	uri                     = aws_lambda_function.lambda.invoke_arn
+  uri                     = aws_lambda_function.lambda.invoke_arn
 
 
   request_templates = {
@@ -76,7 +76,7 @@ resource "aws_api_gateway_integration" "integration" {
     "requestPath": "$context.resourcePath"
   }
 EOF
-}
+  }
 }
 
 resource "aws_lambda_function" "lambda" {

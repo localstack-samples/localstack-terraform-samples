@@ -38,7 +38,7 @@ resource "aws_api_gateway_method_response" "response_200" {
   http_method = aws_api_gateway_method.method.http_method
   status_code = "200"
 
-	# Empty2 is not a valid value
+  # Empty2 is not a valid value
   response_models = {
     "application/json" = "Empty"
   }

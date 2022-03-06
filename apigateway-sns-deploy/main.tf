@@ -25,14 +25,14 @@ resource "aws_api_gateway_integration" "integration" {
   http_method             = aws_api_gateway_method.method.http_method
   integration_http_method = "POST"
   type                    = "AWS"
-	credentials             = aws_iam_role.sns_publish.arn
-	uri = "arn:aws:apigateway:${data.aws_region.current.name}:sns:path//"
+  credentials             = aws_iam_role.sns_publish.arn
+  uri                     = "arn:aws:apigateway:${data.aws_region.current.name}:sns:path//"
 
-	request_parameters = {
+  request_parameters = {
     "integration.request.header.Content-Type" = "'application/x-www-form-urlencoded'"
   }
 
-  request_templates       = {
+  request_templates = {
     "application/json" = "Action=Publish&TopicArn=$util.urlEncode('${aws_sns_topic.topic.arn}')&Message=$util.urlEncode($input.body)"
   }
 }
@@ -64,7 +64,7 @@ resource "aws_sns_topic" "topic" {
 
 
 resource "aws_iam_role" "sns_publish" {
-  name = "sns-publish-role"
+  name               = "sns-publish-role"
   assume_role_policy = data.aws_iam_policy_document.apigw.json
 }
 
@@ -82,19 +82,19 @@ data "aws_iam_policy_document" "apigw" {
 }
 
 resource "aws_iam_role_policy" "sns_publish" {
-  name = "SNS-Publish"
-  role = aws_iam_role.sns_publish.id
+  name   = "SNS-Publish"
+  role   = aws_iam_role.sns_publish.id
   policy = data.aws_iam_policy_document.sns_publish.json
 }
 
 data "aws_iam_policy_document" "sns_publish" {
   statement {
-     actions = [
+    actions = [
       "sns:Publish",
     ]
 
     resources = [
-			aws_sns_topic.topic.arn
+      aws_sns_topic.topic.arn
     ]
   }
 }

@@ -55,7 +55,7 @@ resource "aws_api_gateway_integration" "integration" {
   credentials             = aws_iam_role.s3_api_gateyway_role.arn
   uri                     = "arn:aws:apigateway:${data.aws_region.current.name}:s3:action/GetObject&Bucket=${var.bucket_name}&Key={proxy}"
   request_parameters = {
-		"integration.request.path.proxy"   = "method.request.path.proxy"
+    "integration.request.path.proxy" = "method.request.path.proxy"
     #"integration.request.path.object" = "context.requestId"
   }
 }
