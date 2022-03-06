@@ -29,32 +29,52 @@ resource "aws_api_gateway_integration" "integration" {
 
   request_templates = {
     "application/json" = <<EOF
-#set( $body = $input.json("$") )
+ #set( $body = $input.json("$") )
 
-#macro( loop $map )
-{
+
+  #define( $loop )
+    {
     #foreach($key in $map.keySet())
         #set( $k = $util.escapeJavaScript($key) )
         #set( $v = $util.escapeJavaScript($map.get($key)).replaceAll("\\'", "'") )
-        "$k": "$v"
-        #if( $foreach.hasNext ) , #end
+        "$k":
+          "$v"
+          #if( $foreach.hasNext ) , #end
     #end
-}
-#end
+    }
+  #end
 
-{
-    "enhancedAuthContext": #loop($context.authorizer),
+  {
+    "body": $body,
+    "method": "$context.httpMethod",
+    "principalId": "$context.authorizer.principalId",
+    "stage": "$context.stage",
 
-    "headers": #loop($input.params().header),
+    "cognitoPoolClaims" : {
 
-    "query": #loop($input.params().querystring),
+       "sub": "$context.authorizer.claims.sub"
+    },
 
-    "path": #loop($input.params().path),
+    #set( $map = $context.authorizer )
+    "enhancedAuthContext": $loop,
 
-    "identity": #loop($context.identity),
+    #set( $map = $input.params().header )
+    "headers": $loop,
 
-    "stageVariables": #loop($stageVariables),
-}
+    #set( $map = $input.params().querystring )
+    "query": $loop,
+
+    #set( $map = $input.params().path )
+    "path": $loop,
+
+    #set( $map = $context.identity )
+    "identity": $loop,
+
+    #set( $map = $stageVariables )
+    "stageVariables": $loop,
+
+    "requestPath": "$context.resourcePath"
+  }
 EOF
 }
 }
