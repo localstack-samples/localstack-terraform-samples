@@ -1,4 +1,3 @@
-# curl -X POST -H 'content-type: image/jpeg' --data-binary @./nyan-cat.jpg "http://6d00f63f.execute-api.localhost.localstack.cloud:4566/example/test/foo/bar"
 resource "aws_apigatewayv2_api" "example" {
   name          = "example-http-api"
   protocol_type = "HTTP"

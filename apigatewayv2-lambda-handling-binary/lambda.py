@@ -17,14 +17,30 @@ from base64 import b64encode
 
 
 def handler(event, context):
+    print(event)
+    # For demo purposes only - define whether plain text response in base64 encoded
+    demo64Flag = int(event.get("queryStringParameters", {}).get("demo64Flag", 0))
+
     # Define desired output formate from accept header, default to JPEG
     accept = event.get("headers", {}).get("accept", "image/jpeg")
+
+    # Get the RESTful VERB
+    verb = event.get("requestContext", {}).get("http", {}).get("method", "GET").split()[0]
+
+    # Return failure message as unencoded string to API-GW
+    if demo64Flag == 0:
+        return_string = "Text path: Unknown encoding requested"
+        return_encode = False
+        # Return failure message as unencoded string to API-GW
+    else:
+        return_string = b64encode(("Binary path: Unknown encoding requested").encode('utf-8'))
+        return_encode = True
 
     return {
         'statusCode': 200,
         # Return the mime type of the response
         'headers': {
-            'Content-Type': accept
+            'Content-Type': 'text/plain'
         },
         # Return message, might be Base64 encoded
         'body': event["body"],
