@@ -1,0 +1,4 @@
+{
+		"userId": "123",
+		"connectionId": "$context.connectionId"
+}
