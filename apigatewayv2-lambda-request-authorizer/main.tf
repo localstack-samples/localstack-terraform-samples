@@ -34,7 +34,7 @@ resource "aws_lambda_function" "lambda_auth" {
   filename      = "lambda-auth.zip"
   function_name = "lambda-auth"
   role          = aws_iam_role.role.arn
-  handler       = "lambda.handler"
+  handler       = "lambda-auth.handler"
 
   source_code_hash = filebase64sha256("lambda-auth.zip")
 
