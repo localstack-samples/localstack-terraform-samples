@@ -7,7 +7,7 @@
 Using the outputs run the following commands,
 
 ```
- awslocal cognito-idp sign-up \                                                                                                       0 (9.199s) < 23:44:25
+ awslocal cognito-idp sign-up \
       --client-id <user_pool_client_id> \
       --username "user@domain.com" \
       --password "password"
@@ -16,7 +16,7 @@ Using the outputs run the following commands,
 then,
 
 ```
-awslocal cognito-idp admin-confirm-sign-up \                                                                                         0 (1.442s) < 23:46:06
+awslocal cognito-idp admin-confirm-sign-up \
       --user-pool-id <user_pool_id> \
       --username "user@domain.com"
 ```
@@ -24,7 +24,7 @@ awslocal cognito-idp admin-confirm-sign-up \                                    
 then,
 
 ```
-awslocal cognito-idp initiate-auth \                                                                                                 0 (0.601s) < 23:46:07
+awslocal cognito-idp initiate-auth \
       --auth-flow USER_PASSWORD_AUTH \
       --auth-parameters USERNAME="user@domain.com",PASSWORD="password" \
       --client-id <user_pool_client_id>
