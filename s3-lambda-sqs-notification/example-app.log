@@ -1,0 +1,4 @@
+{"timestamp":"2022-04-07T17:53:00","message":"cpu-utilization","cpu":60}
+{"timestamp":"2022-04-07T17:53:30","message":"hello there"}
+{"timestamp":"2022-04-07T17:54:00","message":"cpu-utilization","cpu":90}
+{"timestamp":"2022-04-07T17:55:00","message":"cpu-utilization","cpu":30}
