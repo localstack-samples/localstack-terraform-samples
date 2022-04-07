@@ -1,0 +1,2 @@
+2022-04-07T14:03:58.937:DEBUG:stevedore.extension: found extension EntryPoint(name='initialize_health_info', value='localstack_ext.plugins:initialize_health_info', group='localstack.hooks.on_infra_ready')
+2022-04-07T14:03:58.938:INFO:plugin.manager: instantiating plugin PluginSpec(localstack.hooks.on_infra_ready.initialize_health_info = <function initialize_health_info at 0x7f59a5f31a60>)
