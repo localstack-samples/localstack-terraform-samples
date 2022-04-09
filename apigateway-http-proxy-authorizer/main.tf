@@ -19,8 +19,8 @@ resource "aws_api_gateway_method" "method_post" {
   rest_api_id   = aws_api_gateway_rest_api.rest.id
   resource_id   = aws_api_gateway_resource.proxy.id
   http_method   = "POST"
-	authorization = "CUSTOM"
-	authorizer_id = aws_api_gateway_authorizer.demo.id
+  authorization = "CUSTOM"
+  authorizer_id = aws_api_gateway_authorizer.demo.id
 }
 
 
@@ -37,19 +37,19 @@ resource "aws_lambda_function" "authorizer" {
   role          = aws_iam_role.role.arn
   handler       = "authorizer.handler"
 
-	source_code_hash = filebase64sha256("authorizer-function.zip")
+  source_code_hash = filebase64sha256("authorizer-function.zip")
 
   runtime = "nodejs12.x"
 }
 
 resource "aws_api_gateway_integration" "integration" {
-  rest_api_id             = aws_api_gateway_rest_api.rest.id
-  resource_id             = aws_api_gateway_resource.proxy.id
-	http_method = aws_api_gateway_method.method_get.http_method
+  rest_api_id = aws_api_gateway_rest_api.rest.id
+  resource_id = aws_api_gateway_resource.proxy.id
+  http_method = aws_api_gateway_method.method_get.http_method
 
-  type = "HTTP_PROXY"
+  type                    = "HTTP_PROXY"
   integration_http_method = "POST"
-  uri    = "http://httpbin.org/anything/{proxy}"
+  uri                     = "http://httpbin.org/anything/{proxy}"
 }
 
 resource "aws_api_gateway_integration" "integration_post" {
