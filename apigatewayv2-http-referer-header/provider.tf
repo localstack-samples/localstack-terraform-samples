@@ -11,7 +11,8 @@ provider "aws" {
     apigateway      = "http://localhost:4566"
     apigatewayv2    = "http://localhost:4566"
     cloudformation  = "http://localhost:4566"
-    cloudwatch      = "http://localhost:4566"
+		cloudwatch      = "http://localhost:4566"
+		cloudwatchlogs  = "http://localhost:4566"
     cognitoidp      = "http://localhost:4566"
     cognitosync     = "http://localhost:4566"
     cognitoidentity = "http://localhost:4566"
@@ -56,7 +57,7 @@ terraform {
   required_providers {
     aws = {
       source  = "hashicorp/aws"
-      version = ">= 3.60.0, <= 3.69.0"
+      version = ">= 3.60.0"
     }
   }
 }
