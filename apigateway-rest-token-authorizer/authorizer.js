@@ -11,10 +11,10 @@ function generatePolicy(methodArn) {
   };
 }
 
-exports.handler = function(event) {
+exports.handler = function(event, context, callback) {
 		console.log(event);
 		return {
-				principalId: 'me'
-				policyDocument: generatePolicy(event.methodArn),
+				principalId: 'me',
+				policyDocument: generatePolicy(event.methodArn)
     };
 }
