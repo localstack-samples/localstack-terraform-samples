@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 
+export TF_LOG=debug
 terraform init; terraform plan; terraform apply --auto-approve
 
 restapi=$(aws apigateway --endpoint-url=http://localhost:4566 get-rest-apis | jq -r .items[0].id)
