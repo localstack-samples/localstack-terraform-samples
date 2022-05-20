@@ -1,5 +1,6 @@
 provider "aws" {
-  region                      = "eu-west-1"
+	alias = "localstack"
+	region                      = "eu-west-1"
   access_key                  = "fake"
   secret_key                  = "fake"
   skip_credentials_validation = true

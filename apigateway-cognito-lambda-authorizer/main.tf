@@ -1,3 +1,15 @@
+data "aws_caller_identity" "current" {}
+
+data "aws_region" "current" {
+	provider = aws.localstack
+}
+
+locals {
+	account_id = data.aws_caller_identity.current.account_id
+	region = data.aws_region.current.name
+}
+
+
 resource "aws_api_gateway_rest_api" "demo" {
 	name = "auth-demo"
 	description = "cognito-authorization"
@@ -36,6 +48,17 @@ resource "aws_api_gateway_integration" "integration" {
   integration_http_method = "ANY"
   type                    = "AWS_PROXY"
   uri                     = aws_lambda_function.lambda.invoke_arn
+}
+
+resource "aws_lambda_permission" "apigw_lambda" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  # More: http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-control-access-using-iam-policies-to-invoke-api.html
+	#  source_arn = "arn:aws:execute-api:${local.region}:${local.account_id}:${aws_api_gateway_rest_api.demo.id}/*/${aws_api_gateway_method.any.http_method}${aws_api_gateway_resource.demo.path}"
+	source_arn = "${aws_api_gateway_rest_api.demo.execution_arn}/*/*/*"
 }
 
 

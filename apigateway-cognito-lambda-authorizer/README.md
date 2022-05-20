@@ -10,7 +10,7 @@ Using the outputs run the following commands,
  awslocal cognito-idp sign-up \
       --client-id <user_pool_client_id> \
       --username "user@domain.com" \
-      --password "password"
+      --password "Ppassword123!"
 ```
 
 then,
