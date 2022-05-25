@@ -1,13 +1,13 @@
 data "aws_caller_identity" "current" {}
 
-data "aws_region" "current" {
-  provider = aws.localstack
-}
+# data "aws_region" "current" {
+#   provider = aws.localstack
+# }
 
-locals {
-  account_id = data.aws_caller_identity.current.account_id
-  region     = data.aws_region.current.name
-}
+# locals {
+#   account_id = data.aws_caller_identity.current.account_id
+#   region     = data.aws_region.current.name
+#}
 
 
 resource "aws_api_gateway_rest_api" "demo" {
@@ -57,7 +57,7 @@ resource "aws_lambda_permission" "apigw_lambda" {
   principal     = "apigateway.amazonaws.com"
 
   # More: http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-control-access-using-iam-policies-to-invoke-api.html
-  #  source_arn = "arn:aws:execute-api:${local.region}:${local.account_id}:${aws_api_gateway_rest_api.demo.id}/*/${aws_api_gateway_method.any.http_method}${aws_api_gateway_resource.demo.path}"
+	#  source_arn = "arn:aws:execute-api:${local.region}:${local.account_id}:${aws_api_gateway_rest_api.demo.id}/*/${aws_api_gateway_method.any.http_method}${aws_api_gateway_resource.demo.path}"
   source_arn = "${aws_api_gateway_rest_api.demo.execution_arn}/*/*/*"
 }
 
