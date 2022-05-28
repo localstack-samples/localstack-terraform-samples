@@ -10,7 +10,7 @@ This example requires LocalStack Pro.
 
 ### Prepare LocalStack
 
-Then, prepare a route53 zone:
+Once you have started LocalStack, proceed to prepare a route53 zone:
 
 ```sh
 awslocal route53 create-hosted-zone \
