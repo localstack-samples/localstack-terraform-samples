@@ -1,5 +1,5 @@
 variable "auth0_tenant_domain_url" {
-	default = "https://localstack-dev.eu.auth0.com/"
+	default = "https://localstack-dev.eu.auth0.com"
 }
 
 resource "aws_apigatewayv2_api" "example" {
@@ -24,14 +24,14 @@ resource "aws_apigatewayv2_integration" "user" {
   integration_type       = "AWS_PROXY"
   payload_format_version = "2.0"
   description            = "Lambda example"
-  integration_method     = "ANY"
+  integration_method     = "POST"
   integration_uri        = aws_lambda_function.user.invoke_arn
 }
 
 resource "aws_apigatewayv2_route" "user" {
   api_id             = aws_apigatewayv2_api.example.id
   route_key          = "ANY /users/user"
-  authorization_type = "CUSTOM"
+  authorization_type = "JWT"
   authorizer_id      = aws_apigatewayv2_authorizer.user.id
   target             = "integrations/${aws_apigatewayv2_integration.user.id}"
 
