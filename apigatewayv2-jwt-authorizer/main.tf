@@ -7,11 +7,11 @@ resource "aws_apigatewayv2_authorizer" "user" {
   api_id           = aws_apigatewayv2_api.example.id
   authorizer_type  = "JWT"
   identity_sources = ["$request.header.Authorization"]
-	name             = "user-authorizer"
+  name             = "user-authorizer"
 
-	jwt_configuration {
-		audience = ["user"]
-    issuer   = "https://${aws_cognito_user_pool.pool.endpoint}"
+  jwt_configuration {
+    audience = ["user"]
+		issuer   = "http://localhost:4566/${basename(aws_cognito_user_pool.pool.endpoint)}"
   }
 }
 
@@ -19,27 +19,12 @@ resource "aws_apigatewayv2_authorizer" "admin" {
   api_id           = aws_apigatewayv2_api.example.id
   authorizer_type  = "JWT"
   identity_sources = ["$request.header.Authorization"]
-	name             = "admin-authorizer"
+  name             = "admin-authorizer"
 
-	jwt_configuration {
-		audience = ["admin"]
-    issuer   = "https://${aws_cognito_user_pool.pool.endpoint}"
+  jwt_configuration {
+    audience = ["admin"]
+		issuer   = "http://localhost:4566/${basename(aws_cognito_user_pool.pool.endpoint)}"
   }
-}
-
-
-resource "aws_cognito_user_pool" "pool" {
-  name = "user_pool"
-}
-
-resource "aws_cognito_user_pool_client" "client" {
-  name         = "example_external_api"
-  user_pool_id = aws_cognito_user_pool.pool.id
-  explicit_auth_flows = [
-    "ALLOW_USER_PASSWORD_AUTH",
-    "ALLOW_USER_SRP_AUTH",
-    "ALLOW_REFRESH_TOKEN_AUTH"
-  ]
 }
 
 resource "aws_apigatewayv2_integration" "user" {
@@ -61,11 +46,12 @@ resource "aws_apigatewayv2_integration" "admin" {
 }
 
 resource "aws_apigatewayv2_route" "user" {
-  api_id             = aws_apigatewayv2_api.example.id
-  route_key          = "ANY /users/user"
-  authorization_type = "CUSTOM"
-  authorizer_id      = aws_apigatewayv2_authorizer.user.id
-  target             = "integrations/${aws_apigatewayv2_integration.user.id}"
+  api_id               = aws_apigatewayv2_api.example.id
+  route_key            = "ANY /users/user"
+  authorization_type   = "CUSTOM"
+	authorization_scopes = ["user@domain.com"]
+  authorizer_id        = aws_apigatewayv2_authorizer.user.id
+  target               = "integrations/${aws_apigatewayv2_integration.user.id}"
 
 }
 resource "aws_apigatewayv2_route" "admin" {
@@ -74,6 +60,22 @@ resource "aws_apigatewayv2_route" "admin" {
   authorization_type = "CUSTOM"
   authorizer_id      = aws_apigatewayv2_authorizer.admin.id
   target             = "integrations/${aws_apigatewayv2_integration.admin.id}"
+}
+
+resource "aws_cognito_user_pool" "pool" {
+  name = "user_pool"
+}
+
+resource "aws_cognito_user_pool_client" "client" {
+  name                 = "example_external_api"
+  user_pool_id         = aws_cognito_user_pool.pool.id
+  allowed_oauth_scopes = ["email"]
+  explicit_auth_flows = [
+    "ALLOW_USER_PASSWORD_AUTH",
+    "ALLOW_USER_SRP_AUTH",
+    "ALLOW_REFRESH_TOKEN_AUTH"
+  ]
+  supported_identity_providers = ["COGNITO"]
 }
 
 resource "aws_lambda_function" "admin" {

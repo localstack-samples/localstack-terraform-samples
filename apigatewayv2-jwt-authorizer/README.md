@@ -27,5 +27,6 @@ then,
 awslocal cognito-idp initiate-auth \
       --auth-flow USER_PASSWORD_AUTH \
       --auth-parameters USERNAME="user@domain.com",PASSWORD="password" \
+			--scopes "email" \
       --client-id <user_pool_client_id>
 ```
