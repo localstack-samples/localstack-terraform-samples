@@ -10,7 +10,7 @@ resource "aws_apigatewayv2_authorizer" "user" {
   name             = "user-authorizer"
 
   jwt_configuration {
-    audience = ["user"]
+		audience = [${aws_cognito_user_pool_client.client.id}]
 		issuer   = "http://localhost:4566/${basename(aws_cognito_user_pool.pool.endpoint)}"
   }
 }
@@ -22,7 +22,7 @@ resource "aws_apigatewayv2_authorizer" "admin" {
   name             = "admin-authorizer"
 
   jwt_configuration {
-    audience = ["admin"]
+		audience = [${aws_cognito_user_pool_client.client.id}]
 		issuer   = "http://localhost:4566/${basename(aws_cognito_user_pool.pool.endpoint)}"
   }
 }
