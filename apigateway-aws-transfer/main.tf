@@ -340,3 +340,7 @@ output "endpoint" {
 output "role" {
   value = aws_iam_role.transfer.arn
 }
+
+output "auth_url" {
+	value = aws_api_gateway_stage.stage.invoke_url
+}
