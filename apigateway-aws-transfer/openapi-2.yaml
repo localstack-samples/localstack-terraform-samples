@@ -1,0 +1,67 @@
+swagger: '2.0'
+info:
+  description: This API provides an IDP for AWS Transfer service
+  title: sftp-idp-secrets
+  version: 0.0.2
+paths:
+  '/servers/{serverId}/users/{username}/config':
+    get:
+      produces:
+        - application/json
+      parameters:
+        - in: header
+          name: Password
+          type: string
+        - in: query
+          name: protocol
+          type: string
+        - in: query
+          name: sourceIp
+          type: string
+      responses:
+        '200':
+          description: 200 response
+          schema:
+            $ref: '#/definitions/UserConfigResponseModel'
+      security:
+        - sigv4: []
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: '200'
+        httpMethod: POST
+        passthroughBehavior: when_no_match
+        requestTemplates:
+          application/json: |
+            {
+              "username": "$input.params('username')",
+              "password": "$util.escapeJavaScript($input.params('Password')).replaceAll("\\'","'")",
+              "serverId": "$input.params('serverId')",
+            "protocol": "$input.params('protocol')",
+            "sourceIp": "$input.params('sourceIp')"
+            }
+        timeoutInMillis: 29000
+        type: aws
+        uri: '${LAMBDA_INVOKE_ARN}'
+definitions:
+  UserConfigResponseModel:
+    properties:
+      HomeDirectory:
+        type: string
+      Policy:
+        type: string
+      PublicKeys:
+        items:
+          type: string
+        type: array
+      Role:
+        type: string
+    title: UserUserConfig
+    type: object
+securityDefinitions:
+  sigv4:
+    in: header
+    name: Authorization
+    type: apiKey
+    x-amazon-apigateway-authtype: awsSigv4
+x-components: {}

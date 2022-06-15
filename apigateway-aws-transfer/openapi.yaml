@@ -1,0 +1,67 @@
+openapi: "3.0.1"
+info:
+  title: "sftp-idp-secrets"
+  description: "This API provides an IDP for AWS Transfer service"
+  version: 0.0.2
+paths:
+  /servers/{serverId}/users/{username}/config:
+    get:
+      parameters:
+      - name: "Password"
+        in: "header"
+        schema:
+          type: "string"
+      - name: "protocol"
+        in: "query"
+        schema:
+          type: "string"
+      - name: "sourceIp"
+        in: "query"
+        schema:
+          type: "string"
+      responses:
+        "200":
+          description: "200 response"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/UserConfigResponseModel"
+      security:
+      - sigv4: []
+      x-amazon-apigateway-integration:
+        httpMethod: "POST"
+        uri: ${LAMBDA_INVOKE_ARN}
+        responses:
+          default:
+            statusCode: "200"
+        requestTemplates:
+          application/json: "{\n  \"username\": \"$input.params('username')\",\n \
+            \ \"password\": \"$util.escapeJavaScript($input.params('Password')).replaceAll(\"\
+            \\\\'\",\"'\")\",\n  \"serverId\": \"$input.params('serverId')\",\n\
+            \"protocol\": \"$input.params('protocol')\",\n\
+            \"sourceIp\": \"$input.params('sourceIp')\"\n}\n"
+        passthroughBehavior: "when_no_match"
+        timeoutInMillis: 29000
+        type: "aws"
+components:
+  schemas:
+    UserConfigResponseModel:
+      title: "UserUserConfig"
+      type: "object"
+      properties:
+        HomeDirectory:
+          type: "string"
+        Role:
+          type: "string"
+        Policy:
+          type: "string"
+        PublicKeys:
+          type: "array"
+          items:
+            type: "string"
+  securitySchemes:
+    sigv4:
+      type: "apiKey"
+      name: "Authorization"
+      in: "header"
+      x-amazon-apigateway-authtype: "awsSigv4"
