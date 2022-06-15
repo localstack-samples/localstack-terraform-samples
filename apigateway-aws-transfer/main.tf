@@ -153,3 +153,190 @@ resource "aws_api_gateway_stage" "stage" {
   rest_api_id   = aws_api_gateway_rest_api.sftp-idp-secrets.id
   deployment_id = aws_api_gateway_deployment.deployment.id
 }
+
+resource "aws_iam_role" "sftp" {
+  name = "sftp-server-iam-role-${var.stage}"
+
+  assume_role_policy = <<-POLICY
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "transfer.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+            }
+        ]
+    }
+  POLICY
+}
+
+resource "aws_iam_role" "sftp_log" {
+  # log role for SFTP server
+  name = "sftp-server-iam-log-role-${var.stage}"
+
+  assume_role_policy = <<-POLICY
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+            "Effect": "Allow",
+            "Principal": {
+                "Service": "transfer.amazonaws.com"
+            },
+            "Action": "sts:AssumeRole"
+            }
+        ]
+    }
+  POLICY
+}
+
+resource "aws_iam_role_policy" "sftp" {
+  # policy to allow invocation of IdP API
+  name = "sftp-server-iam-policy-${var.stage}"
+  role = aws_iam_role.sftp.id
+
+  policy = <<-POLICY
+    {
+      "Version": "2012-10-17",
+      "Statement": [
+        {
+          "Sid": "InvokeApi",
+          "Effect": "Allow",
+          "Action": [
+            "execute-api:Invoke"
+          ],
+          "Resource": "arn:aws:execute-api:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.sftp-idp-secrets.id}/${var.stage}/GET/*"
+        },
+        {
+          "Sid": "ReadApi",
+          "Effect": "Allow",
+          "Action": [
+            "apigateway:GET"
+          ],
+          "Resource": "*"
+        }
+      ]
+    }
+  POLICY
+}
+
+resource "aws_iam_role_policy" "sftp_log" {
+  # policy to allow logging to Cloudwatch
+  name = "sftp-server-iam-log-policy-${var.stage}"
+  role = aws_iam_role.sftp_log.id
+
+  policy = <<-POLICY
+    {
+      "Version": "2012-10-17",
+      "Statement": [{
+          "Sid": "AllowFullAccesstoCloudWatchLogs",
+          "Effect": "Allow",
+          "Action": [
+            "logs:*"
+          ],
+          "Resource": "*"
+        }
+      ]
+    }
+  POLICY
+}
+
+resource "aws_secretsmanager_secret" "secret" {
+  name                = "SFTP/user1"
+}
+
+resource "aws_secretsmanager_secret_version" "secret" {
+  secret_id     = "${aws_secretsmanager_secret.secret.id}"
+  secret_string = <<-EOF
+    {
+      "HomeDirectoryDetails": "[{\"Entry\": \"/\", \"Target\": \"/test.devopsgoat/$${Transfer:UserName}\"}]",
+      "Password": "Password1",
+      "Role": "arn:aws:iam::XXXXXXX:role/transfer-user-iam-role",
+      "UserId": "user1",
+      "AcceptedIpNetwork": "192.168.1.0/24",
+    }
+  EOF
+}
+
+resource "aws_transfer_server" "sftp" {
+  identity_provider_type = "API_GATEWAY"
+  logging_role           = aws_iam_role.sftp_log.arn
+  url                    = aws_api_gateway_stage.stage.invoke_url
+  invocation_role        = aws_iam_role.sftp.arn
+  endpoint_type          = "PUBLIC"
+
+  tags = {
+    NAME = "sftp-server"
+  }
+}
+
+resource "aws_s3_bucket" "sftp" {
+  bucket_prefix = "sftpbucket"
+  acl           = "private"
+}
+
+resource "aws_iam_role" "transfer" {
+  name = "transfer-user-iam-role-${var.stage}"
+
+  assume_role_policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+        "Effect": "Allow",
+        "Principal": {
+            "Service": "transfer.amazonaws.com"
+        },
+        "Action": "sts:AssumeRole"
+        }
+    ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy" "transfer" {
+  name = "transfer-user-iam-policy-${var.stage}"
+  role = aws_iam_role.transfer.id
+
+  policy = <<-POLICY
+    {
+        "Version": "2012-10-17",
+        "Statement": [
+            {
+                "Sid": "AllowListingOfUserFolder",
+                "Action": [
+                    "s3:ListBucket",
+                    "s3:GetBucketLocation"
+                ],
+                "Effect": "Allow",
+                "Resource": [
+                    "${aws_s3_bucket.sftp.arn}"
+                ]
+            },
+            {
+                "Sid": "HomeDirObjectAccess",
+                "Effect": "Allow",
+                "Action": [
+                    "s3:PutObject",
+                    "s3:GetObject",
+                    "s3:DeleteObjectVersion",
+                    "s3:DeleteObject",
+                    "s3:GetObjectVersion"
+                ],
+                "Resource": ["${aws_s3_bucket.sftp.arn}","${aws_s3_bucket.sftp.arn}/*"]
+            }
+        ]
+    }
+  POLICY
+}
+
+output "endpoint" {
+  value = aws_transfer_server.sftp.endpoint
+}
+
+output "role" {
+  value = aws_iam_role.transfer.arn
+}

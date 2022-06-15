@@ -2,4 +2,6 @@
 
 terraform init; terraform plan; terraform apply --auto-approve
 
-restapi=$(aws --endpoint-url=http://localhost:4566 apigateway  get-rest-apis | jq -r .items[0].id)
+
+serverid=$(aws --endpoint-url=http://localhost:4566 transfer list-servers | grep "ServerId" | sed 's/"ServerId"\://' | cut -d ',' -f1)
+aws --endpoint-url=http://localhost:4566 transfer test-identity-provider --server-id $serverid --user-name user1 --user-password Password1
