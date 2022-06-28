@@ -1,16 +1,44 @@
+provider "aws" {
+	region                      = "eu-west-1"
+}
+
 resource "aws_apigatewayv2_api" "ws" {
   name                       = "websocket-api"
   protocol_type              = "WEBSOCKET"
   route_selection_expression = "$request.body.action"
 }
 
+resource "aws_apigatewayv2_authorizer" "example" {
+  api_id           = aws_apigatewayv2_api.ws.id
+  authorizer_type  = "REQUEST"
+  authorizer_uri   = aws_lambda_function.lambda_auth.invoke_arn
+  identity_sources = ["route.request.header.Authorization"]
+  name             = "authorizer"
+}
 
 resource "aws_apigatewayv2_route" "example" {
   api_id    = aws_apigatewayv2_api.ws.id
 	route_key = "$connect"
-	authorization_type = "NONE"
-
+	authorization_type = "CUSTOM"
+	authorizer_id = aws_apigatewayv2_authorizer.example.id
 	target = "integrations/${aws_apigatewayv2_integration.example.id}"
+}
+
+resource "aws_lambda_function" "lambda_auth" {
+  filename      = "lambda-auth.zip"
+  function_name = "lambda-auth"
+  role          = aws_iam_role.role.arn
+  handler       = "lambda-auth.handler"
+
+  source_code_hash = filebase64sha256("lambda-auth.zip")
+
+  runtime = "nodejs12.x"
+
+  environment {
+    variables = {
+      foo = "bar"
+    }
+  }
 }
 
 resource "aws_apigatewayv2_integration" "example" {
