@@ -68,10 +68,26 @@ resource "aws_lambda_function" "lambda" {
   filename      = "lambda-connect.zip"
   function_name = "lambda"
   role          = aws_iam_role.role.arn
-  handler       = "lambda.handler"
+  handler       = "lambda-connect.handler"
   runtime       = "nodejs12.x"
 
   source_code_hash = filebase64sha256("lambda-connect.zip")
+
+  environment {
+    variables = {
+      foo = "bar"
+    }
+  }
+}
+
+resource "aws_lambda_function" "lambda_disconnect" {
+  filename      = "lambda-disconnect.zip"
+  function_name = "lambda-disconnect"
+  role          = aws_iam_role.role.arn
+  handler       = "lambda-disconnect.handler"
+  runtime       = "nodejs12.x"
+
+  source_code_hash = filebase64sha256("lambda-disconnect.zip")
 
   environment {
     variables = {
@@ -109,7 +125,7 @@ resource "aws_apigatewayv2_authorizer" "authorizer" {
   name             = "authorizer"
 }
 
-resource "aws_apigatewayv2_route" "route" {
+resource "aws_apigatewayv2_route" "connect_route" {
   api_id             = aws_apigatewayv2_api.ws.id
   route_key          = "$connect"
   authorization_type = "CUSTOM"
@@ -117,10 +133,25 @@ resource "aws_apigatewayv2_route" "route" {
   target             = "integrations/${aws_apigatewayv2_integration.lambda.id}"
 }
 
+resource "aws_apigatewayv2_route" "disconnect_route" {
+  api_id             = aws_apigatewayv2_api.ws.id
+  route_key          = "$disconnect"
+  authorization_type = "NONE"
+  target             = "integrations/${aws_apigatewayv2_integration.lambda_disconnect.id}"
+}
+
+
 resource "aws_apigatewayv2_integration" "lambda" {
   api_id             = aws_apigatewayv2_api.ws.id
   integration_type   = "AWS_PROXY"
   integration_uri    = aws_lambda_function.lambda.invoke_arn
+  integration_method = "POST"
+}
+
+resource "aws_apigatewayv2_integration" "lambda_disconnect" {
+  api_id             = aws_apigatewayv2_api.ws.id
+  integration_type   = "AWS_PROXY"
+  integration_uri    = aws_lambda_function.lambda_disconnect.invoke_arn
   integration_method = "POST"
 }
 
@@ -146,7 +177,7 @@ resource "aws_lambda_permission" "lambda_permission" {
 }
 
 resource "aws_apigatewayv2_deployment" "example" {
-  api_id      = aws_apigatewayv2_route.route.api_id
+  api_id      = aws_apigatewayv2_api.ws.id
   description = "ws deployment"
 
   lifecycle {
