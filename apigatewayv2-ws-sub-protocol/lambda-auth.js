@@ -28,7 +28,7 @@ exports.handler = function(event, context, callback) {
    var condition = {};
     condition.IpAddress = {};
 
-   if (headers.HeaderAuth1 === "headerValue1") {
+   if (headers.headerauth1 === "headerValue1") {
         callback(null, generateAllow('me', event.methodArn));
     }  else {
         callback("Unauthorized");
