@@ -1,5 +1,5 @@
 provider "aws" {
-#  alias                       = "localstack"
+  #  alias                       = "localstack"
   region                      = "eu-west-1"
   access_key                  = "fake"
   secret_key                  = "fake"

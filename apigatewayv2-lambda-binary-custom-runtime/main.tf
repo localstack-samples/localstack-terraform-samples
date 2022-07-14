@@ -20,12 +20,12 @@ resource "aws_apigatewayv2_route" "example" {
 }
 
 resource "aws_lambda_function" "lambda" {
-	source_code_hash = filebase64sha256("function.zip")
-	filename = "function.zip"
-	function_name = "bash-runtime"
-	handler = "function.handler"
-	runtime = "provided"
-	role = aws_iam_role.role.arn
+  source_code_hash = filebase64sha256("function.zip")
+  filename         = "function.zip"
+  function_name    = "bash-runtime"
+  handler          = "function.handler"
+  runtime          = "provided"
+  role             = aws_iam_role.role.arn
 }
 
 resource "aws_iam_role" "role" {

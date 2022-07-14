@@ -1,7 +1,7 @@
 module "vpc" {
-  source = "cloudposse/vpc/aws"
+  source  = "cloudposse/vpc/aws"
   version = "1.1.0"
-  
+
   context = module.this.context
 
   ipv4_primary_cidr_block = "10.0.0.0/16"
@@ -11,7 +11,7 @@ module "vpc" {
 }
 
 module "subnets" {
-  source = "cloudposse/dynamic-subnets/aws"
+  source  = "cloudposse/dynamic-subnets/aws"
   version = "2.0.2"
 
   context = module.this.context
@@ -23,14 +23,14 @@ module "subnets" {
 }
 
 module "kafka" {
-  source = "cloudposse/msk-apache-kafka-cluster/aws"
+  source  = "cloudposse/msk-apache-kafka-cluster/aws"
   version = "0.8.6"
 
   context = module.this.context
 
-  vpc_id                 = module.vpc.vpc_id
-  zone_id                = var.zone_id
-  subnet_ids             = module.subnets.private_subnet_ids
+  vpc_id     = module.vpc.vpc_id
+  zone_id    = var.zone_id
+  subnet_ids = module.subnets.private_subnet_ids
 
   kafka_version          = "2.4.1"
   number_of_broker_nodes = 2 # this has to be a multiple of the # of subnet_ids

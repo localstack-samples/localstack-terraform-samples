@@ -134,7 +134,7 @@ resource "aws_lambda_permission" "lambda_permission_auth" {
   action        = "lambda:InvokeFunction"
   principal     = "apigateway.amazonaws.com"
   function_name = aws_lambda_function.lambda_auth.function_name
-  source_arn = "arn:aws:execute-api:${var.region}:${local.account_id}:${aws_apigatewayv2_api.ws.id}/authorizers/${aws_apigatewayv2_authorizer.authorizer.id}"
+  source_arn    = "arn:aws:execute-api:${var.region}:${local.account_id}:${aws_apigatewayv2_api.ws.id}/authorizers/${aws_apigatewayv2_authorizer.authorizer.id}"
 }
 
 resource "aws_lambda_permission" "lambda_permission" {
@@ -142,7 +142,7 @@ resource "aws_lambda_permission" "lambda_permission" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.lambda.function_name
   principal     = "apigateway.amazonaws.com"
-  source_arn = "arn:aws:execute-api:${var.region}:${local.account_id}:${aws_apigatewayv2_api.ws.id}/*/$connect"
+  source_arn    = "arn:aws:execute-api:${var.region}:${local.account_id}:${aws_apigatewayv2_api.ws.id}/*/$connect"
 }
 
 resource "aws_apigatewayv2_deployment" "example" {

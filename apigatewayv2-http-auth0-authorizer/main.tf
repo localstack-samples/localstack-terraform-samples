@@ -1,5 +1,5 @@
 variable "auth0_tenant_domain_url" {
-	default = "https://localstack-dev.eu.auth0.com"
+  default = "https://localstack-dev.eu.auth0.com"
 }
 
 resource "aws_apigatewayv2_api" "example" {
@@ -11,10 +11,10 @@ resource "aws_apigatewayv2_authorizer" "user" {
   api_id           = aws_apigatewayv2_api.example.id
   authorizer_type  = "JWT"
   identity_sources = ["$request.header.Authorization"]
-	name             = "user-authorizer"
+  name             = "user-authorizer"
 
-	jwt_configuration {
-		audience = ["https://auth0-jwt-authorizer"]
+  jwt_configuration {
+    audience = ["https://auth0-jwt-authorizer"]
     issuer   = var.auth0_tenant_domain_url
   }
 }

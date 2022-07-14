@@ -245,11 +245,11 @@ resource "aws_iam_role_policy" "sftp_log" {
 }
 
 resource "aws_secretsmanager_secret" "secret" {
-  name                = "SFTP/user1"
+  name = "SFTP/user1"
 }
 
 resource "aws_secretsmanager_secret_version" "secret" {
-  secret_id     = "${aws_secretsmanager_secret.secret.id}"
+  secret_id     = aws_secretsmanager_secret.secret.id
   secret_string = <<-EOF
     {
       "HomeDirectoryDetails": "[{\"Entry\": \"/\", \"Target\": \"/test.devopsgoat/$${Transfer:UserName}\"}]",
@@ -342,5 +342,5 @@ output "role" {
 }
 
 output "auth_url" {
-	value = aws_api_gateway_stage.stage.invoke_url
+  value = aws_api_gateway_stage.stage.invoke_url
 }

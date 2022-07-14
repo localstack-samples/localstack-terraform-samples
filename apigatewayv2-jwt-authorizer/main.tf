@@ -10,8 +10,8 @@ resource "aws_apigatewayv2_authorizer" "user" {
   name             = "user-authorizer"
 
   jwt_configuration {
-		audience = [aws_cognito_user_pool_client.client.id]
-		issuer   = "http://localhost:4566/${basename(aws_cognito_user_pool.pool.endpoint)}"
+    audience = [aws_cognito_user_pool_client.client.id]
+    issuer   = "http://localhost:4566/${basename(aws_cognito_user_pool.pool.endpoint)}"
   }
 }
 
@@ -22,8 +22,8 @@ resource "aws_apigatewayv2_authorizer" "admin" {
   name             = "admin-authorizer"
 
   jwt_configuration {
-		audience = [aws_cognito_user_pool_client.client.id]
-		issuer   = "http://localhost:4566/${basename(aws_cognito_user_pool.pool.endpoint)}"
+    audience = [aws_cognito_user_pool_client.client.id]
+    issuer   = "http://localhost:4566/${basename(aws_cognito_user_pool.pool.endpoint)}"
   }
 }
 
@@ -49,7 +49,7 @@ resource "aws_apigatewayv2_route" "user" {
   api_id               = aws_apigatewayv2_api.example.id
   route_key            = "ANY /users/user"
   authorization_type   = "CUSTOM"
-	authorization_scopes = ["user@domain.com"]
+  authorization_scopes = ["user@domain.com"]
   authorizer_id        = aws_apigatewayv2_authorizer.user.id
   target               = "integrations/${aws_apigatewayv2_integration.user.id}"
 

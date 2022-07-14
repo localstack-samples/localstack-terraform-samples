@@ -73,7 +73,7 @@ resource "aws_api_gateway_deployment" "example" {
       aws_api_gateway_method.method.id,
       aws_api_gateway_integration.integration.id,
     ]))
-	}
+  }
 
   lifecycle {
     create_before_destroy = true
