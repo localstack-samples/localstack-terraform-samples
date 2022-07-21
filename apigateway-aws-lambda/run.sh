@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+rm terraformstate* || true
+
 terraform init; terraform plan; terraform apply --auto-approve
 
 restapi=$(aws --endpoint-url=http://localhost:4566 apigateway  get-rest-apis | jq -r .items[0].id)
