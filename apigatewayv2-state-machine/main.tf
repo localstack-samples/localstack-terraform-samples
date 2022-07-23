@@ -10,14 +10,14 @@ resource "aws_apigatewayv2_stage" "apigateway" {
 }
 
 resource "aws_apigatewayv2_route" "apigateway_get_job" {
-  api_id             = aws_apigatewayv2_api.apigateway.id
+  api_id             = aws_apigatewayv2_api.api.id
   route_key          = "GET /test"
-  target             = "integrations/${aws_apigatewayv2_integration.apigateway_get_job.id}"
+  target             = "integrations/${aws_apigatewayv2_integration.state_machine_lmbd.id}"
   authorization_type = "NONE"
 }
 
 resource "aws_apigatewayv2_integration" "state_machine_lmbd" {
-  api_id = aws_apigatewayv2_api.rest_api_gateway.id
+  api_id = aws_apigatewayv2_api.api.id
 
   integration_type       = "AWS_PROXY"
   integration_subtype    = "StepFunctions-StartExecution"
@@ -26,7 +26,7 @@ resource "aws_apigatewayv2_integration" "state_machine_lmbd" {
   timeout_milliseconds   = 30000
 
   request_parameters = {
-    StateMachineArn = var.aws_sfn_state_machine-fn_lambda-arn
+    StateMachineArn = aws_sfn_state_machine.sfn_state_machine.arn
     Input           = "$request.body.Input",
   }
 }
