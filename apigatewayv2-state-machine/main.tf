@@ -11,7 +11,7 @@ resource "aws_apigatewayv2_stage" "apigateway" {
 
 resource "aws_apigatewayv2_route" "apigateway_get_job" {
   api_id             = aws_apigatewayv2_api.api.id
-  route_key          = "GET /test"
+  route_key          = "POST /test"
   target             = "integrations/${aws_apigatewayv2_integration.state_machine_lmbd.id}"
   authorization_type = "NONE"
 }
