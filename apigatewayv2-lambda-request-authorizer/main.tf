@@ -20,6 +20,10 @@ resource "aws_apigatewayv2_integration" "example" {
   description            = "Lambda example"
   integration_method     = "ANY"
   integration_uri        = aws_lambda_function.lambda.invoke_arn
+
+  request_parameters = {
+    "overwrite:header.x-syna-accountalias" : "authorizer.accountAlias"
+  }
 }
 
 resource "aws_apigatewayv2_route" "example" {
