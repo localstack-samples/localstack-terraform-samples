@@ -22,7 +22,12 @@ resource "aws_apigatewayv2_integration" "example" {
   integration_uri        = aws_lambda_function.lambda.invoke_arn
 
   request_parameters = {
-    "overwrite:header.x-syna-accountalias" : "authorizer.accountAlias"
+    "overwrite:header.x-syna-accountalias" : "$context.authorizer.accountAlias"
+    "overwrite:header.x-syna-accountid" : "$context.authorizer.accountId"
+    "overwrite:header.x-syna-permissions" : "$context.authorizer.permissions"
+    "overwrite:header.x-syna-projectid" : "$context.authorizer.projectId"
+    "overwrite:header.x-syna-tenantid" : "$context.authorizer.tenantId"
+    "overwrite:header.x-syna-userid" : "$context.authorizer.userId"
   }
 }
 

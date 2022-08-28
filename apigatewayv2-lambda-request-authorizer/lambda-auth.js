@@ -1,5 +1,6 @@
 exports.handler = async(event) => {
-		if (event.headers.authorization == "secretToken") {
+		console.log(event)
+		if (event.headers.Authorization == "secretToken") {
 				console.log("allowed");
 				return {
 						"principalId": "abcdef", // The principal user identification associated with the token sent by the client.
@@ -12,7 +13,12 @@ exports.handler = async(event) => {
 								}]
 						},
 						"context": {
-								"accountAlias": "undefined",
+								"accountAlias": "account-alias",
+								"accountId": "12345-2345",
+								"permissions": "all-perms",
+								"projectId": "project-1234",
+								"tenantId": "tenant-1234",
+								"userId": "user-1234",
 								"stringKey": "value",
 								"numberKey": 1,
 								"booleanKey": true,
