@@ -1,6 +1,3 @@
-# https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up-lambda-proxy-integrations.html
-# curl -X POST "mtnpa8am4z.execute-api.localhost.localstack.cloud:4566/local/test" -H 'content-type: application/json' -d '{ "greeter": "jane" }'
-# curl -X POST "mtnpa8am4z.execute-api.localhost.localstack.cloud:4566/local/test" -H 'greeter: jane'
 resource "aws_api_gateway_rest_api" "rest" {
   name = "HelloWorld (AWS CLI)"
 }
