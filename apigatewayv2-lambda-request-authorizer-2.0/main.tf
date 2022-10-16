@@ -10,7 +10,8 @@ resource "aws_apigatewayv2_authorizer" "example" {
   authorizer_type  = "REQUEST"
   authorizer_uri   = aws_lambda_function.lambda_auth.invoke_arn
   identity_sources = ["$request.header.Authorization"]
-  name             = "example-authorizer"
+	name             = "example-authorizer"
+	authorizer_payload_format_version = "2.0"
 }
 
 resource "aws_apigatewayv2_integration" "example" {
