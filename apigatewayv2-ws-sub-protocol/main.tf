@@ -161,10 +161,10 @@ resource "aws_apigatewayv2_deployment" "example" {
 resource "aws_apigatewayv2_stage" "example" {
   deployment_id = aws_apigatewayv2_deployment.example.id
   api_id        = aws_apigatewayv2_api.ws.id
-	name          = "beta"
-	stage_variables = {
-		"foo": "bar"
-	}
+  name          = "beta"
+  stage_variables = {
+    "foo" : "bar"
+  }
 }
 
 

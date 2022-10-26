@@ -69,6 +69,10 @@ POLICY
 
 resource "aws_api_gateway_api_key" "api-key" {
   name = "api-key"
+
+  tags = {
+    "organization" : "demo-org"
+  }
 }
 
 resource "aws_api_gateway_usage_plan_key" "main" {

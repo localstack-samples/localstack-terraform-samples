@@ -6,12 +6,12 @@ resource "aws_apigatewayv2_api" "example" {
 }
 
 resource "aws_apigatewayv2_authorizer" "example" {
-  api_id           = aws_apigatewayv2_api.example.id
-  authorizer_type  = "REQUEST"
-  authorizer_uri   = aws_lambda_function.lambda_auth.invoke_arn
-  identity_sources = ["$request.header.Authorization"]
-	name             = "example-authorizer"
-	authorizer_payload_format_version = "2.0"
+  api_id                            = aws_apigatewayv2_api.example.id
+  authorizer_type                   = "REQUEST"
+  authorizer_uri                    = aws_lambda_function.lambda_auth.invoke_arn
+  identity_sources                  = ["$request.header.Authorization"]
+  name                              = "example-authorizer"
+  authorizer_payload_format_version = "2.0"
 }
 
 resource "aws_apigatewayv2_integration" "example" {
