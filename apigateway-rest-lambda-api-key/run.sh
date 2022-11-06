@@ -1,5 +1,6 @@
 #!/usr/bin/env sh
 
+export TF_LOG=trace
 rm terraform.tfstate* || true
 
 terraform init; terraform plan; terraform apply --auto-approve
