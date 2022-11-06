@@ -85,8 +85,6 @@ resource "aws_api_gateway_integration" "eb_integration" {
 
   request_templates = {
         "application/json" = <<-EOT
-            #set($context.requestOverride.header.X-Amz-Target = "AWSEvents.PutEvents")
-            #set($context.requestOverride.header.Content-Type = "application/x-amz-json-1.1")
             #set($inputRoot = $input.path('$'))
             {
               "Entries": [
