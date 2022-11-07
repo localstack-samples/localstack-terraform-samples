@@ -14,7 +14,7 @@ resource "aws_api_gateway_resource" "resource" {
 resource "aws_api_gateway_method" "method" {
   rest_api_id   = aws_api_gateway_rest_api.rest.id
   resource_id   = aws_api_gateway_resource.resource.id
-  http_method   = "GET"
+  http_method   = "POST"
   authorization = "NONE"
 }
 
@@ -47,19 +47,17 @@ resource "aws_api_gateway_integration" "integration" {
   request_templates = {
     "application/json" = <<EOF
 {
-  "authorization": "$input.params('Authorization')",
-  "body": $input.json('$')
+  "version": "$stageVariables.version"
 }
 EOF
   }
 }
 
 resource "aws_lambda_function" "lambda" {
-  filename      = "lambda.zip"
-  function_name = "mylambda"
-  role          = aws_iam_role.role.arn
-  handler       = "lambda.handler"
-
+  filename         = "lambda.zip"
+  function_name    = "mylambda"
+  role             = aws_iam_role.role.arn
+  handler          = "lambda.handler"
   source_code_hash = filebase64sha256("lambda.zip")
 
   runtime = "nodejs12.x"
@@ -98,5 +96,6 @@ resource "aws_api_gateway_deployment" "dev" {
   stage_name  = "dev"
   variables = {
     "lambdaFunction" = "mylambda"
+    "version"        = "$LATEST"
   }
 }
