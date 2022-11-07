@@ -35,7 +35,7 @@ resource "aws_lambda_function" "event-echo-lambda" {
 
   environment {
     variables = {
-      BOTO_ENDPOINT_URL = "http://172.17.0.1:4566" # FIXME: should be injected transparently
+      BOTO_ENDPOINT_URL   = "http://172.17.0.1:4566" # FIXME: should be injected transparently
       LAMBDA_RESULT_QUEUE = aws_sqs_queue.lambda-result-queue.url
     }
   }

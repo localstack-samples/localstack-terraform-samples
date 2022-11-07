@@ -14,14 +14,14 @@ variable "eventbus_name" {
 
 variable "apigw_name" {
   description = "the name of the api gateway"
-  type = string
-  default = "rest-api-eb"
+  type        = string
+  default     = "rest-api-eb"
 }
 
 variable "catchall_log_retention" {
   description = "cw log retention in days"
-  type = number
-  default = 7
+  type        = number
+  default     = 7
 }
 
 data "aws_caller_identity" "current" {}
@@ -31,8 +31,8 @@ locals {
 }
 
 resource "random_string" "random" {
-  length           = 4
-  special          = false
+  length  = 4
+  special = false
 }
 
 resource "aws_api_gateway_rest_api" "rest_api_eb" {
@@ -53,38 +53,38 @@ resource "aws_api_gateway_method" "post" {
   resource_id   = aws_api_gateway_resource.eb_resource.id
   http_method   = "POST"
   authorization = "NONE"
-  request_parameters   = {
-      "method.request.header.Content-Type" = false
-      "method.request.header.X-Amz-Target" = false
+  request_parameters = {
+    "method.request.header.Content-Type" = false
+    "method.request.header.X-Amz-Target" = false
   }
 }
 
 resource "aws_api_gateway_method_response" "response_200" {
-    rest_api_id         = aws_api_gateway_rest_api.rest_api_eb.id
-    resource_id         = aws_api_gateway_resource.eb_resource.id
-    http_method         = aws_api_gateway_method.post.http_method
-    response_models     = {
-        "application/json" = "Empty"
-    }
-    response_parameters = {}
-    status_code         = "200"
+  rest_api_id = aws_api_gateway_rest_api.rest_api_eb.id
+  resource_id = aws_api_gateway_resource.eb_resource.id
+  http_method = aws_api_gateway_method.post.http_method
+  response_models = {
+    "application/json" = "Empty"
+  }
+  response_parameters = {}
+  status_code         = "200"
 }
 
 resource "aws_api_gateway_integration" "eb_integration" {
-  rest_api_id          = aws_api_gateway_rest_api.rest_api_eb.id
-  resource_id          = aws_api_gateway_resource.eb_resource.id
-  http_method          = aws_api_gateway_method.post.http_method
-  integration_http_method  = aws_api_gateway_method.post.http_method
-  type                 = "AWS"
-  uri                  = "arn:aws:apigateway:${var.aws_region}:events:action/PutEvents" //arn:aws:apigateway:us-east-1:events:action/PutEvents
-  passthrough_behavior = "WHEN_NO_TEMPLATES"
-  credentials          = aws_iam_role.ApiGatewayEventBridgeRole.arn
+  rest_api_id             = aws_api_gateway_rest_api.rest_api_eb.id
+  resource_id             = aws_api_gateway_resource.eb_resource.id
+  http_method             = aws_api_gateway_method.post.http_method
+  integration_http_method = aws_api_gateway_method.post.http_method
+  type                    = "AWS"
+  uri                     = "arn:aws:apigateway:${var.aws_region}:events:action/PutEvents" //arn:aws:apigateway:us-east-1:events:action/PutEvents
+  passthrough_behavior    = "WHEN_NO_TEMPLATES"
+  credentials             = aws_iam_role.ApiGatewayEventBridgeRole.arn
 
 
   request_parameters = {}
 
   request_templates = {
-        "application/json" = <<-EOT
+    "application/json" = <<-EOT
             #set($inputRoot = $input.path('$'))
             {
               "Entries": [
@@ -105,18 +105,18 @@ resource "aws_api_gateway_integration" "eb_integration" {
 }
 
 resource "aws_api_gateway_integration_response" "this" {
-  rest_api_id          = aws_api_gateway_rest_api.rest_api_eb.id
-  resource_id          = aws_api_gateway_resource.eb_resource.id
-  http_method         = aws_api_gateway_method.post.http_method
-  response_templates  = {
-      "application/json" = <<-EOT
+  rest_api_id = aws_api_gateway_rest_api.rest_api_eb.id
+  resource_id = aws_api_gateway_resource.eb_resource.id
+  http_method = aws_api_gateway_method.post.http_method
+  response_templates = {
+    "application/json" = <<-EOT
           #set($inputRoot = $input.path('$'))
         {
         }
       EOT
   }
-  status_code         = aws_api_gateway_method_response.response_200.status_code
-  depends_on = [aws_api_gateway_integration.eb_integration]
+  status_code = aws_api_gateway_method_response.response_200.status_code
+  depends_on  = [aws_api_gateway_integration.eb_integration]
 }
 
 // API GATEWAY DEPLOYMENT
@@ -196,16 +196,16 @@ resource "aws_cloudwatch_event_bus" "integration" {
 }
 
 resource "aws_cloudwatch_event_rule" "catch_all" {
-    name           = "catch_all"
-    description    = "default catch all"
-    event_bus_name = aws_cloudwatch_event_bus.integration.name
-    event_pattern  = jsonencode(
-        {
-            account = [
-                "${local.account_id}",
-            ]
-        }
-    )
+  name           = "catch_all"
+  description    = "default catch all"
+  event_bus_name = aws_cloudwatch_event_bus.integration.name
+  event_pattern = jsonencode(
+    {
+      account = [
+        "${local.account_id}",
+      ]
+    }
+  )
 }
 
 resource "aws_cloudwatch_log_group" "log" {
@@ -215,8 +215,8 @@ resource "aws_cloudwatch_log_group" "log" {
 }
 
 resource "aws_cloudwatch_event_target" "cw_log" {
-  rule      = aws_cloudwatch_event_rule.catch_all.name
-  arn       = aws_cloudwatch_log_group.log.arn
+  rule           = aws_cloudwatch_event_rule.catch_all.name
+  arn            = aws_cloudwatch_log_group.log.arn
   event_bus_name = aws_cloudwatch_event_bus.integration.name
-  depends_on = [aws_cloudwatch_log_group.log]
+  depends_on     = [aws_cloudwatch_log_group.log]
 }
