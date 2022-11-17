@@ -28,7 +28,7 @@ resource "aws_api_gateway_integration" "integration" {
     http_method   = aws_api_gateway_method.method.http_method
     integration_http_method = "POST"
     type          = "AWS_PROXY"
-    uri           = "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/${aws_lambda_function.lambda.arn}/invocations"
+	uri           = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${aws_lambda_function.lambda.arn}/invocations"
 }
 
 resource "aws_api_gateway_deployment" "deployment" {
@@ -55,12 +55,13 @@ resource "aws_api_gateway_deployment" "deployment" {
   }
 }
 
+data "aws_caller_identity" "current" {}
 resource "aws_lambda_permission" "apigw_lambda" {
-    statement_id  = "AllowExecutionFromAPIGateway"
-    action        = "lambda:InvokeFunction"
-    function_name = "${aws_lambda_function.lambda.arn}"
-    principal     = "apigateway.amazonaws.com"
-	source_arn    = "arn:aws:execute-api:${var.aws_region}:123456789012:${aws_api_gateway_rest_api.api.id}/*/${aws_api_gateway_method.method.http_method}/cors"
+	statement_id  = "AllowExecutionFromAPIGateway"
+	action        = "lambda:InvokeFunction"
+	function_name = aws_lambda_function.lambda.arn
+	principal     = "apigateway.amazonaws.com"
+	source_arn = "${aws_api_gateway_rest_api.api.execution_arn}/*/*/*"
 }
 
 resource "aws_iam_role" "role" {
