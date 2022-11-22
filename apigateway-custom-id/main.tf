@@ -1,6 +1,8 @@
 resource "aws_api_gateway_rest_api" "custom" {
-	name = "Custom Domain API"
-	disable_execute_api_endpoint = true
+	name = "Custom ID API"
+	tags = {
+		"_custom_id_": "myCustomId"
+	}
 }
 
 resource "aws_api_gateway_resource" "resource" {
@@ -33,7 +35,7 @@ resource "aws_lambda_function" "lambda" {
 
   source_code_hash = filebase64sha256("lambda.zip")
 
-  runtime = "nodejs12.x"
+  runtime = "nodejs14.x"
 
   environment {
     variables = {
@@ -90,40 +92,4 @@ resource "aws_iam_role" "role" {
   ]
 }
 POLICY
-}
-
-resource "aws_route53_zone" "dns_zone" {
-  name = "example.com"
-}
-
-resource "aws_api_gateway_domain_name" "domain_name" {
-  certificate_body          = file("${path.module}/sslcert/server.crt")
-  certificate_chain         = file("${path.module}/sslcert/rootCA.key")
-  certificate_private_key   = file("${path.module}/sslcert/ssl.key")
-  domain_name               = "api.example.com"
-  regional_certificate_name = "example-api"
-
-  endpoint_configuration {
-    types = ["REGIONAL"]
-  }
-}
-
-# Example DNS record using Route53.
-# Route53 is not specifically required; any DNS host can be used.
-resource "aws_route53_record" "example" {
-  name    = aws_api_gateway_domain_name.domain_name.domain_name
-  type    = "A"
-  zone_id = aws_route53_zone.dns_zone.id
-
-  alias {
-    evaluate_target_health = true
-    name                   = aws_api_gateway_domain_name.domain_name.regional_domain_name
-    zone_id                = aws_api_gateway_domain_name.domain_name.regional_zone_id
-  }
-}
-
-resource "aws_api_gateway_base_path_mapping" "example" {
-  api_id      = aws_api_gateway_rest_api.custom.id
-  domain_name = aws_api_gateway_domain_name.domain_name.domain_name
-  stage_name  = aws_api_gateway_stage.example.stage_name
 }
