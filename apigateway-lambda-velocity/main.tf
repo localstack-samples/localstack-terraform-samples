@@ -87,7 +87,7 @@ resource "aws_lambda_function" "lambda" {
 
   source_code_hash = filebase64sha256("lambda.zip")
 
-  runtime = "nodejs12.x"
+  runtime = "nodejs14.x"
 
   environment {
     variables = {
