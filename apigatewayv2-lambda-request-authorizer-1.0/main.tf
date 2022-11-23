@@ -17,7 +17,7 @@ resource "aws_apigatewayv2_integration" "example" {
   integration_type       = "AWS_PROXY"
   payload_format_version = "2.0"
   description            = "Lambda example"
-  integration_method     = "ANY"
+  integration_method     = "POST"
   integration_uri        = aws_lambda_function.lambda.invoke_arn
 
   request_parameters = {
@@ -36,6 +36,13 @@ resource "aws_apigatewayv2_route" "example" {
   authorization_type = "CUSTOM"
   authorizer_id      = aws_apigatewayv2_authorizer.example.id
   target             = "integrations/${aws_apigatewayv2_integration.example.id}"
+
+}
+
+resource "aws_apigatewayv2_stage" "testing" {
+  api_id      = aws_apigatewayv2_api.example.id
+  name        = "testing"
+  auto_deploy = true
 }
 
 resource "aws_lambda_function" "lambda_auth" {
@@ -46,7 +53,7 @@ resource "aws_lambda_function" "lambda_auth" {
 
   source_code_hash = filebase64sha256("lambda-auth.zip")
 
-  runtime = "nodejs12.x"
+  runtime = "nodejs14.x"
 
   environment {
     variables = {
@@ -64,7 +71,7 @@ resource "aws_lambda_function" "lambda" {
 
   source_code_hash = filebase64sha256("lambda.zip")
 
-  runtime = "nodejs12.x"
+  runtime = "nodejs14.x"
 
   environment {
     variables = {
@@ -91,4 +98,30 @@ resource "aws_iam_role" "role" {
   ]
 }
 POLICY
+}
+
+
+resource "aws_iam_policy" "policy" {
+  name        = "log-write-policy"
+  description = "A policy allowing cloudwatch access"
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "logs:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy_attachment" "role-policy-attach" {
+  role       = aws_iam_role.role.name
+  policy_arn = aws_iam_policy.policy.arn
 }
