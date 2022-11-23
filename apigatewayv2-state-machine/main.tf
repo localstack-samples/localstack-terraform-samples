@@ -1,3 +1,25 @@
+resource "aws_iam_role" "apigateway" {
+	name               = "apigw-sfn"
+
+  assume_role_policy = <<POLICY
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "apigateway.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+POLICY
+
+}
+
+
 resource "aws_apigatewayv2_api" "api" {
   name          = "example-sfn-api"
   protocol_type = "HTTP"
@@ -16,6 +38,7 @@ resource "aws_apigatewayv2_route" "apigateway_get_job" {
   authorization_type = "NONE"
 }
 
+
 resource "aws_apigatewayv2_integration" "state_machine_lmbd" {
   api_id = aws_apigatewayv2_api.api.id
 
@@ -24,10 +47,10 @@ resource "aws_apigatewayv2_integration" "state_machine_lmbd" {
   description            = "..."
   payload_format_version = "1.0"
   timeout_milliseconds   = 30000
-
+	credentials_arn =
   request_parameters = {
     StateMachineArn = aws_sfn_state_machine.sfn_state_machine.arn
-    Input           = "$request.body.Input",
+    Input           = "$request.body",
   }
 }
 
@@ -67,7 +90,7 @@ EOF
 
 resource "aws_lambda_function" "lambda" {
   filename      = "lambda.zip"
-  function_name = "mylambda"
+  function_name = "mylambda-sfn"
   role          = aws_iam_role.role.arn
   handler       = "lambda.handler"
 
@@ -82,8 +105,37 @@ resource "aws_lambda_function" "lambda" {
   }
 }
 
+resource "aws_iam_policy" "policy_invoke_lambda" {
+  name        = "stepFunctionSampleLambdaFunctionInvocationPolicy"
+
+  policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Sid": "VisualEditor0",
+            "Effect": "Allow",
+            "Action": [
+                "lambda:InvokeFunction",
+                "lambda:InvokeAsync"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
+EOF
+}
+
+
+// Attach policy to IAM Role for Step Function
+resource "aws_iam_role_policy_attachment" "iam_for_sfn_attach_policy_invoke_lambda" {
+  role       = aws_iam_role.sfn.name
+  policy_arn = aws_iam_policy.policy_invoke_lambda.arn
+}
+
+
 resource "aws_iam_role" "role" {
-  name = "myrole"
+  name = "assume-lambda-role"
 
   assume_role_policy = <<POLICY
 {
