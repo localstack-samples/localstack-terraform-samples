@@ -10,6 +10,7 @@ resource "aws_apigatewayv2_authorizer" "example" {
   authorizer_payload_format_version = "1.0"
   identity_sources                  = ["$request.header.Authorization"]
   name                              = "example-authorizer"
+	authorizer_credentials_arn        = aws_iam_role.invocation_role.arn
 }
 
 resource "aws_apigatewayv2_integration" "example" {
@@ -62,6 +63,53 @@ resource "aws_lambda_function" "lambda_auth" {
   }
 }
 
+resource "aws_iam_role_policy" "invocation_policy" {
+  name = "default"
+  role = aws_iam_role.invocation_role.id
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "lambda:InvokeFunction",
+      "Effect": "Allow",
+      "Resource": "${aws_lambda_function.lambda_auth.arn}"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role" "invocation_role" {
+  name = "api_gateway_auth_invocation"
+  path = "/"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "sts:AssumeRole",
+      "Principal": {
+        "Service": "apigateway.amazonaws.com"
+      },
+      "Effect": "Allow",
+      "Sid": ""
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_lambda_permission" "authorizer_lambda_permission" {
+  statement_id  = "AllowAPIGatewayInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.lambda_auth.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn    = "${aws_apigatewayv2_api.example.execution_arn}/authorizers/${aws_apigatewayv2_authorizer.example.id}"
+}
 
 resource "aws_lambda_function" "lambda" {
   filename      = "lambda.zip"
@@ -81,7 +129,7 @@ resource "aws_lambda_function" "lambda" {
 }
 
 resource "aws_iam_role" "role" {
-  name = "myrole"
+  name = "myrole-lambda"
 
   assume_role_policy = <<POLICY
 {
