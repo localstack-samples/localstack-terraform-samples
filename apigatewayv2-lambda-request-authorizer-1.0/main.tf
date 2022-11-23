@@ -10,7 +10,7 @@ resource "aws_apigatewayv2_authorizer" "example" {
   authorizer_payload_format_version = "1.0"
   identity_sources                  = ["$request.header.Authorization"]
   name                              = "example-authorizer"
-	authorizer_credentials_arn        = aws_iam_role.invocation_role.arn
+  authorizer_credentials_arn        = aws_iam_role.invocation_role.arn
 }
 
 resource "aws_apigatewayv2_integration" "example" {
@@ -108,7 +108,7 @@ resource "aws_lambda_permission" "authorizer_lambda_permission" {
   function_name = aws_lambda_function.lambda_auth.function_name
   principal     = "apigateway.amazonaws.com"
 
-  source_arn    = "${aws_apigatewayv2_api.example.execution_arn}/authorizers/${aws_apigatewayv2_authorizer.example.id}"
+  source_arn = "${aws_apigatewayv2_api.example.execution_arn}/authorizers/${aws_apigatewayv2_authorizer.example.id}"
 }
 
 resource "aws_lambda_function" "lambda" {
