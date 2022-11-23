@@ -1,6 +1,6 @@
 exports.handler = async(event) => {
 		console.log(event)
-		if (event.headers.authorization == "secretToken") {
+		if (event.headers.authorization == "secretToken" || event.headers.Authorization == "secretToken") {
 				console.log("allowed");
 				return {
 						"principalId": "abcdef", // The principal user identification associated with the token sent by the client.
