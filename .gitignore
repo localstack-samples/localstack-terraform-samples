@@ -2,7 +2,10 @@
 */terraform.tfstate
 */terraform.tfstate.backup
 */.terraform.lock.hcl
-
+*/.terraform.tfstate.lock.info
+*/localstack_providers_override.tf
+*/volume/
+*/.venv/
 __pycache__
 
 .idea
