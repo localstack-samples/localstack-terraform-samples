@@ -9,7 +9,7 @@ exports.handler = async(event) => {
 								"Statement": [{
 										"Action": "execute-api:Invoke",
 										"Effect": "Allow",
-										"Resource": event.routeArn
+										"Resource": event.methodArn
 								}]
 						},
 						"context": {
@@ -36,7 +36,7 @@ exports.handler = async(event) => {
 								"Statement": [{
 										"Action": "execute-api:Invoke",
 										"Effect": "Deny",
-										"Resource": event.routeArn
+										"Resource": event.methodArn
 								}]
 						},
 						"context": {

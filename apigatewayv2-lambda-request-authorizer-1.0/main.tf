@@ -1,3 +1,7 @@
+variable "region" {
+  default = "eu-west-1"
+}
+
 resource "aws_apigatewayv2_api" "example" {
   name          = "example-http-api"
   protocol_type = "HTTP"
@@ -10,7 +14,6 @@ resource "aws_apigatewayv2_authorizer" "example" {
   authorizer_payload_format_version = "1.0"
   identity_sources                  = ["$request.header.Authorization"]
   name                              = "example-authorizer"
-  authorizer_credentials_arn        = aws_iam_role.invocation_role.arn
 }
 
 resource "aws_apigatewayv2_integration" "example" {
@@ -46,10 +49,23 @@ resource "aws_apigatewayv2_stage" "testing" {
   auto_deploy = true
 }
 
+resource "aws_apigatewayv2_deployment" "example" {
+  api_id      = aws_apigatewayv2_api.example.id
+  description = "deployment"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+
+  triggers = {
+    redeployment = sha1(jsonencode(aws_apigatewayv2_api.example.body))
+  }
+}
+
 resource "aws_lambda_function" "lambda_auth" {
   filename      = "lambda-auth.zip"
   function_name = "lambda-auth"
-  role          = aws_iam_role.role.arn
+  role          = aws_iam_role.role_auth.arn
   handler       = "lambda-auth.handler"
 
   source_code_hash = filebase64sha256("lambda-auth.zip")
@@ -63,43 +79,34 @@ resource "aws_lambda_function" "lambda_auth" {
   }
 }
 
-resource "aws_iam_role_policy" "invocation_policy" {
-  name = "default"
-  role = aws_iam_role.invocation_role.id
+resource "aws_iam_role" "role_auth" {
+  name = "role-auth"
 
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": "lambda:InvokeFunction",
-      "Effect": "Allow",
-      "Resource": "${aws_lambda_function.lambda_auth.arn}"
-    }
-  ]
-}
-EOF
-}
-
-resource "aws_iam_role" "invocation_role" {
-  name = "api_gateway_auth_invocation"
-  path = "/"
-
-  assume_role_policy = <<EOF
+  assume_role_policy = <<POLICY
 {
   "Version": "2012-10-17",
   "Statement": [
     {
       "Action": "sts:AssumeRole",
       "Principal": {
-        "Service": "apigateway.amazonaws.com"
+        "Service": "lambda.amazonaws.com"
       },
       "Effect": "Allow",
       "Sid": ""
     }
   ]
 }
-EOF
+POLICY
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_policy_auth" {
+  role       = aws_iam_role.role_auth.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+data "aws_caller_identity" "current" {}
+locals {
+  account_id = data.aws_caller_identity.current.account_id
 }
 
 resource "aws_lambda_permission" "authorizer_lambda_permission" {
@@ -107,8 +114,7 @@ resource "aws_lambda_permission" "authorizer_lambda_permission" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.lambda_auth.function_name
   principal     = "apigateway.amazonaws.com"
-
-  source_arn = "${aws_apigatewayv2_api.example.execution_arn}/authorizers/${aws_apigatewayv2_authorizer.example.id}"
+  source_arn    = "arn:aws:execute-api:${var.region}:${local.account_id}:${aws_apigatewayv2_api.example.id}/authorizers/${aws_apigatewayv2_authorizer.example.id}"
 }
 
 resource "aws_lambda_function" "lambda" {
@@ -129,7 +135,7 @@ resource "aws_lambda_function" "lambda" {
 }
 
 resource "aws_iam_role" "role" {
-  name = "myrole-lambda"
+  name = "role-lambda"
 
   assume_role_policy = <<POLICY
 {
@@ -148,6 +154,24 @@ resource "aws_iam_role" "role" {
 POLICY
 }
 
+resource "aws_iam_role_policy_attachment" "lambda_policy" {
+  role       = aws_iam_role.role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+}
+
+resource "aws_cloudwatch_log_group" "lambda_log_group" {
+  name              = "/aws/lambda/${aws_lambda_function.lambda.function_name}"
+  retention_in_days = 30
+}
+
+resource "aws_lambda_permission" "apigw_to_lambda" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  source_arn = "arn:aws:execute-api:${var.region}:${local.account_id}:${aws_apigatewayv2_api.example.id}/*/*"
+}
 
 resource "aws_iam_policy" "policy" {
   name        = "log-write-policy"
