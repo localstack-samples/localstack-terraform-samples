@@ -4,3 +4,5 @@
 */.terraform.lock.hcl
 
 __pycache__
+
+.idea
