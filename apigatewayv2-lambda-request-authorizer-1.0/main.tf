@@ -101,7 +101,7 @@ resource "aws_apigatewayv2_stage" "testing" {
 
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.apigateway.arn
-    format          = jsonencode({
+    format = jsonencode({
       "requestId" : "$context.requestId"
       "ip" : "$context.identity.sourceIp"
       "requestTime" : "$context.requestTime"
@@ -110,7 +110,7 @@ resource "aws_apigatewayv2_stage" "testing" {
       "status" : "$context.status"
       "protocol" : "$context.protocol"
       "responseLength" : "$context.responseLength"
-      "authorizationError": "$context.authorizer.error"
+      "authorizationError" : "$context.authorizer.error"
     })
   }
 }
