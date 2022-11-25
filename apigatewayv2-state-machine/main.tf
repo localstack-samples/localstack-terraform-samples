@@ -47,7 +47,6 @@ resource "aws_apigatewayv2_integration" "state_machine_lmbd" {
   description            = "..."
   payload_format_version = "1.0"
   timeout_milliseconds   = 30000
-	credentials_arn =
   request_parameters = {
     StateMachineArn = aws_sfn_state_machine.sfn_state_machine.arn
     Input           = "$request.body",
