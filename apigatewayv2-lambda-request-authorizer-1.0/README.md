@@ -13,7 +13,6 @@ Execute the following commands to run the example:
 ./run.sh
 ```
 
-
 ## Notes
 
 Use `tfswitch` or `tfenv` to install the required provider version

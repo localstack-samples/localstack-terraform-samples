@@ -22,7 +22,7 @@ resource "aws_apigatewayv2_api" "apigw" {
 
 resource "aws_cloudwatch_log_group" "apigateway" {
   name              = "/aws/apigateway/${aws_apigatewayv2_api.apigw.name}"
-  retention_in_days = 30
+  retention_in_days = 3
 }
 
 resource "aws_iam_role" "apigateway" {

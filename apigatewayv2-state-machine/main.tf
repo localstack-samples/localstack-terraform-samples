@@ -17,6 +17,12 @@ data "aws_iam_policy_document" "apigw_assume" {
   }
 }
 
+resource "aws_iam_policy_attachment" "policy_invoke_sfn" {
+  name       = random_pet.random.id
+  roles      = [aws_iam_role.apigateway.name]
+  policy_arn = "arn:aws:iam::aws:policy/AWSStepFunctionsFullAccess"
+}
+
 resource "aws_apigatewayv2_api" "api" {
   name          = random_pet.random.id
   protocol_type = "HTTP"
@@ -26,6 +32,26 @@ resource "aws_apigatewayv2_stage" "stage" {
   api_id      = aws_apigatewayv2_api.api.id
   name        = "$default"
   auto_deploy = true
+
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.apigateway.arn
+    format          = jsonencode({
+      "requestId" : "$context.requestId"
+      "ip" : "$context.identity.sourceIp"
+      "requestTime" : "$context.requestTime"
+      "httpMethod" : "$context.httpMethod"
+      "routeKey" : "$context.routeKey"
+      "status" : "$context.status"
+      "protocol" : "$context.protocol"
+      "responseLength" : "$context.responseLength"
+      "authorizationError" : "$context.authorizer.error"
+    })
+  }
+}
+
+resource "aws_cloudwatch_log_group" "apigateway" {
+  name              = "/aws/apigateway/${aws_apigatewayv2_api.api.name}"
+  retention_in_days = 3
 }
 
 resource "aws_apigatewayv2_route" "route" {
@@ -35,18 +61,17 @@ resource "aws_apigatewayv2_route" "route" {
   authorization_type = "NONE"
 }
 
-
 resource "aws_apigatewayv2_integration" "integration" {
   api_id = aws_apigatewayv2_api.api.id
-
+  description = "Invoke Step Functions"
   integration_type       = "AWS_PROXY"
   integration_subtype    = "StepFunctions-StartExecution"
-  description            = "..."
+  credentials_arn = aws_iam_role.apigateway.arn
   payload_format_version = "1.0"
   timeout_milliseconds   = 30000
-  request_parameters = {
-    StateMachineArn = aws_sfn_state_machine.sfn_state_machine.arn
-    Input           = "$request.body",
+  request_parameters     = {
+    "StateMachineArn" = aws_sfn_state_machine.sfn_state_machine.arn
+    "Input"           = "$request.body",
   }
 }
 
