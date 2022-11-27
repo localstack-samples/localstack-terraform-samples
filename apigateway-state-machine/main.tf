@@ -54,7 +54,7 @@ resource "aws_api_gateway_integration" "integration" {
   request_templates       = {
     "application/json" = <<EOF
 {
-    "input": "$util.escapeJavaScript($input.json('$'))",
+    "input": $util.escapeJavaScript($input.json('$')),
     "stateMachineArn": "${aws_sfn_state_machine.sfn_state_machine.arn}"
 }
 EOF
