@@ -51,7 +51,7 @@ resource "aws_api_gateway_integration" "integration" {
   uri         = "arn:aws:apigateway:${data.aws_region.current.name}:states:action/StartExecution"
 
   integration_http_method = "POST"
-  request_templates       = {
+  request_templates = {
     "application/json" = <<EOF
 {
     "input": $util.escapeJavaScript($input.json('$')),
@@ -74,7 +74,7 @@ resource "aws_api_gateway_stage" "example" {
 
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.apigateway.arn
-    format          = jsonencode({
+    format = jsonencode({
       "requestId" : "$context.requestId",
       "ip" : "$context.identity.sourceIp",
       "caller" : "$context.identity.caller",
@@ -111,6 +111,8 @@ resource "aws_api_gateway_deployment" "deployment" {
   lifecycle {
     create_before_destroy = true
   }
+
+  depends_on = [aws_api_gateway_rest_api.api]
 }
 
 data "aws_iam_policy_document" "sfn_assume" {
