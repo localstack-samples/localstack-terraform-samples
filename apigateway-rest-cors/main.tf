@@ -84,6 +84,11 @@ resource "aws_api_gateway_deployment" "deployment" {
   lifecycle {
     create_before_destroy = true
   }
+
+  depends_on = [
+    aws_api_gateway_method.options_method,
+    aws_api_gateway_integration.options_integration,
+  ]
 }
 
 resource "aws_cloudwatch_log_group" "apigateway" {
@@ -110,5 +115,16 @@ resource "aws_api_gateway_stage" "stage" {
       "protocol" : "$context.protocol",
       "responseLength" : "$context.responseLength"
     })
+  }
+}
+
+resource "aws_api_gateway_method_settings" "all" {
+  rest_api_id = aws_api_gateway_rest_api.cors_api.id
+  stage_name  = aws_api_gateway_stage.stage.stage_name
+  method_path = "*/*"
+
+  settings {
+    metrics_enabled = true
+    logging_level   = "ERROR"
   }
 }
