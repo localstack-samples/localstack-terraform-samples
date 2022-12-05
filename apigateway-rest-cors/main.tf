@@ -128,3 +128,14 @@ resource "aws_api_gateway_method_settings" "all" {
     logging_level   = "ERROR"
   }
 }
+
+resource "aws_api_gateway_method_settings" "path_specific" {
+  rest_api_id = aws_api_gateway_rest_api.cors_api.id
+  stage_name  = aws_api_gateway_stage.stage.stage_name
+  method_path = "test/OPTIONS"
+
+  settings {
+    metrics_enabled = true
+    logging_level   = "INFO"
+  }
+}
