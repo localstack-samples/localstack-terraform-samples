@@ -1,0 +1,33 @@
+#set($responseBody = $input.json('$.responseBody'))
+#set($errorMessage = $input.path('$.errorMessage'))
+#set($errorType = $input.path('$.errorType'))
+#set($headers = $input.path('$.headers'))
+#set($stage = $context.stage)
+#foreach($headerName in $headers.keySet())
+    #set($context.responseOverride.header["$headerName"] = "$headers.get($headerName)")#if($foreach.hasNext),#end
+#end
+#if($errorMessage && !$errorMessage.empty)
+{
+"mapping_template": true,
+    #if($responseBody && !$responseBody.empty && $responseBody != '""' && $responseBody != '{}')
+    "response": $responseBody,
+    #end
+    #if($errorType && !$errorType.empty)
+    "type": "$errorType",
+    #end
+    #if($errorMessage.startsWith('{'))
+        #set ($errorMessageObj = $util.parseJson($errorMessage))
+        #if($errorMessageObj.httpStatus && $errorMessageObj.errorMessage)
+            #set($context.responseOverride.status = $errorMessageObj.httpStatus)
+        "message": "$errorMessageObj.errorMessage"
+        #else
+        "message": $errorMessage
+        #end
+    #else
+    "message": "$errorMessage"
+    #end
+}
+#else
+    #set($context.responseOverride.status = $input.path('$.statusCode'))
+    $responseBody
+#end
