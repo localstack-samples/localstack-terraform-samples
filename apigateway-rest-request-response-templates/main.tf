@@ -39,7 +39,6 @@ resource "aws_iam_role_policy" "invocation_policy" {
 EOF
 }
 
-
 resource "aws_api_gateway_rest_api" "api" {
   name = random_pet.random.id
   body = jsonencode({
@@ -108,13 +107,88 @@ resource "aws_api_gateway_rest_api" "api" {
             "httpMethod" = "POST"
             "type"       = "aws"
             "requestTemplates" = {
-              "application/json" = replace(replace(file("./request-template.vm"), "\n", ""), "\"", "\\\"")
+              "application/json" = <<EOF
+#set($allParams = $input.params())
+#set($jsonBody = $input.json('$'))
+#set($path = $allParams.get('path'))
+#set($querystring = $allParams.get('querystring'))
+#set($header = $allParams.get('header'))
+#set($stage = $context.stage)
+{
+    "apiContext": {
+        "apiId": "$context.apiId",
+        "method": "$context.httpMethod",
+        "sourceIp": "$context.identity.sourceIp",
+        "userAgent": "$context.identity.userAgent",
+        "path": "$context.path",
+        "protocol": "$context.protocol",
+        "requestId": "$context.requestId",
+        "stage": "$stage"
+    },
+    "path": {
+        "parameterMap": {
+            #foreach($paramName in $path.keySet())
+            "$paramName": "$util.escapeJavaScript($path.get($paramName))"#if($foreach.hasNext),#end
+            #end
+        }
+    },
+    "querystring": {
+        "parameterMap":{
+            #foreach($paramName in $querystring.keySet())
+            "$paramName": "$util.escapeJavaScript($querystring.get($paramName))"#if($foreach.hasNext),#end
+            #end
+        }
+    },
+    "header": {
+        "parameterMap": {
+            #foreach($paramName in $header.keySet())
+            "$paramName": "$util.escapeJavaScript($header.get($paramName))"#if($foreach.hasNext),#end
+            #end
+        }
+    },
+    "body": $jsonBody
+}
+EOF
             }
             "responses" = {
               "default" = {
                 "statusCode" = "200"
                 "responseTemplates" = {
-                  "application/json" = replace(replace(file("./response-template.vm"), "\n", ""), "\"", "\\\"")
+                  "application/json" = <<EOF
+#set($responseBody = $input.json('$.responseBody'))
+#set($errorMessage = $input.path('$.errorMessage'))
+#set($errorType = $input.path('$.errorType'))
+#set($headers = $input.path('$.headers'))
+#set($stage = $context.stage)
+#foreach($headerName in $headers.keySet())
+    #set($context.responseOverride.header["$headerName"] = "$headers.get($headerName)")#if($foreach.hasNext),#end
+#end
+#if($errorMessage && !$errorMessage.empty)
+{
+    "mapping_template": true,
+    #if($responseBody && !$responseBody.empty && $responseBody != '""' && $responseBody != '{}')
+    "response": $responseBody,
+    #end
+    #if($errorType && !$errorType.empty)
+    "type": "$errorType",
+    #end
+    #if($errorMessage.startsWith('{'))
+        #set ($errorMessageObj = $util.parseJson($errorMessage))
+        #if($errorMessageObj.httpStatus && $errorMessageObj.errorMessage)
+            #set($context.responseOverride.status = $errorMessageObj.httpStatus)
+            "message": "$errorMessageObj.errorMessage"
+        #else
+            "message": $errorMessage
+        #end
+    #else
+        "message": "$errorMessage"
+    #end
+}
+#else
+    #set($context.responseOverride.status = $input.path('$.statusCode'))
+    $responseBody
+#end
+EOF
                 }
               }
               ".*httpStatus\\\":400.*" = {
@@ -247,6 +321,17 @@ resource "aws_api_gateway_rest_api" "api" {
   })
 }
 
+resource "aws_lambda_permission" "lambda_permission" {
+  statement_id  = "AllowAPIInvoke"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.lambda.function_name
+  principal     = "apigateway.amazonaws.com"
+
+  # The /*/*/* part allows invocation from any stage, method and resource path
+  # within API Gateway REST API.
+  source_arn = "${aws_api_gateway_rest_api.api.execution_arn}/*/*/*"
+}
+
 resource "aws_api_gateway_deployment" "deployment" {
   rest_api_id = aws_api_gateway_rest_api.api.id
 
@@ -302,6 +387,11 @@ resource "aws_iam_role" "lambda-role" {
   ]
 }
 POLICY
+}
+
+resource "aws_iam_role_policy_attachment" "lambda_policy_auth" {
+  role       = aws_iam_role.lambda-role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 
 resource "aws_lambda_function" "lambda" {
