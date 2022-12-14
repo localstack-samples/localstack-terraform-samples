@@ -13,4 +13,4 @@ access_token=$(curl http://localhost:4566/oauth2/token \
                   -d "grant_type=client_credentials&scope=$client_name/cancellation" | jq -r .access_token)
 
 restapi=$(aws apigateway --endpoint-url=http://localhost:4566 get-rest-apis | jq -r .items[0].id)
-curl $restapi.execute-api.localhost.localstack.cloud:4566/local/demo -H "Authorization: Bearer $access_token"
+curl $restapi.execute-api.localhost.localstack.cloud:4566/local/demo -H "X-Auth-Token: Bearer $access_token"
