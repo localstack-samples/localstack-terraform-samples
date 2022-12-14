@@ -2,12 +2,15 @@
 
 tflocal init; tflocal plan; tflocal apply --auto-approve
 
-restapi=$(aws apigateway --endpoint-url=http://localhost:4566 get-rest-apis | jq -r .items[0].id)
-curl $restapi.execute-api.localhost.localstack.cloud:4566/local/demo -H "Authorization: Bearer ey"
+client_id=$(tflocal output -json | jq -r .user_pool_client_id.value)
+pool_id=$(tflocal output -json | jq -r .user_pool_id.value)
+secret=$(aws cognito-idp --endpoint-url=http://localhost:4566 describe-user-pool-client --user-pool-id $pool_id --client-id $client_id | jq -r .UserPoolClient.ClientSecret)
+client_name=$(aws cognito-idp --endpoint-url=http://localhost:4566 describe-user-pool-client --user-pool-id $pool_id --client-id $client_id | jq -r .UserPoolClient.ClientName)
 
-# aws cognito-idp describe-user-pool-client --user-pool-id <pool-id> --client-id <client-id>
-#curl -X POST \                                                                                                        0 (18.486s) < 16:30:32
-#      https://legal-lacewing.auth.eu-west-1.amazoncognito.com/oauth2/token \
-#      -H 'authorization: Basic ***c2VndGc3dHRqbjVhZjFmMzU5aDM0N***' \
-#      -H 'content-type: application/x-www-form-urlencoded' \
-#      -d 'grant_type=client_credentials&scope=legal-lacewing/cancellation'
+access_token=$(curl -X POST http://localhost:4566/oauth2/token \
+                  -H 'authorization: Basic $secret' \
+                  -H 'content-type: application/x-www-form-urlencoded' \
+                  -d 'grant_type=client_credentials&scope=$client_name/cancellation' | jq -r .access_token)
+
+restapi=$(aws apigateway --endpoint-url=http://localhost:4566 get-rest-apis | jq -r .items[0].id)
+curl $restapi.execute-api.localhost.localstack.cloud:4566/local/demo -H "Authorization: Bearer $access_token"
