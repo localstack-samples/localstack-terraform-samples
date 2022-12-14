@@ -1,38 +1,20 @@
-## Run Terraform
+## API Gateway with Cognito OAuth
 
-`terraform init; terraform plan; terraform apply --auto-approve`
+![LocalStack](https://img.shields.io/static/v1?label=Works&message=@LocalStack&color=purple)
+![AWS](https://img.shields.io/static/v1?label=Works&message=@AWS&color=orange)
 
-## Create Cognito users
+This project contains an example of an API Gateway with Cognito OAuth.
 
-Using the outputs run the following commands,
+### Run
 
-```
- awslocal cognito-idp sign-up \
-      --client-id <user_pool_client_id> \
-      --username "user@domain.com" \
-      --password "Ppassword123!"
-```
+Execute the following commands to run the example:
 
-then,
-
-```
-awslocal cognito-idp admin-confirm-sign-up \
-      --user-pool-id <user_pool_id> \
-      --username "user@domain.com"
+```bash
+./run.sh
 ```
 
-then,
+## Notes
 
-```
-awslocal cognito-idp initiate-auth \
-      --auth-flow USER_PASSWORD_AUTH \
-      --auth-parameters USERNAME="user@domain.com",PASSWORD="password" \
-      --client-id <user_pool_client_id>
-```
+Use `tfswitch` or `tfenv` to install the required provider version
 
 
-then,
-
-```
-curl -vvv "https://<rest_api_id>.execute-api.localhost.localstack.cloud:4566/local/demo" --header "Authorization: bearer <id-token>"
-```
