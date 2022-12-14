@@ -164,8 +164,8 @@ resource "aws_cognito_user_pool_client" "client" {
     "${random_pet.random.id}/cancellation",
   ]
   allowed_oauth_flows_user_pool_client = true
-  generate_secret        = true
-  refresh_token_validity = 7
+  generate_secret                      = true
+  refresh_token_validity               = 7
 }
 
 resource "aws_cognito_resource_server" "resource_server" {
