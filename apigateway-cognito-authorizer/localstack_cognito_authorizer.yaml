@@ -1,0 +1,191 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: A sample template
+Resources:
+  CognitoUsers:
+    Type: AWS::Cognito::UserPool
+    Properties:
+      UserPoolName: test-pool
+      UsernameConfiguration:
+        CaseSensitive: false
+      AdminCreateUserConfig:
+        AllowAdminCreateUserOnly: true
+      Policies:
+        PasswordPolicy:
+          MinimumLength: 8
+          RequireLowercase: true
+          RequireSymbols: true
+          RequireUppercase: true
+          TemporaryPasswordValidityDays: 1
+      UsernameAttributes:
+        - email
+      MfaConfiguration: "OFF"
+      Schema:
+        - AttributeDataType: String
+          DeveloperOnlyAttribute: false
+          Mutable: true
+          Name: email
+  CognitoDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      Domain: "lemme-lemme"
+      UserPoolId: !Ref CognitoUsers
+  ServerAppClient:
+    Type: AWS::Cognito::UserPoolClient
+    DependsOn: !Ref ResourceServer
+    Properties:
+      UserPoolId: !Ref CognitoUsers
+      ClientName: ServerClient
+      GenerateSecret: true
+      RefreshTokenValidity: 30
+      AllowedOAuthFlows:
+        - client_credentials
+      AllowedOAuthScopes:
+        - notification
+        - cancellation
+      AllowedOAuthFlowsUserPoolClient: true
+      PreventUserExistenceErrors: ENABLED
+      SupportedIdentityProviders:
+        - COGNITO
+  ResourceServer:
+    Type: AWS::Cognito::UserPoolResourceServer
+    Properties:
+      Identifier: "dev-server"
+      Name: "dev-server"
+      Scopes:
+        - ScopeDescription: "notification"
+        - ScopeName: "notification"
+      UserPoolId: !Ref CognitoUsers
+  AuthDomain:
+    Type: AWS::Cognito::UserPoolDomain
+    Properties:
+      UserPoolId: !Ref CognitoUsers
+      Domain: !Ref CognitoDomain
+  TestUser:
+    Type: AWS::Cognito::UserPoolUser
+    Properties:
+      UserPoolId: !Ref CognitoUsers
+      Username: !Ref UserEmail
+      UserAttributes:
+        - Name: email
+          Value: !Ref UserEmail
+
+  TestApi:
+    Type: AWS::ApiGateway::RestApi
+    Properties:
+      Name: Test Cognito Auth
+      Description: Testing the user pool
+
+  TestResource:
+    Type: AWS::ApiGateway::Resource
+    Properties:
+      RestApiId: !Ref TestApi
+      PathPart: test
+      ParentId:
+        Fn::GetAtt:
+          - TestApi
+          - RootResourceId
+
+  TestAuthorizer:
+    Type: AWS::ApiGateway::Authorizer
+    Properties:
+      IdentitySource: method.request.header.authorization
+      Name: CognitoAuthorizer
+      ProviderARNs:
+        - Fn::GetAtt:
+            - CognitoUsers
+            - Arn
+      RestApiId: !Ref TestApi
+      Type: COGNITO_USER_POOLS
+
+  ApiGatewayModel:
+    Type: AWS::ApiGateway::Model
+    Properties:
+      ContentType: 'application/json'
+      RestApiId: !Ref TestApi
+      Schema: {}
+
+  TestMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      ApiKeyRequired: false
+      AuthorizationType: COGNITO_USER_POOLS
+      AuthorizerId: !Ref TestAuthorizer
+      HttpMethod: GET
+      Integration:
+        IntegrationHttpMethod: GET
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        IntegrationResponses:
+          - ResponseTemplates:
+              application/json: "{\"message\": \"Hello from API gateway\"}"
+            SelectionPattern: '2\d{2}'
+            StatusCode: 200
+          - ResponseTemplates:
+              application/json: "{\"message\": \"Endless fucking trash\"}"
+            SelectionPattern: '5\d{2}'
+            StatusCode: 500
+        PassthroughBehavior: WHEN_NO_TEMPLATES
+        Type: MOCK
+        TimeoutInMillis: 29000
+      MethodResponses:
+        - ResponseModels:
+            application/json: !Ref ApiGatewayModel
+          StatusCode: 200
+        - ResponseModels:
+            application/json: !Ref ApiGatewayModel
+          StatusCode: 500
+      OperationName: 'mock'
+      ResourceId: !Ref TestResource
+      RestApiId: !Ref TestApi
+
+  OptionsMethod:
+    Type: AWS::ApiGateway::Method
+    Properties:
+      AuthorizationType: NONE
+      RestApiId:
+        Ref: TestApi
+      ResourceId:
+        Ref: TestResource
+      HttpMethod: OPTIONS
+      Integration:
+        IntegrationResponses:
+          - StatusCode: 200
+            ResponseParameters:
+              method.response.header.Access-Control-Allow-Headers: "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'"
+              method.response.header.Access-Control-Allow-Methods: "'GET,OPTIONS'"
+              method.response.header.Access-Control-Allow-Origin: "'*'"
+            ResponseTemplates:
+              application/json: ''
+        PassthroughBehavior: WHEN_NO_MATCH
+        RequestTemplates:
+          application/json: '{"statusCode": 200}'
+        Type: MOCK
+      MethodResponses:
+        - StatusCode: 200
+          ResponseModels:
+            application/json: 'Empty'
+          ResponseParameters:
+            method.response.header.Access-Control-Allow-Headers: false
+            method.response.header.Access-Control-Allow-Methods: false
+            method.response.header.Access-Control-Allow-Origin: false
+
+  # Need a way to force this to update, still looking for something easy
+  TestDeploy:
+    Type: AWS::ApiGateway::Deployment
+    Properties:
+      RestApiId: !Ref TestApi
+      StageName: test
+
+Outputs:
+  UserPoolId:
+    Description: The user pool ID
+    Value: !Ref CognitoUsers
+  UserPoolUrl:
+    Description: URL of the Cognito provider
+    Value:
+      Fn::GetAtt:
+        - CognitoUsers
+        - ProviderURL
+  ClientId:
+    Description: The app client ID
+    Value: !Ref ClientAppClient
