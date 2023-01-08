@@ -62,7 +62,7 @@ resource "aws_api_gateway_integration" "integration" {
   uri = "arn:aws:apigateway:${data.aws_region.current.name}:lambda:path/2015-03-31/functions/arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:$${stageVariables.lambdaFunction}/invocations"
   request_templates = {
 		"application/json" = <<EOF
-#set($inputRoot = $input('$'))
+#set($inputRoot = $input.json('$'))
 {
   "version": "$stageVariables.version"
 }
