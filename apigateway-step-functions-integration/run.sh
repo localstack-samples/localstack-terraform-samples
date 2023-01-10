@@ -1,5 +1,7 @@
 #!/usr/bin/env sh
 
+rm terraform.tfstate* || true
+
 tflocal init; tflocal plan; tflocal apply --auto-approve
 
 restapi=$(aws --endpoint-url=http://localhost:4566 apigateway  get-rest-apis | jq -r .items[0].id)
