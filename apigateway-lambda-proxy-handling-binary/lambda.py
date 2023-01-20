@@ -15,9 +15,17 @@
 
 from base64 import b64encode
 
+def wait_for_debug_client(timeout=15):
+    import sys, glob
+    sys.path.append(glob.glob(".venv/lib/python*/site-packages")[0])
+    import pydevd_pycharm
+    pydevd_pycharm.settrace('localhost', port=19891, stdoutToServer=True, stderrToServer=True)
+
 
 def handler(event, context):
     print(event)
+
+    wait_for_debug_client()
     # For demo purposes only - define whether plain text response in base64 encoded
     demo64Flag = int(event.get("queryStringParameters", {}).get("demo64Flag", 0))
 
