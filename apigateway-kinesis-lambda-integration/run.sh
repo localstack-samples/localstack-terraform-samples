@@ -7,10 +7,6 @@ tflocal init; tflocal plan; tflocal apply --auto-approve
 
 restapi=$(aws apigateway --endpoint-url=http://localhost:4566 get-rest-apis | jq -r .items[0].id)
 
-curl -X POST "$restapi.execute-api.localhost.localstack.cloud:4566/local/ingest"  -H 'Content-Type: application/json' -d '{
-          "HID": "ad",
-          "SID": "consequat ex velit sed",
-          "Data": {
-            "ipsum_e_": 50662226
-          }
-        }'
+curl -X POST "$restapi.execute-api.localhost.localstack.cloud:4566/dev/api?who=god"
+
+curl -X PUT "$restapi.execute-api.localhost.localstack.cloud:4566/dev/api?who=god"
