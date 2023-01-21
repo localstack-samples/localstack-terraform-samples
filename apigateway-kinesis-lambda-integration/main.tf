@@ -5,6 +5,10 @@ resource "random_pet" "random" {
   length = 2
 }
 
+#
+# API Gateway resources
+#
+
 resource "aws_api_gateway_rest_api" "rest" {
   name = random_pet.random.id
 }
@@ -30,6 +34,9 @@ resource "aws_api_gateway_request_validator" "validator" {
   validate_request_parameters = true
 }
 
+#
+# Permission for API Gateway to invoke Lambda
+#
 resource "aws_lambda_permission" "apigw_lambda" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
@@ -40,6 +47,9 @@ resource "aws_lambda_permission" "apigw_lambda" {
   source_arn = "arn:aws:execute-api:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.rest.id}/*/${aws_api_gateway_method.method.http_method}${aws_api_gateway_resource.root.path}"
 }
 
+#
+# API Gateway Integration call to Lambda
+#
 resource "aws_api_gateway_integration" "integration" {
   rest_api_id             = aws_api_gateway_rest_api.rest.id
   resource_id             = aws_api_gateway_resource.root.id
@@ -50,7 +60,7 @@ resource "aws_api_gateway_integration" "integration" {
   passthrough_behavior    = "NEVER"
 
   request_parameters = {
-    "integration.request.header.Content-Type" = "'application/x-amz-json-1.1'"
+    "integration.request.header.Content-Type" = "'application/json'"
   }
 
   request_templates = {
@@ -61,18 +71,6 @@ resource "aws_api_gateway_integration" "integration" {
     EOT
   }
 }
-
-resource "aws_lambda_event_source_mapping" "example" {
-  event_source_arn  = aws_kinesis_stream.stream.arn
-  function_name     = aws_lambda_function.consumer.arn
-  starting_position = "LATEST"
-  batch_size        = 5
-
-  depends_on = [
-    aws_iam_role_policy_attachment.kinesis_processing
-  ]
-}
-
 
 resource "aws_api_gateway_method_response" "status_code_200" {
   http_method = aws_api_gateway_method.method.http_method
@@ -153,6 +151,9 @@ resource "aws_api_gateway_deployment" "deployment" {
   depends_on  = [aws_api_gateway_integration.integration]
 }
 
+#
+# Lambda function will push to Kinesis stream
+#
 resource "aws_lambda_function" "producer" {
   filename      = "producer.zip"
   function_name = "producer"
@@ -170,7 +171,9 @@ resource "aws_lambda_function" "producer" {
   }
 }
 
-
+#
+# Lambda function will read from Kinesis stream
+#
 resource "aws_lambda_function" "consumer" {
   filename      = "consumer.zip"
   function_name = "consumer"
@@ -179,7 +182,7 @@ resource "aws_lambda_function" "consumer" {
 
   source_code_hash = filebase64sha256("consumer.zip")
 
-  runtime = "nodejs12.x"
+  runtime = "nodejs14.x"
 
   environment {
     variables = {
@@ -188,6 +191,20 @@ resource "aws_lambda_function" "consumer" {
   }
 }
 
+#
+# Push to lambda from Kinesis (event source mapping)
+#
+resource "aws_lambda_event_source_mapping" "example" {
+  event_source_arn  = aws_kinesis_stream.stream.arn
+  function_name     = aws_lambda_function.consumer.arn
+  starting_position = "LATEST"
+  batch_size        = 5
+  enabled = true
+}
+
+#
+# Kinesis stream
+#
 resource "aws_kinesis_stream" "stream" {
   name        = "stream"
   shard_count = "3"
@@ -209,7 +226,6 @@ resource "aws_kinesis_stream" "stream" {
 resource "aws_iam_role" "role" {
   name                = random_pet.random.id
   path                = "/"
-  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonKinesisFullAccess"]
   assume_role_policy  = <<POLICY
 {
   "Version": "2012-10-17",
@@ -227,40 +243,12 @@ resource "aws_iam_role" "role" {
 POLICY
 }
 
-resource "aws_iam_policy" "allow_kinesis_processing" {
-  name        = "allow_kinesis_processing"
-  path        = "/"
-  description = "IAM policy for logging from a lambda"
-
-  policy = <<EOF
-{
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": [
-        "kinesis:ListShards",
-        "kinesis:ListStreams",
-        "kinesis:*"
-      ],
-      "Resource": "arn:aws:kinesis:*:*:*",
-      "Effect": "Allow"
-    },
-    {
-      "Action": [
-        "stream:GetRecord",
-        "stream:GetShardIterator",
-        "stream:DescribeStream",
-        "stream:*"
-      ],
-      "Resource": "arn:aws:stream:*:*:*",
-      "Effect": "Allow"
-    }
-  ]
+## IAM Role Policies
+resource "aws_iam_role_policy_attachment" "terraform_lambda_iam_policy_basic_execution" {
+  role = aws_iam_role.role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
-EOF
-}
-
-resource "aws_iam_role_policy_attachment" "kinesis_processing" {
-  role       = aws_iam_role.role.name
-  policy_arn = aws_iam_policy.allow_kinesis_processing.arn
+resource "aws_iam_role_policy_attachment" "terraform_lambda_iam_policy_kinesis_execution" {
+  role = aws_iam_role.role.name
+  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaKinesisExecutionRole"
 }
