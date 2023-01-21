@@ -25,6 +25,10 @@ resource "aws_api_gateway_method" "method" {
   http_method          = "ANY"
   authorization        = "NONE"
   request_validator_id = aws_api_gateway_request_validator.validator.id
+
+  request_parameters = {
+    "method.request.querystring.who" = true
+  }
 }
 
 resource "aws_api_gateway_request_validator" "validator" {
