@@ -199,7 +199,7 @@ resource "aws_lambda_event_source_mapping" "example" {
   function_name     = aws_lambda_function.consumer.arn
   starting_position = "LATEST"
   batch_size        = 5
-  enabled = true
+  enabled           = true
 }
 
 #
@@ -224,9 +224,9 @@ resource "aws_kinesis_stream" "stream" {
 }
 
 resource "aws_iam_role" "role" {
-  name                = random_pet.random.id
-  path                = "/"
-  assume_role_policy  = <<POLICY
+  name               = random_pet.random.id
+  path               = "/"
+  assume_role_policy = <<POLICY
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -245,10 +245,10 @@ POLICY
 
 ## IAM Role Policies
 resource "aws_iam_role_policy_attachment" "terraform_lambda_iam_policy_basic_execution" {
-  role = aws_iam_role.role.name
+  role       = aws_iam_role.role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
 }
 resource "aws_iam_role_policy_attachment" "terraform_lambda_iam_policy_kinesis_execution" {
-  role = aws_iam_role.role.name
+  role       = aws_iam_role.role.name
   policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaKinesisExecutionRole"
 }
