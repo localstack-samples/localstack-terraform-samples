@@ -1,8 +1,13 @@
 #!/usr/bin/env sh
 
-rm terraformstate* || true
+set -x
 
-terraform init; terraform plan; terraform apply --auto-approve
+tflocal init; tflocal plan; tflocal apply --auto-approve
 
-restapi=$(aws --endpoint-url=http://localhost:4566 apigateway  get-rest-apis | jq -r .items[0].id)
-curl -X POST "$restapi.execute-api.localhost.localstack.cloud:4566/local/test" -H 'content-type: application/json'
+restapi=$(aws apigateway --endpoint-url=http://localhost:4566 get-rest-apis | jq -r .items[0].id)
+
+curl -X POST "$restapi.execute-api.localhost.localstack.cloud:4566/local/test"
+
+curl -X POST "$restapi.execute-api.localhost.localstack.cloud:4566/local/test//"
+
+curl -X POST "$restapi.execute-api.localhost.localstack.cloud:4566/local/test///"

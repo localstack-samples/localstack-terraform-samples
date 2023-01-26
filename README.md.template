@@ -1,11 +1,23 @@
-# Example Title
+# localstack-terraform
 
-### Requirements
+Terraform example
+
+# Requirements
 
 - [] Community
 - [] Pro
 
-## Run
+# Run
+
+```
+terraform init
+
+terraform plan
+
+terraform apply --auto-approve
+```
 
 
-## Testing
+## Notes
+
+Use `tfswitch` or `tfenv` to install the required provider version
