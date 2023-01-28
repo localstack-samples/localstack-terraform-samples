@@ -7,9 +7,8 @@ This project contains an example of an API Gateway with AppSync Integration.
 
 # Requirements
 
-   [] Community
-
-   [x] Pro
+- [] Community
+- [x] Pro
 
 # Run
 
