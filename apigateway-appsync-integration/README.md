@@ -5,12 +5,12 @@
 
 This project contains an example of an API Gateway with AppSync Integration.
 
-# Requirements
+### Requirements
 
-- [] Community
+- [ ] Community
 - [x] Pro
 
-# Run
+### Run
 
 ```
 ./run.sh
