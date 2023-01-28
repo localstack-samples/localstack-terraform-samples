@@ -10,13 +10,8 @@ Terraform example
 # Run
 
 ```
-terraform init
-
-terraform plan
-
-terraform apply --auto-approve
+./run.sh
 ```
-
 
 ## Notes
 
