@@ -1,0 +1,19 @@
+
+type Mutation {
+    putPost(id: String!, title: String!): Post
+}
+
+type Post {
+    id: String!
+    title: String!
+}
+
+type Query {
+    singlePost(id: String!): Post!
+    none(dummyString: String!): String!
+}
+
+schema {
+    query: Query
+    mutation: Mutation
+}
