@@ -21,6 +21,11 @@ resource "aws_api_gateway_method" "method" {
   resource_id   = aws_api_gateway_resource.resource.id
   http_method   = "POST"
   authorization = "NONE"
+
+  # add static api key to header
+  request_parameters = {
+    "method.request.header.x-api-key" = true
+  }
 }
 
 resource "aws_api_gateway_integration" "integration" {
@@ -30,30 +35,21 @@ resource "aws_api_gateway_integration" "integration" {
   credentials             = aws_iam_role.apigateway_appsync.arn
   type                    = "AWS"
   integration_http_method = "POST"
-  uri                     = "arn:aws:apigateway:${data.aws_region.current.name}:appsync:action/${aws_appsync_graphql_api.api.id}/types/Query/fields/singlePost"
+
+  uri = "arn:aws:apigateway:${data.aws_region.current.name}:xc2vxsirrzejxg2zkelopnzp2u.appsync-api:path/graphql"
 
   # http headers
   request_parameters = {
     "integration.request.header.x-api-key" = "'${aws_appsync_api_key.apikey.key}'"
   }
 
-  # request template for appsync single post query
-  request_templates = {
-    "application/json" = <<EOF
-{
-    "version": "2018-05-29",
-    "method": "POST",
-    "resourcePath": "/",
-    "params":{
-        "headers": {
-            "x-api-key": "${aws_appsync_api_key.apikey.key}"
-        },
-        "querystring": $input.params().querystring,
-        "body": $input.json('$')
-    }
-}
+  # singlePost graphql query
+
+    request_templates = {
+        "application/json" = <<EOF
+{"query":"query MyQuery {\n  singlePost(id: \"1\") {\n    id\n  }\n}\n","variables":null,"operationName":"MyQuery"},
 EOF
-  }
+    }
 }
 
 resource "aws_api_gateway_deployment" "deployment" {
@@ -68,10 +64,40 @@ resource "aws_api_gateway_deployment" "deployment" {
   }
 }
 
-resource "aws_api_gateway_stage" "example" {
+resource "aws_cloudwatch_log_group" "appsync" {
+    name              = "/aws/appsync/apis/${aws_appsync_graphql_api.api.name}"
+    retention_in_days = 3
+}
+
+resource "aws_cloudwatch_log_group" "apigateway" {
+  name              = "/aws/apigateway/${aws_api_gateway_rest_api.api.name}"
+  retention_in_days = 3
+}
+
+resource "aws_api_gateway_stage" "stage" {
   deployment_id = aws_api_gateway_deployment.deployment.id
   rest_api_id   = aws_api_gateway_rest_api.api.id
-  stage_name    = "example"
+  stage_name    = "dev"
+
+  access_log_settings {
+    destination_arn = aws_cloudwatch_log_group.apigateway.arn
+    format = jsonencode({
+      "requestId" : "$context.requestId",
+      "trueRequestId" : "$context.extendedRequestId",
+      "sourceIp" : "$context.identity.sourceIp",
+      "requestTime" : "$context.requestTime",
+      "httpMethod" : "$context.httpMethod",
+      "resourcePath" : "$context.resourcePath",
+      "status" : "$context.status",
+      "protocol" : "$context.protocol",
+      "responseLength" : "$context.responseLength",
+      "responseLatency" : "$context.responseLatency",
+      "integrationLatency" : "$context.integration.latency",
+      "validationError" : "$context.error.validationErrorString",
+      "userAgent" : "$context.identity.userAgent",
+      "path" : "$context.path"
+    })
+  }
 }
 
 resource "aws_api_gateway_method_response" "method_response" {
@@ -147,6 +173,12 @@ resource "aws_appsync_graphql_api" "api" {
 
   authentication_type = "API_KEY"
   schema              = file("schema.graphql")
+
+  log_config {
+    field_log_level = "ALL"
+    cloudwatch_logs_role_arn = aws_iam_role.apigateway_appsync.arn
+    exclude_verbose_content = false
+  }
 }
 
 resource "aws_appsync_datasource" "datasource" {
@@ -198,17 +230,22 @@ resource "aws_dynamodb_table" "table" {
   read_capacity  = 1
   write_capacity = 1
   hash_key       = "id"
-  range_key      = "title"
 
   attribute {
     name = "id"
     type = "S"
   }
+}
 
-  attribute {
-    name = "title"
-    type = "S"
+resource "aws_dynamodb_table_item" "example_item" {
+  table_name = aws_dynamodb_table.table.name
+  hash_key = aws_dynamodb_table.table.hash_key
+  item = <<ITEM
+  {
+    "id": { "S": "2"},
+    "title": { "S": "Post Title" }
   }
+ITEM
 }
 
 resource "aws_iam_role" "appsync_dynamo" {
@@ -250,4 +287,14 @@ resource "aws_iam_role_policy" "example" {
   ]
 }
 EOF
+}
+
+# output id
+output "appsync_id" {
+  value = aws_appsync_graphql_api.api.id
+}
+
+# output appsync domain
+output "appsync_domain" {
+  value = aws_appsync_graphql_api.api.uris
 }
