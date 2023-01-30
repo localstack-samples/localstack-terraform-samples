@@ -1,6 +1,10 @@
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
+locals {
+  subdomain = regex("https://([^.]+).*", aws_appsync_graphql_api.api.uris["GRAPHQL"])
+}
+
 resource "random_pet" "random" {
   length = 2
 }
@@ -36,7 +40,7 @@ resource "aws_api_gateway_integration" "integration" {
   type                    = "AWS"
   integration_http_method = "POST"
 
-  uri = "arn:aws:apigateway:${data.aws_region.current.name}:xc2vxsirrzejxg2zkelopnzp2u.appsync-api:path/graphql"
+  uri = "arn:aws:apigateway:${data.aws_region.current.name}:${local.subdomain[0]}.appsync-api:path/graphql"
 
   # http headers
   request_parameters = {
@@ -62,6 +66,12 @@ resource "aws_api_gateway_deployment" "deployment" {
   lifecycle {
     create_before_destroy = true
   }
+
+  depends_on = [
+    aws_api_gateway_integration.integration,
+    aws_api_gateway_method_response.method_response,
+    aws_api_gateway_integration_response.integration_response
+  ]
 }
 
 resource "aws_cloudwatch_log_group" "appsync" {
@@ -291,10 +301,11 @@ EOF
 
 # output id
 output "appsync_id" {
-  value = aws_appsync_graphql_api.api.id
+  value = aws_appsync_graphql_api.api.arn
 }
 
-# output appsync domain
+# extract appsync domain from url
 output "appsync_domain" {
-  value = aws_appsync_graphql_api.api.uris
+
+  value = aws_appsync_graphql_api.api.uris["GRAPHQL"]
 }
