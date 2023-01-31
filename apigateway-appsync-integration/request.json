@@ -1,0 +1,5 @@
+{
+  "query": "query MyQuery {\n  singlePost(id: \"1\") {\n    id\n  }\n}\n",
+  "variables": null,
+  "operationName": "MyQuery"
+}

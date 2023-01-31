@@ -2,7 +2,7 @@ data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
 locals {
-  subdomain = regex("https://([^.]+).*", aws_appsync_graphql_api.api.uris["GRAPHQL"])
+  subdomain = regex("https?://([a-z0-9]+).*", aws_appsync_graphql_api.api.uris["GRAPHQL"])
 }
 
 resource "random_pet" "random" {
@@ -42,18 +42,16 @@ resource "aws_api_gateway_integration" "integration" {
 
   uri = "arn:aws:apigateway:${data.aws_region.current.name}:${local.subdomain[0]}.appsync-api:path/graphql"
 
-  # http headers
   request_parameters = {
     "integration.request.header.x-api-key" = "'${aws_appsync_api_key.apikey.key}'"
   }
 
-  # singlePost graphql query
+  # request template json from file
+  request_templates = {
+    "application/json" = file("${path.module}/request.json")
+  }
 
-    request_templates = {
-        "application/json" = <<EOF
-{"query":"query MyQuery {\n  singlePost(id: \"1\") {\n    id\n  }\n}\n","variables":null,"operationName":"MyQuery"},
-EOF
-    }
+  depends_on = [aws_api_gateway_method.method]
 }
 
 resource "aws_api_gateway_deployment" "deployment" {
@@ -75,8 +73,8 @@ resource "aws_api_gateway_deployment" "deployment" {
 }
 
 resource "aws_cloudwatch_log_group" "appsync" {
-    name              = "/aws/appsync/apis/${aws_appsync_graphql_api.api.name}"
-    retention_in_days = 3
+  name              = "/aws/appsync/apis/${aws_appsync_graphql_api.api.name}"
+  retention_in_days = 3
 }
 
 resource "aws_cloudwatch_log_group" "apigateway" {
@@ -127,9 +125,7 @@ resource "aws_api_gateway_integration_response" "integration_response" {
   http_method = aws_api_gateway_method.method.http_method
   status_code = aws_api_gateway_method_response.method_response.status_code
 
-  response_templates = {
-    "application/json" = ""
-  }
+  depends_on = [aws_api_gateway_integration.integration]
 }
 
 resource "aws_iam_role" "apigateway_appsync" {
@@ -176,6 +172,10 @@ EOF
 
 resource "aws_appsync_api_key" "apikey" {
   api_id = aws_appsync_graphql_api.api.id
+
+  depends_on = [
+    aws_appsync_graphql_api.api
+  ]
 }
 
 resource "aws_appsync_graphql_api" "api" {
@@ -185,9 +185,9 @@ resource "aws_appsync_graphql_api" "api" {
   schema              = file("schema.graphql")
 
   log_config {
-    field_log_level = "ALL"
+    field_log_level          = "ALL"
     cloudwatch_logs_role_arn = aws_iam_role.apigateway_appsync.arn
-    exclude_verbose_content = false
+    exclude_verbose_content  = false
   }
 }
 
@@ -249,8 +249,8 @@ resource "aws_dynamodb_table" "table" {
 
 resource "aws_dynamodb_table_item" "example_item" {
   table_name = aws_dynamodb_table.table.name
-  hash_key = aws_dynamodb_table.table.hash_key
-  item = <<ITEM
+  hash_key   = aws_dynamodb_table.table.hash_key
+  item       = <<ITEM
   {
     "id": { "S": "2"},
     "title": { "S": "Post Title" }
@@ -305,7 +305,6 @@ output "appsync_id" {
 }
 
 # extract appsync domain from url
-output "appsync_domain" {
-
+output "appsync_endpoint" {
   value = aws_appsync_graphql_api.api.uris["GRAPHQL"]
 }
