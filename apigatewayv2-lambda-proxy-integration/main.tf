@@ -152,7 +152,7 @@ POLICY
 }
 
 resource "aws_cloudwatch_log_group" "access_logs" {
-  name = random_pet.random.id
+  name              = random_pet.random.id
   retention_in_days = 1
 }
 
@@ -173,8 +173,8 @@ resource "aws_apigatewayv2_deployment" "deployment" {
   api_id      = aws_apigatewayv2_api.api.id
   description = "HTTP API deployment"
 
-	triggers = {
-		redeployment = sha1(join(",", tolist([
+  triggers = {
+    redeployment = sha1(join(",", tolist([
       jsonencode(aws_apigatewayv2_integration.package),
       jsonencode(aws_apigatewayv2_route.package),
     ])))
