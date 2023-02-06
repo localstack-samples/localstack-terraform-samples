@@ -9,3 +9,5 @@ http_api=$(aws --endpoint-url=http://localhost:4566 apigatewayv2 get-apis | jq -
 curl -X POST "$http_api.execute-api.localhost.localstack.cloud:4566/package/123/payloads"
 
 curl -X POST "$http_api.execute-api.localhost.localstack.cloud:4566/package"
+
+curl -X POST "$http_api.execute-api.localhost.localstack.cloud:4566/"
