@@ -10,19 +10,19 @@ resource "aws_api_gateway_deployment" "deployment" {
     create_before_destroy = true
   }
 
-  depends_on  = [
+  depends_on = [
     aws_api_gateway_method.method,
     aws_api_gateway_integration.integration
   ]
 }
 
 resource "aws_api_gateway_stage" "stage" {
-  stage_name           = "dev"
-  rest_api_id          = aws_api_gateway_rest_api.api.id
-  deployment_id        = aws_api_gateway_deployment.deployment.id
+  stage_name    = "dev"
+  rest_api_id   = aws_api_gateway_rest_api.api.id
+  deployment_id = aws_api_gateway_deployment.deployment.id
   # needed to prevent Terraform from updating this resource every time
-	cache_cluster_size = "0.5"
-	cache_cluster_enabled = false
+  cache_cluster_size    = "0.5"
+  cache_cluster_enabled = false
 }
 
 resource "aws_api_gateway_resource" "resource" {

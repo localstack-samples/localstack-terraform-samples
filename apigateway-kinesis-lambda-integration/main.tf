@@ -64,7 +64,7 @@ resource "aws_api_gateway_integration" "integration" {
   passthrough_behavior    = "NEVER"
 
   request_parameters = {
-    "integration.request.querystring.who": "method.request.querystring.who"
+    "integration.request.querystring.who" : "method.request.querystring.who"
     "integration.request.header.Content-Type" = "'application/json'"
   }
 

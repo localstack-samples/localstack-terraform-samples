@@ -1,5 +1,5 @@
 variable "aws_region" {
-	default = "eu-west-1"
+  default = "eu-west-1"
 }
 
 resource "aws_iam_role" "lambda_role" {
@@ -83,13 +83,13 @@ resource "aws_kinesis_firehose_delivery_stream" "demo_firehose_stream" {
   destination = "elasticsearch"
 
   s3_configuration {
-    role_arn           = aws_iam_role.firehose_role.arn
-    bucket_arn         = aws_s3_bucket.demo_skipped_docs_bucket.arn
+    role_arn   = aws_iam_role.firehose_role.arn
+    bucket_arn = aws_s3_bucket.demo_skipped_docs_bucket.arn
   }
 
   kinesis_source_configuration {
     kinesis_stream_arn = aws_kinesis_stream.demo_kinesis_stream.arn
-    role_arn = aws_iam_role.firehose_role.arn
+    role_arn           = aws_iam_role.firehose_role.arn
   }
 
   elasticsearch_configuration {

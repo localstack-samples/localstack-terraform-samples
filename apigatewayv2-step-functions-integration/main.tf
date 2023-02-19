@@ -35,7 +35,7 @@ resource "aws_apigatewayv2_stage" "stage" {
 
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.apigateway.arn
-    format          = jsonencode({
+    format = jsonencode({
       "requestId" : "$context.requestId"
       "ip" : "$context.identity.sourceIp"
       "requestTime" : "$context.requestTime"
@@ -62,14 +62,14 @@ resource "aws_apigatewayv2_route" "route" {
 }
 
 resource "aws_apigatewayv2_integration" "integration" {
-  api_id = aws_apigatewayv2_api.api.id
-  description = "Invoke Step Functions"
+  api_id                 = aws_apigatewayv2_api.api.id
+  description            = "Invoke Step Functions"
   integration_type       = "AWS_PROXY"
   integration_subtype    = "StepFunctions-StartExecution"
-  credentials_arn = aws_iam_role.apigateway.arn
+  credentials_arn        = aws_iam_role.apigateway.arn
   payload_format_version = "1.0"
   timeout_milliseconds   = 30000
-  request_parameters     = {
+  request_parameters = {
     "StateMachineArn" = aws_sfn_state_machine.sfn_state_machine.arn
     "Input"           = "$request.body",
   }

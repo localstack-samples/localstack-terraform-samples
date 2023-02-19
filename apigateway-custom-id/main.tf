@@ -1,8 +1,8 @@
 resource "aws_api_gateway_rest_api" "custom" {
-	name = "Custom ID API"
-	tags = {
-		"_custom_id_": "myCustomId"
-	}
+  name = "Custom ID API"
+  tags = {
+    "_custom_id_" : "myCustomId"
+  }
 }
 
 resource "aws_api_gateway_resource" "resource" {
