@@ -106,7 +106,7 @@ resource "aws_api_gateway_integration" "integration" {
        {
         "Data": "$util.base64Encode($input.body)",
         "PartitionKey": "$util.escapeJavaScript($input.params('ingest'))",
-        "StreamName": "timeseries-ingest-stream"
+        "StreamName": "${aws_kinesis_stream.stream.name}"
        }
     EOT
   }
