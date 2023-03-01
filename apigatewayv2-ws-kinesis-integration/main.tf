@@ -5,27 +5,29 @@ resource "random_pet" "random" {
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 data "aws_partition" "current" {}
-data "aws_iam_policy_document" "assume_role_policy" {
-  statement {
-    effect  = "Allow"
-    actions = ["sts:AssumeRole"]
-    principals {
-      type = "Service"
-      identifiers = [
-        "apigateway.amazonaws.com"
-      ]
-    }
-  }
-}
 
 resource "aws_iam_role" "execution_role" {
   name               = "api-gateway-kinesis-execution-role"
-  assume_role_policy = data.aws_iam_policy_document.assume_role_policy.json
+  assume_role_policy = <<EOF
+{
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+        "Sid": "",
+        "Effect": "Allow",
+        "Principal": {
+            "Service": "apigateway.amazonaws.com"
+        },
+        "Action": "sts:AssumeRole"
+        }
+    ]
+}
+EOF
 }
 
 resource "aws_iam_role_policy_attachment" "execution_role" {
   role       = aws_iam_role.execution_role.name
-  policy_arn = "arn:aws:iam::aws:policy/service-role/AWSLambdaKinesisExecutionRole"
+  policy_arn = "arn:aws:iam::aws:policy/AmazonKinesisFullAccess"
 }
 
 resource "aws_apigatewayv2_api" "websocket" {
@@ -40,8 +42,6 @@ resource "aws_apigatewayv2_route" "default_route" {
   target             = "integrations/${aws_apigatewayv2_integration.integration.id}"
   authorization_type = "NONE"
   api_key_required   = false
-
-  model_selection_expression = "default"
 }
 
 # {
@@ -55,34 +55,33 @@ resource "aws_apigatewayv2_route" "default_route" {
 resource "aws_apigatewayv2_integration" "integration" {
   api_id             = aws_apigatewayv2_api.websocket.id
   integration_type   = "AWS"
-  integration_uri    = "arn:aws:apigateway:${data.aws_region.current.name}:kinesis:action/PutRecord"
   integration_method = "POST"
+  integration_uri    = "arn:aws:apigateway:${data.aws_region.current.name}:kinesis:action/PutRecord"
   credentials_arn    = aws_iam_role.execution_role.arn
   request_templates = {
-    "default" = <<EOT
-#set($payload = $input.json('$'))
-#set($data = "{""payload"": $payload, ""connectionId"": ""$context.connectionId""}")
-{
-  "Data": "$util.base64Encode($data)",
-  "PartitionKey": "$context.connectionId",
-  "StreamName": "${aws_kinesis_stream.stream.name}"
-}
-EOT
+    "default" = <<TEMPLATE
+      #set($data = "{""deviceID"": $input.json('$.deviceID'), ""recordingID"": $input.json('$.recordingID'), ""stop"": $input.json('$.stop'), ""deviceTimestamp"": $input.json('$.deviceTimestamp'), ""payload"": $input.json('$.payload'), ""connectionID"": ""$context.connectionId""}")
+      {
+          "Data": "$util.base64Encode($data)",
+          "PartitionKey": $input.json('$.deviceID'),
+          "StreamName": "${aws_kinesis_stream.stream.name}"
+      }
+    TEMPLATE
   }
   template_selection_expression = "default"
 }
-#
-#resource "aws_apigatewayv2_integration_response" "response" {
-#  api_id                   = aws_apigatewayv2_api.websocket.id
-#  integration_id           = aws_apigatewayv2_integration.integration.id
-#  integration_response_key = "/200/"
-#}
-#
-#resource "aws_apigatewayv2_route_response" "response" {
-#  api_id             = aws_apigatewayv2_api.websocket.id
-#  route_id           = aws_apigatewayv2_route.default_route.id
-#  route_response_key = "$default"
-#}
+
+resource "aws_apigatewayv2_integration_response" "response" {
+  api_id                   = aws_apigatewayv2_api.websocket.id
+  integration_id           = aws_apigatewayv2_integration.integration.id
+  integration_response_key = "/200/"
+}
+
+resource "aws_apigatewayv2_route_response" "response" {
+  api_id             = aws_apigatewayv2_api.websocket.id
+  route_id           = aws_apigatewayv2_route.default_route.id
+  route_response_key = "$default"
+}
 
 resource "aws_apigatewayv2_stage" "stage" {
   name          = "v1"
@@ -96,10 +95,7 @@ resource "aws_apigatewayv2_stage" "stage" {
       requestId               = "$context.requestId"
       sourceIp                = "$context.identity.sourceIp"
       requestTime             = "$context.requestTime"
-      protocol                = "$context.protocol"
-      httpMethod              = "$context.httpMethod"
-      resourcePath            = "$context.resourcePath"
-      routeKey                = "$context.routeKey"
+      message                 = "$context.messageId"
       status                  = "$context.status"
       responseLength          = "$context.responseLength"
       integrationErrorMessage = "$context.integrationErrorMessage"
