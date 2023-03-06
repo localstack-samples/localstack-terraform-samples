@@ -7,8 +7,8 @@ This example demonstrates how to import an OpenAPI 3.0 specification into API Ga
 
 ### Requirements
 
-- [x] Community
-- [ ] Pro
+- [] Community
+- [x] Pro
 
 ### Run
 
