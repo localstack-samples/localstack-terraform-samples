@@ -1,0 +1,87 @@
+openapi: 3.0.1
+info:
+  title: APIs
+  version: v1
+servers:
+  - url: "http://localhost:443"
+    description: Generated server url
+x-amazon-apigateway-request-validators:
+  params-only:
+    validateRequestParameters: true
+    validateRequestBody: false
+paths:
+  /api/v1/user/{user-id}:
+    get:
+      security:
+        - authorizer: [ ]
+      x-amazon-apigateway-request-validator: "params-only"
+      x-amazon-apigateway-integration:
+        uri: "${lambdaUri}"
+        passthroughBehavior: "when_no_match"
+        httpMethod: "POST"
+        timeoutInMillis: 29000
+        type: "aws_proxy"
+        contentHandling: "CONVERT_TO_TEXT"
+      x-amazon-apigateway-auth:
+        type: "NONE"
+      tags:
+        - access-request
+      summary: Get user roles
+      description: List of roles
+      operationId: roles
+      parameters:
+        - name: Authorization
+          in: header
+          required: true
+          schema:
+            type: string
+        - in: path
+          name: user-id
+          schema:
+            type: string
+          required: true
+          example: foo@mail.com
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Empty'
+components:
+  securitySchemes:
+    authorizer:
+      type: apiKey
+      name: Authorization
+      in: header
+      x-amazon-apigateway-authtype: custom
+      x-amazon-apigateway-authorizer:
+        type: token
+        authorizerCredentials: ${authorizerCredentials}
+        authorizerUri: ${authorizerUri}
+        authorizerResultTtlInSeconds: 60
+  examples:
+    managementConsoleDto:
+      summary: An example of Management Console response
+      value:
+        '{"url": "https://signin.aws.amazon.com/federation
+              ?Action=login
+              &Issuer=https%3A%2F%2Fexample.com
+              &Destination=https%3A%2F%2Fconsole.aws.amazon.com%2F
+              &SigninToken=VCQgs5qZZt3Q6fn8Tr5EXAMPLEmLnwB7JjUc-SHwnUUWabcRdnWsi4DBn-dvC"}'
+    apiConsoleDto:
+      summary: An example of API Console response
+      value:
+        '{"AccessKeyId": "ABNSVDJCIODLODSDFSDFSD","SecretAccessKey": "*********"}'
