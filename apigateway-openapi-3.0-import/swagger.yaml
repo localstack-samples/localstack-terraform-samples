@@ -61,6 +61,10 @@ paths:
               schema:
                 $ref: '#/components/schemas/Empty'
 components:
+  schemas:
+    Empty:
+      type: object
+      description: An empty response
   securitySchemes:
     authorizer:
       type: apiKey
