@@ -68,7 +68,7 @@ components:
   securitySchemes:
     authorizer:
       type: apiKey
-      name: Authorization
+      name: X-Authorization
       in: header
       x-amazon-apigateway-authtype: custom
       x-amazon-apigateway-authorizer:
