@@ -159,9 +159,9 @@ data "template_file" "swagger" {
   template = file("${path.module}/swagger.yaml")
 
   vars = {
-    authorizerUri = "arn:aws:apigateway:${data.aws_region.current.name}:lambda:path/2015-03-31/functions/${aws_lambda_function.authorizer.arn}/invocations"
+    authorizerUri         = "arn:aws:apigateway:${data.aws_region.current.name}:lambda:path/2015-03-31/functions/${aws_lambda_function.authorizer.arn}/invocations"
     authorizerCredentials = aws_iam_role.invocation_role.arn
-    lambdaUri     = "arn:aws:apigateway:${data.aws_region.current.name}:lambda:path/2015-03-31/functions/${aws_lambda_function.lambda.arn}/invocations"
+    lambdaUri             = "arn:aws:apigateway:${data.aws_region.current.name}:lambda:path/2015-03-31/functions/${aws_lambda_function.lambda.arn}/invocations"
   }
 }
 
