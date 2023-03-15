@@ -10,7 +10,8 @@ Using the outputs run the following commands,
  awslocal cognito-idp sign-up \
       --client-id <user_pool_client_id> \
       --username "user@domain.com" \
-      --password "Ppassword123!"
+      --password "Ppassword123!" \
+      --secret-hash <secret_hash>
 ```
 
 then,
@@ -24,9 +25,9 @@ awslocal cognito-idp admin-confirm-sign-up \
 then,
 
 ```
-awslocal cognito-idp initiate-auth \
-      --auth-flow USER_PASSWORD_AUTH \
-      --auth-parameters USERNAME="user@domain.com",PASSWORD="password" \
-			--scopes "email" \
-      --client-id <user_pool_client_id>
+curl -X POST \                                                                                                                                     0 (0.477s) < 23:51:26
+                      https://united-fly.auth.eu-west-1.amazoncognito.com/oauth2/token \
+                      --user '<client_id>:<client_secret>' \
+                      -H 'content-type: application/x-www-form-urlencoded' \
+                      -d 'grant_type=client_credentials&scope=<scope-name>%2Flocalstack'
 ```
