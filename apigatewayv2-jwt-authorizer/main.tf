@@ -19,8 +19,8 @@ resource "aws_apigatewayv2_authorizer" "user" {
 
   jwt_configuration {
     audience = [aws_cognito_user_pool_client.client.id]
-    issuer = "https://${aws_cognito_user_pool.pool.endpoint}"
-    //issuer   = "http://localhost:4566/${basename(aws_cognito_user_pool.pool.endpoint)}"
+    //issuer = "https://${aws_cognito_user_pool.pool.endpoint}"
+    issuer   = "http://localhost:4566/${basename(aws_cognito_user_pool.pool.endpoint)}"
   }
 }
 
@@ -32,8 +32,8 @@ resource "aws_apigatewayv2_authorizer" "admin" {
 
   jwt_configuration {
     audience = [aws_cognito_user_pool_client.client.id]
-    //issuer   = "http://localhost:4566/${basename(aws_cognito_user_pool.pool.endpoint)}"
-    issuer = "https://${aws_cognito_user_pool.pool.endpoint}"
+    issuer   = "http://localhost:4566/${basename(aws_cognito_user_pool.pool.endpoint)}"
+    //issuer = "https://${aws_cognito_user_pool.pool.endpoint}"
   }
 }
 

@@ -10,8 +10,8 @@ def generate_secret_hash(client_id, client_secret, username):
     return base64.b64encode(digest).decode()
 
 
-client_id = '2apep6q5j2lvnq7fiosbd3apnd'
-client_secret = '177hh5h32l1qbifbiialent23ecq04o6g1c4smokghhqm74drspn'
+client_id = 'l11z7081zypz7s86ysrfnedw9d'
+client_secret = '964a2653'
 username = 'user@domain.com'
 secret_hash = generate_secret_hash(client_id, client_secret, username)
 

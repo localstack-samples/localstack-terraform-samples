@@ -22,11 +22,11 @@ awslocal cognito-idp admin-confirm-sign-up \
       --username "user@domain.com"
 ```
 
-then,
+then use the cognito custom domain to generate a token,
 
 ```
 curl -X POST \                                                                                                                                     0 (0.477s) < 23:51:26
-                      https://united-fly.auth.eu-west-1.amazoncognito.com/oauth2/token \
+                      http://localhost:4566/oauth2/token \
                       --user '<client_id>:<client_secret>' \
                       -H 'content-type: application/x-www-form-urlencoded' \
                       -d 'grant_type=client_credentials&scope=<scope-name>%2Flocalstack'
