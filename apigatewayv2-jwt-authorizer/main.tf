@@ -20,7 +20,7 @@ resource "aws_apigatewayv2_authorizer" "user" {
   jwt_configuration {
     audience = [aws_cognito_user_pool_client.client.id]
     //issuer = "https://${aws_cognito_user_pool.pool.endpoint}"
-    issuer   = "http://localhost:4566/${basename(aws_cognito_user_pool.pool.endpoint)}"
+    issuer = "http://localhost:4566/${basename(aws_cognito_user_pool.pool.endpoint)}"
   }
 }
 
@@ -56,11 +56,11 @@ resource "aws_apigatewayv2_integration" "admin" {
 }
 
 resource "aws_apigatewayv2_route" "user" {
-  api_id               = aws_apigatewayv2_api.api.id
-  route_key            = "ANY /users/user"
-  authorization_type   = "JWT"
-  authorizer_id        = aws_apigatewayv2_authorizer.user.id
-  target               = "integrations/${aws_apigatewayv2_integration.user.id}"
+  api_id             = aws_apigatewayv2_api.api.id
+  route_key          = "ANY /users/user"
+  authorization_type = "JWT"
+  authorizer_id      = aws_apigatewayv2_authorizer.user.id
+  target             = "integrations/${aws_apigatewayv2_integration.user.id}"
 
 }
 resource "aws_apigatewayv2_route" "admin" {
@@ -88,12 +88,12 @@ resource "aws_cognito_user_pool" "pool" {
 }
 
 resource "aws_cognito_resource_server" "resource" {
-  identifier = random_pet.random.id
-  name = random_pet.random.id
+  identifier   = random_pet.random.id
+  name         = random_pet.random.id
   user_pool_id = aws_cognito_user_pool.pool.id
 
   scope {
-    scope_name = "localstack"
+    scope_name        = "localstack"
     scope_description = "read access to localstack"
   }
 }
@@ -101,16 +101,16 @@ resource "aws_cognito_resource_server" "resource" {
 resource "aws_cognito_user_pool_client" "client" {
   name                 = random_pet.random.id
   user_pool_id         = aws_cognito_user_pool.pool.id
-  allowed_oauth_flows = ["client_credentials"]
+  allowed_oauth_flows  = ["client_credentials"]
   allowed_oauth_scopes = aws_cognito_resource_server.resource.scope_identifiers
   explicit_auth_flows = [
     "ALLOW_USER_PASSWORD_AUTH",
     "ALLOW_USER_SRP_AUTH",
     "ALLOW_REFRESH_TOKEN_AUTH"
   ]
-  supported_identity_providers = ["COGNITO"]
+  supported_identity_providers         = ["COGNITO"]
   allowed_oauth_flows_user_pool_client = true
-  generate_secret = true
+  generate_secret                      = true
 }
 
 resource "aws_cognito_user_pool_domain" "domain" {
@@ -207,6 +207,6 @@ output "user_pool_id" {
 }
 
 output "secret_token" {
-  value = aws_cognito_user_pool_client.client.client_secret
+  value     = aws_cognito_user_pool_client.client.client_secret
   sensitive = true
 }

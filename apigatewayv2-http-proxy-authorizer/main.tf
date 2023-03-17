@@ -1,7 +1,13 @@
-# curl -X POST "a750e94d.execute-api.localhost.localstack.cloud:4566/example/test" -H 'content-type: application/json' -d '{ "greeter": "cesar" }'
+data "aws_region" "current" {}
+data "aws_caller_identity" "current" {}
+
+resource "random_pet" "random" {
+  length    = 2
+  separator = "-"
+}
 
 resource "aws_apigatewayv2_api" "example" {
-  name          = "example-http-api"
+  name          = random_pet.random.id
   protocol_type = "HTTP"
 }
 
