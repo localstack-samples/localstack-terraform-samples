@@ -126,7 +126,7 @@ resource "aws_lambda_function" "admin" {
 
   source_code_hash = filebase64sha256("admin.zip")
 
-  runtime = "nodejs12.x"
+  runtime = "nodejs16.x"
 
   environment {
     variables = {
