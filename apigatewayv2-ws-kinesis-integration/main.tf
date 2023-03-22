@@ -60,7 +60,7 @@ resource "aws_apigatewayv2_integration" "integration" {
   credentials_arn    = aws_iam_role.execution_role.arn
   request_templates = {
     "default" = <<TEMPLATE
-      #set($data = {""deviceID"": $input.json('$.deviceID'), ""recordingID"": $input.json('$.recordingID'), ""stop"": $input.json('$.stop'), ""deviceTimestamp"": $input.json('$.deviceTimestamp'), ""payload"": $input.json('$.payload'), ""connectionID"": ""$context.connectionId""})
+      #set($data = "{""deviceID"": $input.json('$.deviceID'), ""recordingID"": $input.json('$.recordingID'), ""stop"": $input.json('$.stop'), ""deviceTimestamp"": $input.json('$.deviceTimestamp'), ""payload"": $input.json('$.payload'), ""connectionID"": ""$context.connectionId""}")
       {
           "Data": "$util.base64Encode($data)",
           "PartitionKey": $input.json('$.deviceID'),
