@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
 
-terraform init; terraform plan; terraform apply --auto-approve
+tflocal init; tflocal apply -auto-approve
 
 wscat -c localhost:4510
