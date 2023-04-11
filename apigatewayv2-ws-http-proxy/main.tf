@@ -48,16 +48,12 @@ resource "aws_apigatewayv2_route" "default_route" {
 }
 
 resource "aws_apigatewayv2_integration" "http" {
-  api_id                        = aws_apigatewayv2_api.websockets.id
-  credentials_arn               = aws_iam_role.execution_role.arn
-  payload_format_version        = "1.0"
-  integration_type              = "HTTP_PROXY"
-  integration_method            = "POST"
-  integration_uri               = "https://httpbin.org/anything/echo"
-  template_selection_expression = "default"
-  request_templates = {
-    "default" = file("${path.module}/template.json")
-  }
+  api_id                 = aws_apigatewayv2_api.websockets.id
+  credentials_arn        = aws_iam_role.execution_role.arn
+  payload_format_version = "1.0"
+  integration_type       = "HTTP_PROXY"
+  integration_method     = "POST"
+  integration_uri        = "https://httpbin.org/anything/echo"
 }
 
 resource "aws_apigatewayv2_route_response" "connect_response" {

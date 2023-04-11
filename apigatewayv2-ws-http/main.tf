@@ -23,7 +23,6 @@ resource "aws_iam_role" "execution_role" {
 EOF
 }
 
-
 resource "aws_apigatewayv2_api" "websockets" {
   name                       = random_pet.random.id
   protocol_type              = "WEBSOCKET"
