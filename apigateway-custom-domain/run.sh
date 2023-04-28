@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-rm terraform.tfstate || true
+set -x
 
 tflocal init; tflocal plan; tflocal apply --auto-approve
 

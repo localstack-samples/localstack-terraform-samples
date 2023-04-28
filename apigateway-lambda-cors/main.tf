@@ -1,19 +1,19 @@
-variable "aws_region" {
-  default = "eu-west-1"
+data "aws_caller_identity" "current" {}
+data "aws_region" "current" {}
+
+resource "random_pet" "random" {
+  length = 2
 }
 
 resource "aws_api_gateway_rest_api" "api" {
-  name        = "lambda-cors"
-  description = "An API for demonstrating CORS-enabled lambda"
+  name = random_pet.random.id
 }
-
 
 resource "aws_api_gateway_resource" "resource" {
   path_part   = "cors"
   parent_id   = aws_api_gateway_rest_api.api.root_resource_id
   rest_api_id = aws_api_gateway_rest_api.api.id
 }
-
 
 resource "aws_api_gateway_method" "method" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
@@ -28,7 +28,7 @@ resource "aws_api_gateway_integration" "integration" {
   http_method             = aws_api_gateway_method.method.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
-  uri                     = "arn:aws:apigateway:${var.aws_region}:lambda:path/2015-03-31/functions/${aws_lambda_function.lambda.arn}/invocations"
+  uri                     = "arn:aws:apigateway:${data.aws_region.current.name}:lambda:path/2015-03-31/functions/${aws_lambda_function.lambda.arn}/invocations"
 }
 
 resource "aws_api_gateway_deployment" "deployment" {
@@ -55,7 +55,6 @@ resource "aws_api_gateway_deployment" "deployment" {
   }
 }
 
-data "aws_caller_identity" "current" {}
 resource "aws_lambda_permission" "apigw_lambda" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
@@ -65,7 +64,7 @@ resource "aws_lambda_permission" "apigw_lambda" {
 }
 
 resource "aws_iam_role" "role" {
-  name = "myrole"
+  name = random_pet.random.id
 
   assume_role_policy = <<POLICY
 {
@@ -86,17 +85,21 @@ POLICY
 
 resource "aws_lambda_function" "lambda" {
   filename      = "lambda.zip"
-  function_name = "mylambda"
+  function_name = random_pet.random.id
   role          = aws_iam_role.role.arn
   handler       = "lambda.handler"
 
   source_code_hash = filebase64sha256("lambda.zip")
 
-  runtime = "nodejs14.x"
+  runtime = "nodejs16.x"
 
   environment {
     variables = {
       foo = "bar"
     }
   }
+}
+
+output "api_url" {
+  value = aws_api_gateway_deployment.deployment.invoke_url
 }
