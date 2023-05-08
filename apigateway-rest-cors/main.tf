@@ -57,7 +57,10 @@ resource "aws_api_gateway_integration" "options_integration" {
   depends_on  = [aws_api_gateway_method.options_method]
 
   request_templates = {
-    "application/json" = "{\"statusCode\": 200}"
+    "application/json" = <<-EOF
+    {"statusCode": 200}
+    #set($context.requestOverride.header.Access-Control-Request-Headers = "$input.params().header.get('Access-Control-Request-Headers')")
+    EOF
   }
 }
 
@@ -67,7 +70,7 @@ resource "aws_api_gateway_integration_response" "options_integration_response" {
   http_method = aws_api_gateway_method.options_method.http_method
   status_code = aws_api_gateway_method_response.options_200.status_code
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+    "method.response.header.Access-Control-Allow-Headers" = "context.requestOverride.header.Access-Control-Request-Headers",
     "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS,POST,PUT'",
     "method.response.header.Access-Control-Allow-Origin"  = "'*'"
   }

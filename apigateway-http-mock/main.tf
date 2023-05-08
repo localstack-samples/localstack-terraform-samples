@@ -1,7 +1,10 @@
+resource "random_pet" "random" {
+  length = 2
+}
 
 # curl http://localhost:4566/restapis/${API_ID}/test/_user_request_/test -v
 resource "aws_api_gateway_rest_api" "mock" {
-  name = "Mock API"
+  name = random_pet.random.id
 }
 
 resource "aws_api_gateway_resource" "mock" {
