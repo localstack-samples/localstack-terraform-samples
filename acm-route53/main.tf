@@ -28,3 +28,13 @@ resource "aws_acm_certificate_validation" "hello_cert_validate" {
   certificate_arn         = aws_acm_certificate.hello_certificate.arn
   validation_record_fqdns = [aws_route53_record.hello_cert_dns.fqdn]
 }
+
+
+resource "aws_apigatewayv2_domain_name" "mydomain" {
+  domain_name = var.root_domain_name
+  domain_name_configuration {
+    certificate_arn = aws_acm_certificate.hello_certificate.arn
+    endpoint_type   = "REGIONAL"
+    security_policy = "TLS_1_2"
+  }
+}
