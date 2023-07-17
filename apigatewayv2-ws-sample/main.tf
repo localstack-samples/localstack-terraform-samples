@@ -127,17 +127,17 @@ resource "aws_apigatewayv2_authorizer" "authorizer" {
 
 resource "aws_apigatewayv2_route" "connect_route" {
   api_id             = aws_apigatewayv2_api.ws.id
-	route_key          = "$connect"
-	api_key_required   = false
+  route_key          = "$connect"
+  api_key_required   = false
   authorization_type = "CUSTOM"
   authorizer_id      = aws_apigatewayv2_authorizer.authorizer.id
-	target             = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+  target             = "integrations/${aws_apigatewayv2_integration.lambda.id}"
 }
 
 
 resource "aws_apigatewayv2_route" "disconnect_route" {
   api_id             = aws_apigatewayv2_api.ws.id
-	api_key_required   = false
+  api_key_required   = false
   route_key          = "$disconnect"
   authorization_type = "NONE"
   target             = "integrations/${aws_apigatewayv2_integration.lambda_disconnect.id}"
@@ -147,9 +147,9 @@ resource "aws_apigatewayv2_integration" "lambda" {
   api_id             = aws_apigatewayv2_api.ws.id
   integration_type   = "AWS_PROXY"
   integration_uri    = aws_lambda_function.lambda.invoke_arn
-	integration_method = "POST"
+  integration_method = "POST"
 
-	request_parameters = {
+  request_parameters = {
     "integration.request.header.authToken" = "route.request.querystring.q1"
   }
 }

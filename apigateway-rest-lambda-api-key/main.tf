@@ -1,6 +1,6 @@
 resource "aws_api_gateway_rest_api" "api" {
-  name = "rest"
-  description = "api-key-auth"
+  name           = "rest"
+  description    = "api-key-auth"
   api_key_source = "AUTHORIZER"
 }
 
@@ -13,19 +13,20 @@ resource "aws_api_gateway_resource" "authorizer" {
 
 // GET /auth
 resource "aws_api_gateway_method" "method" {
-  authorization    = "NONE"
-  http_method      = "GET"
-  resource_id      = aws_api_gateway_resource.authorizer.id
   rest_api_id      = aws_api_gateway_rest_api.api.id
+  resource_id      = aws_api_gateway_resource.authorizer.id
+  http_method      = "GET"
+  authorization    = "CUSTOM"
   api_key_required = true
+  authorizer_id    = aws_api_gateway_authorizer.lambda_auth.id
 }
 
 // REQUEST type authorizer
 resource "aws_api_gateway_authorizer" "lambda_auth" {
-  name        = "lambda_auth"
-  rest_api_id = aws_api_gateway_rest_api.api.id
-  type        = "REQUEST"
-  authorizer_uri = aws_lambda_function.lambda_auth.invoke_arn
+  type                   = "REQUEST"
+  name                   = "lambda_auth"
+  rest_api_id            = aws_api_gateway_rest_api.api.id
+  authorizer_uri         = aws_lambda_function.lambda_auth.invoke_arn
   authorizer_credentials = aws_iam_role.invocation_role.arn
   identity_source        = "method.request.querystring.apiKey"
 }
