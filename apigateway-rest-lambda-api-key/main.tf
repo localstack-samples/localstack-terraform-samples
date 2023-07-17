@@ -67,7 +67,7 @@ resource "aws_api_gateway_integration" "integration" {
 resource "aws_lambda_function" "lambda" {
   filename      = "lambda/lambda.zip"
   function_name = "integration-lambda"
-  role          = aws_iam_role.invocation_role.arn
+  role          = aws_iam_role.assume_lambda_role.arn
   handler       = "lambda.lambda_handler"
 
   source_code_hash = filebase64sha256("lambda/lambda.zip")
