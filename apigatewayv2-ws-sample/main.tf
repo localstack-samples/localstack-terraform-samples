@@ -30,7 +30,7 @@ resource "aws_lambda_function" "lambda_auth" {
 
   source_code_hash = filebase64sha256("lambda-auth.zip")
 
-  runtime = "nodejs12.x"
+  runtime = "nodejs18.x"
 
   environment {
     variables = {
@@ -69,7 +69,7 @@ resource "aws_lambda_function" "lambda" {
   function_name = "lambda"
   role          = aws_iam_role.role.arn
   handler       = "lambda-connect.handler"
-  runtime       = "nodejs12.x"
+  runtime       = "nodejs18.x"
 
   source_code_hash = filebase64sha256("lambda-connect.zip")
 
@@ -85,7 +85,7 @@ resource "aws_lambda_function" "lambda_disconnect" {
   function_name = "lambda-disconnect"
   role          = aws_iam_role.role.arn
   handler       = "lambda-disconnect.handler"
-  runtime       = "nodejs12.x"
+  runtime       = "nodejs18.x"
 
   source_code_hash = filebase64sha256("lambda-disconnect.zip")
 
@@ -127,25 +127,31 @@ resource "aws_apigatewayv2_authorizer" "authorizer" {
 
 resource "aws_apigatewayv2_route" "connect_route" {
   api_id             = aws_apigatewayv2_api.ws.id
-  route_key          = "$connect"
+	route_key          = "$connect"
+	api_key_required   = false
   authorization_type = "CUSTOM"
   authorizer_id      = aws_apigatewayv2_authorizer.authorizer.id
-  target             = "integrations/${aws_apigatewayv2_integration.lambda.id}"
+	target             = "integrations/${aws_apigatewayv2_integration.lambda.id}"
 }
+
 
 resource "aws_apigatewayv2_route" "disconnect_route" {
   api_id             = aws_apigatewayv2_api.ws.id
+	api_key_required   = false
   route_key          = "$disconnect"
   authorization_type = "NONE"
   target             = "integrations/${aws_apigatewayv2_integration.lambda_disconnect.id}"
 }
 
-
 resource "aws_apigatewayv2_integration" "lambda" {
   api_id             = aws_apigatewayv2_api.ws.id
   integration_type   = "AWS_PROXY"
   integration_uri    = aws_lambda_function.lambda.invoke_arn
-  integration_method = "POST"
+	integration_method = "POST"
+
+	request_parameters = {
+    "integration.request.header.authToken" = "route.request.querystring.q1"
+  }
 }
 
 resource "aws_apigatewayv2_integration" "lambda_disconnect" {

@@ -1,24 +1,57 @@
 resource "aws_api_gateway_rest_api" "api" {
-  name = "api key example"
+  name = "rest"
+  description = "api-key-auth"
+  api_key_source = "AUTHORIZER"
 }
 
-resource "aws_api_gateway_resource" "resource" {
+// /auth
+resource "aws_api_gateway_resource" "authorizer" {
   parent_id   = aws_api_gateway_rest_api.api.root_resource_id
-  path_part   = "models"
+  path_part   = "auth"
   rest_api_id = aws_api_gateway_rest_api.api.id
 }
 
+// GET /auth
 resource "aws_api_gateway_method" "method" {
   authorization    = "NONE"
-  http_method      = "POST"
-  resource_id      = aws_api_gateway_resource.resource.id
+  http_method      = "GET"
+  resource_id      = aws_api_gateway_resource.authorizer.id
   rest_api_id      = aws_api_gateway_rest_api.api.id
   api_key_required = true
 }
 
+// REQUEST type authorizer
+resource "aws_api_gateway_authorizer" "lambda_auth" {
+  name        = "lambda_auth"
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  type        = "REQUEST"
+  authorizer_uri = aws_lambda_function.lambda_auth.invoke_arn
+  authorizer_credentials = aws_iam_role.invocation_role.arn
+  identity_source        = "method.request.querystring.apiKey"
+}
+
+// Authorizer lambda
+resource "aws_lambda_function" "lambda_auth" {
+  filename      = "lambda_auth/lambda_auth.zip"
+  function_name = "authorizer-lambda"
+  role          = aws_iam_role.assume_lambda_role.arn
+  handler       = "lambda_auth.lambda_handler"
+
+  source_code_hash = filebase64sha256("lambda_auth/lambda_auth.zip")
+
+  runtime = "python3.10"
+
+  environment {
+    variables = {
+      foo = "bar"
+    }
+  }
+}
+
+// lambda integration
 resource "aws_api_gateway_integration" "integration" {
   rest_api_id             = aws_api_gateway_rest_api.api.id
-  resource_id             = aws_api_gateway_resource.resource.id
+  resource_id             = aws_api_gateway_resource.authorizer.id
   http_method             = aws_api_gateway_method.method.http_method
   integration_http_method = "POST"
   type                    = "AWS_PROXY"
@@ -30,15 +63,16 @@ resource "aws_api_gateway_integration" "integration" {
   }
 }
 
+// lambda
 resource "aws_lambda_function" "lambda" {
-  filename      = "lambda.zip"
-  function_name = "mylambda"
-  role          = aws_iam_role.role.arn
-  handler       = "lambda.handler"
+  filename      = "lambda/lambda.zip"
+  function_name = "integration-lambda"
+  role          = aws_iam_role.invocation_role.arn
+  handler       = "lambda.lambda_handler"
 
-  source_code_hash = filebase64sha256("lambda.zip")
+  source_code_hash = filebase64sha256("lambda/lambda.zip")
 
-  runtime = "nodejs12.x"
+  runtime = "python3.10"
 
   environment {
     variables = {
@@ -47,24 +81,73 @@ resource "aws_lambda_function" "lambda" {
   }
 }
 
-resource "aws_iam_role" "role" {
-  name = "myrole"
+resource "aws_lambda_permission" "permission" {
+  statement_id  = "AllowExecutionFromAPIGateway"
+  action        = "lambda:InvokeFunction"
+  function_name = aws_lambda_function.lambda.function_name
+  principal     = "apigateway.amazonaws.com"
 
-  assume_role_policy = <<POLICY
+  # More: http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-control-access-using-iam-policies-to-invoke-api.html
+  source_arn = "${aws_api_gateway_rest_api.api.execution_arn}/*/*/*" // must contain full path as defined by API
+}
+
+
+resource "aws_iam_role_policy" "invocation_policy" {
+  name = "default"
+  role = aws_iam_role.invocation_role.id
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": "lambda:InvokeFunction",
+      "Effect": "Allow",
+      "Resource": "${aws_lambda_function.lambda_auth.arn}"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role" "assume_lambda_role" {
+
+  assume_role_policy = <<EOF
+{
+     "Version": "2012-10-17",
+    "Statement": [
+        {
+        "Action": "sts:AssumeRole",
+        "Principal": {
+            "Service": "lambda.amazonaws.com"
+        },
+        "Effect": "Allow",
+        "Sid": ""
+        }
+    ]
+}
+EOF
+}
+
+resource "aws_iam_role" "invocation_role" {
+  name = "api_gateway_auth_invocation"
+  path = "/"
+
+  assume_role_policy = <<EOF
 {
   "Version": "2012-10-17",
   "Statement": [
     {
       "Action": "sts:AssumeRole",
       "Principal": {
-        "Service": "lambda.amazonaws.com"
+        "Service": "apigateway.amazonaws.com"
       },
       "Effect": "Allow",
       "Sid": ""
     }
   ]
 }
-POLICY
+EOF
 }
 
 resource "aws_api_gateway_api_key" "api-key" {
@@ -108,7 +191,7 @@ resource "aws_api_gateway_deployment" "deployment" {
     #       resources will show a difference after the initial implementation.
     #       It will stabilize to only change when resources change afterwards.
     redeployment = sha1(jsonencode([
-      aws_api_gateway_resource.resource.id,
+      aws_api_gateway_resource.authorizer.id,
       aws_api_gateway_method.method.id,
       aws_api_gateway_integration.integration.id,
     ]))
