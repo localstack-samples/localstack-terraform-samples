@@ -92,7 +92,7 @@ resource "aws_api_gateway_integration" "integration" {
   rest_api_id             = aws_api_gateway_rest_api.rest.id
   credentials             = aws_iam_role.api.arn
   type                    = "AWS"
-  uri                     = "arn:aws:apigateway:${data.aws_region.current.name}:sqs:path/${aws_sqs_queue.queue.name}"
+  uri                     = "arn:aws:apigateway:${data.aws_region.current.name}:sqs:path/${data.aws_caller_identity.current.account_id}/${aws_sqs_queue.queue.name}"
   integration_http_method = "POST"
   passthrough_behavior    = "NEVER"
 
