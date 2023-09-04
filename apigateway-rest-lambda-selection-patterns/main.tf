@@ -90,10 +90,10 @@ resource "aws_api_gateway_integration_response" "integration_response" {
 
 
 resource "aws_api_gateway_integration_response" "integration_response_400" {
-  rest_api_id = aws_api_gateway_rest_api.api.id
-  resource_id = aws_api_gateway_resource.resource.id
-  status_code = aws_api_gateway_method_response.method_response_400.status_code
-  http_method = aws_api_gateway_method_response.method_response_400.http_method
+  rest_api_id       = aws_api_gateway_rest_api.api.id
+  resource_id       = aws_api_gateway_resource.resource.id
+  status_code       = aws_api_gateway_method_response.method_response_400.status_code
+  http_method       = aws_api_gateway_method_response.method_response_400.http_method
   selection_pattern = ".*400.*"
 }
 
