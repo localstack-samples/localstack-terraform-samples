@@ -29,81 +29,81 @@ resource "aws_api_gateway_rest_api" "api" {
   name = random_pet.random.id
 }
 
-resource "aws_api_gateway_resource" "resource_200" {
-  path_part   = "200"
+resource "aws_api_gateway_resource" "resource" {
+  path_part   = "{statusCode}"
   parent_id   = aws_api_gateway_rest_api.api.root_resource_id
   rest_api_id = aws_api_gateway_rest_api.api.id
 }
 
-resource "aws_api_gateway_resource" "resource_404" {
-  path_part   = "404"
-  parent_id   = aws_api_gateway_rest_api.api.root_resource_id
-  rest_api_id = aws_api_gateway_rest_api.api.id
-}
-
-resource "aws_api_gateway_method" "method_200" {
+resource "aws_api_gateway_method" "method" {
   rest_api_id   = aws_api_gateway_rest_api.api.id
-  resource_id   = aws_api_gateway_resource.resource_200.id
+  resource_id   = aws_api_gateway_resource.resource.id
   http_method   = "GET"
   authorization = "NONE"
 }
 
-resource "aws_api_gateway_method" "method_404" {
-  rest_api_id   = aws_api_gateway_rest_api.api.id
-  resource_id   = aws_api_gateway_resource.resource_404.id
-  http_method   = "GET"
-  authorization = "NONE"
-}
-
-resource "aws_api_gateway_integration" "integration_200" {
+resource "aws_api_gateway_integration" "integration" {
   rest_api_id             = aws_api_gateway_rest_api.api.id
-  resource_id             = aws_api_gateway_resource.resource_200.id
-  http_method             = aws_api_gateway_method.method_200.http_method
+  resource_id             = aws_api_gateway_resource.resource.id
+  http_method             = aws_api_gateway_method.method.http_method
   integration_http_method = "POST"
   type                    = "AWS"
-  uri                     = "arn:aws:apigateway:${data.aws_region.current.name}:lambda:path/2015-03-31/functions/${aws_lambda_function.lambda_200.arn}/invocations"
+  uri                     = "arn:aws:apigateway:${data.aws_region.current.name}:lambda:path/2015-03-31/functions/${aws_lambda_function.lambda.arn}/invocations"
+
+  request_templates = {
+    "application/json" = <<JSON
+    #set($inputRoot = $input.path('$'))
+{
+  "statusCode": "$input.params('statusCode')"
+}
+JSON
+  }
 }
 
-
-resource "aws_api_gateway_integration" "integration_404" {
-  rest_api_id             = aws_api_gateway_rest_api.api.id
-  resource_id             = aws_api_gateway_resource.resource_404.id
-  http_method             = aws_api_gateway_method.method_404.http_method
-  integration_http_method = "POST"
-  type                    = "AWS"
-  uri                     = "arn:aws:apigateway:${data.aws_region.current.name}:lambda:path/2015-03-31/functions/${aws_lambda_function.lambda_404.arn}/invocations"
-}
-
-resource "aws_api_gateway_method_response" "method_200_response" {
-  http_method = aws_api_gateway_method.method_200.http_method
-  resource_id = aws_api_gateway_resource.resource_200.id
+resource "aws_api_gateway_method_response" "method_response_200" {
+  http_method = aws_api_gateway_method.method.http_method
+  resource_id = aws_api_gateway_resource.resource.id
   rest_api_id = aws_api_gateway_rest_api.api.id
   status_code = "200"
 }
 
-resource "aws_api_gateway_method_response" "method_404_response" {
-  http_method = aws_api_gateway_method.method_404.http_method
-  resource_id = aws_api_gateway_resource.resource_404.id
+resource "aws_api_gateway_method_response" "method_response_400" {
+  http_method = aws_api_gateway_method.method.http_method
+  resource_id = aws_api_gateway_resource.resource.id
   rest_api_id = aws_api_gateway_rest_api.api.id
-  status_code = "404"
+  status_code = "405"
 }
 
-resource "aws_api_gateway_integration_response" "integration_success_response" {
-  http_method = aws_api_gateway_method_response.method_200_response.http_method
-  resource_id = aws_api_gateway_resource.resource_200.id
+resource "aws_api_gateway_method_response" "method_response_500" {
+  http_method = aws_api_gateway_method.method.http_method
+  resource_id = aws_api_gateway_resource.resource.id
   rest_api_id = aws_api_gateway_rest_api.api.id
-  status_code = aws_api_gateway_method_response.method_200_response.status_code
-
-  selection_pattern = ""
+  status_code = "502"
 }
 
-resource "aws_api_gateway_integration_response" "integration_error_response" {
-  http_method = aws_api_gateway_method_response.method_404_response.http_method
-  resource_id = aws_api_gateway_resource.resource_404.id
+resource "aws_api_gateway_integration_response" "integration_response" {
   rest_api_id = aws_api_gateway_rest_api.api.id
-  status_code = aws_api_gateway_method_response.method_404_response.status_code
+  resource_id = aws_api_gateway_resource.resource.id
+  status_code = aws_api_gateway_method_response.method_response_200.status_code
+  http_method = aws_api_gateway_method_response.method_response_200.http_method
+}
 
-  selection_pattern = ".*No value present.*"
+
+resource "aws_api_gateway_integration_response" "integration_response_400" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.resource.id
+  status_code = aws_api_gateway_method_response.method_response_400.status_code
+  http_method = aws_api_gateway_method_response.method_response_400.http_method
+  selection_pattern = ".*400.*"
+}
+
+resource "aws_api_gateway_integration_response" "integration_response_500" {
+  rest_api_id = aws_api_gateway_rest_api.api.id
+  resource_id = aws_api_gateway_resource.resource.id
+  status_code = aws_api_gateway_method_response.method_response_500.status_code
+  http_method = aws_api_gateway_method_response.method_response_500.http_method
+
+  selection_pattern = ".*5\\d\\d.*"
 }
 
 resource "aws_api_gateway_stage" "stage" {
@@ -117,48 +117,26 @@ resource "aws_api_gateway_deployment" "deployment" {
 
   triggers = {
     redeployment = sha1(jsonencode({
-      lambda_200 = aws_lambda_function.lambda_200.arn,
-      lambda_404 = aws_lambda_function.lambda_404.arn,
+      lambda = aws_lambda_function.lambda.arn
     }))
   }
 }
 
-resource "aws_lambda_permission" "apigw_lambda_200" {
+resource "aws_lambda_permission" "apigw_lambda" {
   statement_id  = "AllowExecutionFromAPIGateway"
   action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.lambda_200.arn
+  function_name = aws_lambda_function.lambda.arn
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*/*"
 }
 
-
-resource "aws_lambda_permission" "apigw_lambda_404" {
-  statement_id  = "AllowExecutionFromAPIGateway"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.lambda_404.arn
-  principal     = "apigateway.amazonaws.com"
-  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*/*"
-}
-
-
-resource "aws_lambda_function" "lambda_200" {
-  filename      = "lambda_200.zip"
-  function_name = "${random_pet.random.id}-200"
+resource "aws_lambda_function" "lambda" {
+  filename      = "lambda.zip"
+  function_name = random_pet.random.id
   role          = aws_iam_role.role.arn
-  handler       = "lambda_200.handler"
+  handler       = "lambda.handler"
 
-  source_code_hash = filebase64sha256("lambda_200.zip")
-
-  runtime = "python3.10"
-}
-
-resource "aws_lambda_function" "lambda_404" {
-  filename      = "lambda_404.zip"
-  function_name = "${random_pet.random.id}-404"
-  role          = aws_iam_role.role.arn
-  handler       = "lambda_404.handler"
-
-  source_code_hash = filebase64sha256("lambda_404.zip")
+  source_code_hash = filebase64sha256("lambda.zip")
 
   runtime = "python3.10"
 }
