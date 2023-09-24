@@ -107,7 +107,7 @@ resource "aws_lambda_function" "lambda" {
 
   source_code_hash = filebase64sha256("lambda.zip")
 
-  runtime = "nodejs12.x"
+  runtime = "nodejs18.x"
 
   environment {
     variables = {
@@ -145,6 +145,13 @@ resource "aws_cognito_user_pool" "pool" {
 
   auto_verified_attributes = ["email"]
   username_attributes      = ["email"]
+
+  schema {
+    name = "externalid"
+    attribute_data_type = "String"
+    mutable = true
+    required = false
+  }
 
   admin_create_user_config {
     allow_admin_create_user_only = true
