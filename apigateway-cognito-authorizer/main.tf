@@ -1,6 +1,20 @@
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
+locals {
+  request_mapping_template = <<-EOT
+    {
+      "headers": {
+        #foreach($param in $input.params().header.keySet())
+          "$param": "$util.escapeJavaScript($input.params().header.get($param))"
+          #if($foreach.hasNext),#end
+        #end
+      },
+      "body" : %s
+    }
+    EOT
+}
+
 resource "random_pet" "random" {
   length = 2
 }
@@ -42,7 +56,13 @@ resource "aws_api_gateway_integration" "integration" {
   http_method             = aws_api_gateway_method.method.http_method
   integration_http_method = "ANY"
   type                    = "AWS_PROXY"
-  uri                     = aws_lambda_function.lambda.invoke_arn
+	uri                     = aws_lambda_function.lambda.invoke_arn
+
+	request_templates = {
+		"application/json" = format(local.request_mapping_template, {
+      "userId": "$context.authorizer.claims['custom:externalid']"
+    })
+  }
 }
 
 resource "aws_lambda_permission" "apigw_lambda" {
@@ -148,29 +168,21 @@ resource "aws_cognito_user_pool" "pool" {
 
   schema {
     name                     = "externalid"
-    attribute_data_type      = "String"
+    attribute_data_type      = "Number"
     mutable                  = true
-    required                 = false
-    developer_only_attribute = false
+    required                 = true
+		developer_only_attribute = false
+
+		number_attribute_constraints {
+			min_value = 1
+		}
   }
 
   admin_create_user_config {
     allow_admin_create_user_only = true
   }
 
-  #  lambda_config {
-  #    pre_token_generation = aws_lambda_function.pre_token_generation.arn
-  #  }
 }
-
-#resource "aws_lambda_function" "pre_token_generation" {
-#  function_name = "pre-token-generation-function"
-#  runtime       = "nodejs18.x"
-#  handler       = "pre-token.handler"
-#  role          = aws_iam_role.role.arn
-#
-#  filename = "pre-token.zip"
-#}
 
 resource "aws_cognito_user" "user" {
   user_pool_id = aws_cognito_user_pool.pool.id
@@ -181,7 +193,7 @@ resource "aws_cognito_user" "user" {
 
   attributes = {
     email          = "test@localstack.com"
-    externalid     = "d34db33f"
+    externalid     = 1212121
     email_verified = true
   }
 }

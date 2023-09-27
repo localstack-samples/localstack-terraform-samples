@@ -8,4 +8,4 @@ message = bytes(sys.argv[1]+sys.argv[2],'utf-8')
 key = bytes(sys.argv[3],'utf-8')
 secret_hash = base64.b64encode(hmac.new(key, message, digestmod=hashlib.sha256).digest()).decode()
 
-print("SECRET HASH:",secret_hash)
+print(secret_hash)
