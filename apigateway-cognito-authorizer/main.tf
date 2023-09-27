@@ -56,12 +56,12 @@ resource "aws_api_gateway_integration" "integration" {
   http_method             = aws_api_gateway_method.method.http_method
   integration_http_method = "ANY"
   type                    = "AWS_PROXY"
-	uri                     = aws_lambda_function.lambda.invoke_arn
+  uri                     = aws_lambda_function.lambda.invoke_arn
 
-	request_templates = {
-		"application/json" = format(local.request_mapping_template, {
-      "userId": "$context.authorizer.claims['custom:externalid']"
-    })
+  request_templates = {
+    "application/json" = format(local.request_mapping_template, jsonencode({
+      "userId" : "$context.authorizer.claims['custom:externalid']"
+    }))
   }
 }
 
@@ -170,12 +170,12 @@ resource "aws_cognito_user_pool" "pool" {
     name                     = "externalid"
     attribute_data_type      = "Number"
     mutable                  = true
-    required                 = true
-		developer_only_attribute = false
+    required                 = false
+    developer_only_attribute = false
 
-		number_attribute_constraints {
-			min_value = 1
-		}
+    number_attribute_constraints {
+      min_value = 1
+    }
   }
 
   admin_create_user_config {
@@ -198,11 +198,6 @@ resource "aws_cognito_user" "user" {
   }
 }
 
-resource "aws_cognito_user_group" "user_group" {
-  name         = "user-group"
-  user_pool_id = aws_cognito_user_pool.pool.id
-}
-
 resource "aws_cognito_user_pool_client" "client" {
   name         = random_pet.random.id
   user_pool_id = aws_cognito_user_pool.pool.id
@@ -211,11 +206,11 @@ resource "aws_cognito_user_pool_client" "client" {
 
   allowed_oauth_flows = ["implicit", "code"]
   allowed_oauth_scopes = [
-		"openid",
-		"email",
-		"profile"
-	]
-	explicit_auth_flows = ["USER_PASSWORD_AUTH"]
+    "openid",
+    "email",
+    "profile"
+  ]
+  explicit_auth_flows = ["USER_PASSWORD_AUTH"]
 
   allowed_oauth_flows_user_pool_client = true
 
