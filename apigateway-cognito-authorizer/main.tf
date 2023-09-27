@@ -147,16 +147,48 @@ resource "aws_cognito_user_pool" "pool" {
   username_attributes      = ["email"]
 
   schema {
-    name = "externalid"
-    attribute_data_type = "String"
-    mutable = true
-    required = false
+    name                     = "externalid"
+    attribute_data_type      = "String"
+    mutable                  = true
+    required                 = false
+    developer_only_attribute = false
   }
 
   admin_create_user_config {
     allow_admin_create_user_only = true
-
   }
+
+  #  lambda_config {
+  #    pre_token_generation = aws_lambda_function.pre_token_generation.arn
+  #  }
+}
+
+#resource "aws_lambda_function" "pre_token_generation" {
+#  function_name = "pre-token-generation-function"
+#  runtime       = "nodejs18.x"
+#  handler       = "pre-token.handler"
+#  role          = aws_iam_role.role.arn
+#
+#  filename = "pre-token.zip"
+#}
+
+resource "aws_cognito_user" "user" {
+  user_pool_id = aws_cognito_user_pool.pool.id
+  username     = "test@localstack.com"
+  password     = "L0c4lst4ck!"
+
+  enabled = true
+
+  attributes = {
+    email          = "test@localstack.com"
+    externalid     = "d34db33f"
+    email_verified = true
+  }
+}
+
+resource "aws_cognito_user_group" "user_group" {
+  name         = "user-group"
+  user_pool_id = aws_cognito_user_pool.pool.id
 }
 
 resource "aws_cognito_user_pool_client" "client" {
@@ -165,14 +197,21 @@ resource "aws_cognito_user_pool_client" "client" {
 
   supported_identity_providers = ["COGNITO"]
 
-  allowed_oauth_flows = ["client_credentials"]
+  allowed_oauth_flows = ["implicit", "code"]
   allowed_oauth_scopes = [
-    "${random_pet.random.id}/notification",
-    "${random_pet.random.id}/cancellation",
-  ]
+		"openid",
+		"email",
+		"profile"
+	]
+	explicit_auth_flows = ["USER_PASSWORD_AUTH"]
+
   allowed_oauth_flows_user_pool_client = true
-  generate_secret                      = true
-  refresh_token_validity               = 7
+
+  callback_urls = ["https://example.com"]
+
+  generate_secret        = true
+  refresh_token_validity = 7
+
 }
 
 resource "aws_cognito_resource_server" "resource_server" {
