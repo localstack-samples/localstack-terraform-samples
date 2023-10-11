@@ -1,0 +1,25 @@
+type User {
+	id: ID!
+	name: String!
+	group: Group!
+}
+
+type Group {
+	id: ID!
+	name: String!
+	users: [User!]!
+}
+
+type Query {
+	groupById(id: String!): Group
+}
+
+type Mutation {
+	addGroup(name: String!): Group!
+	addUser(name: String!, groupId: ID!): User!
+}
+
+schema {
+	query: Query
+	mutation: Mutation
+}

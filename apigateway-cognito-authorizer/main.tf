@@ -4,12 +4,6 @@ data "aws_region" "current" {}
 locals {
   request_mapping_template = <<-EOT
     {
-      "headers": {
-        #foreach($param in $input.params().header.keySet())
-          "$param": "$util.escapeJavaScript($input.params().header.get($param))"
-          #if($foreach.hasNext),#end
-        #end
-      },
       "body" : %s
     }
     EOT
@@ -160,6 +154,17 @@ POLICY
 #
 # Cognito
 #
+
+resource "aws_lambda_function" "pre_token_generation" {
+  function_name = "pre-token-generation-function"
+  runtime       = "nodejs18.x"
+  handler       = "pre-token.handler"
+  role          = aws_iam_role.role.arn
+
+  filename = "pre-token.zip"
+}
+
+
 resource "aws_cognito_user_pool" "pool" {
   name = random_pet.random.id
 
@@ -180,6 +185,10 @@ resource "aws_cognito_user_pool" "pool" {
 
   admin_create_user_config {
     allow_admin_create_user_only = true
+  }
+
+  lambda_config {
+    pre_token_generation = aws_lambda_function.pre_token_generation.arn
   }
 
 }
