@@ -113,7 +113,7 @@ resource "aws_api_gateway_rest_api" "MyApiGatewayRestApi" {
               }
             },
             "requestTemplates" : {
-							"application/json" : "{\"TableName\":\"Pets\",\"Item\":{\"id\":{\"S\":\"$context.requestId\"},\"PetType\":{\"S\":\"$input.path('$.PetType')\"},\"PetName\":{\"S\":\"$input.path('$.PetName')\"},\"PetPrice\":{\"N\":\"$input.path('$.PetPrice')\"},\"PetBoolean\":{\"BOOL\":true}}}"
+              "application/json" : "{\"TableName\":\"Pets\",\"Item\":{\"id\":{\"S\":\"$context.requestId\"},\"PetType\":{\"S\":\"$input.path('$.PetType')\"},\"PetName\":{\"S\":\"$input.path('$.PetName')\"},\"PetPrice\":{\"N\":\"$input.path('$.PetPrice')\"},\"PetBoolean\":{\"BOOL\":true}}}"
             },
             "passthroughBehavior" : "when_no_templates"
           }
