@@ -1,15 +1,20 @@
+resource "random_pet" "random" {
+  length    = 2
+  separator = "-"
+}
+
 resource "aws_apigatewayv2_api" "example" {
-  name                       = "example-ws-api"
+  name                       = random_pet.random.id
   protocol_type              = "WEBSOCKET"
   route_selection_expression = "$request.body.action"
 }
 
 resource "aws_apigatewayv2_authorizer" "example" {
+  name             = random_pet.random.id
   api_id           = aws_apigatewayv2_api.example.id
-  authorizer_type  = "REQUEST"
   authorizer_uri   = aws_lambda_function.lambda_auth.invoke_arn
-  identity_sources = ["$request.header.Authorization"]
-  name             = "example-authorizer"
+  authorizer_type  = "REQUEST"
+  identity_sources = ["route.request.header.Authorization"]
 }
 
 resource "aws_apigatewayv2_route" "route" {
@@ -34,21 +39,20 @@ resource "aws_apigatewayv2_route" "default_route" {
 resource "aws_apigatewayv2_integration" "example" {
   api_id                 = aws_apigatewayv2_api.example.id
   integration_type       = "AWS_PROXY"
-  payload_format_version = "2.0"
-  description            = "Lambda example"
+  payload_format_version = "1.0"
   integration_method     = "ANY"
   integration_uri        = aws_lambda_function.lambda.invoke_arn
 }
 
 resource "aws_lambda_function" "lambda_auth" {
+  function_name = "${random_pet.random.id}-auth"
   filename      = "lambda-auth.zip"
-  function_name = "lambda-auth"
   role          = aws_iam_role.role.arn
   handler       = "lambda-auth.handler"
 
   source_code_hash = filebase64sha256("lambda-auth.zip")
 
-  runtime = "nodejs12.x"
+  runtime = "nodejs18.x"
 
   environment {
     variables = {
@@ -59,14 +63,14 @@ resource "aws_lambda_function" "lambda_auth" {
 
 
 resource "aws_lambda_function" "lambda" {
+  function_name = random_pet.random.id
   filename      = "lambda.zip"
-  function_name = "mylambda"
   role          = aws_iam_role.role.arn
   handler       = "lambda.handler"
 
   source_code_hash = filebase64sha256("lambda.zip")
 
-  runtime = "nodejs12.x"
+  runtime = "nodejs18.x"
 
   environment {
     variables = {
@@ -76,7 +80,7 @@ resource "aws_lambda_function" "lambda" {
 }
 
 resource "aws_iam_role" "role" {
-  name = "myrole"
+  name = random_pet.random.id
 
   assume_role_policy = <<POLICY
 {
