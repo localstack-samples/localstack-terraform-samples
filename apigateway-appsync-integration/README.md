@@ -14,7 +14,13 @@ More about it [here](https://docs.localstack.cloud/user-guide/aws/appsync/#graph
 
 ### Run
 
+Start LocalStack with a specific endpoint configuration:
+
+```bash
+GRAPHQL_ENDPOINT_STRATEGY=domain localstack start
 ```
+
+```bash
 ./run.sh
 ```
 
