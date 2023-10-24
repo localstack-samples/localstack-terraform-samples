@@ -1,44 +1,41 @@
-exports.handler = async(event) => {
-  if (event.headers.authorization == "secretToken") {
+exports.handler = function(event, context, callback) {
+  console.log('Received event:', JSON.stringify(event, null, 2));
+  if (event.headers.authorization === "secretToken") {
     console.log("allowed");
-    return {
+    callback(null,{
       "principalId": "abcdef", // The principal user identification associated with the token sent by the client.
       "policyDocument": {
         "Version": "2012-10-17",
         "Statement": [{
           "Action": "execute-api:Invoke",
           "Effect": "Allow",
-          "Resource": event.routeArn
+          "Resource": "*"
         }]
       },
       "context": {
         "stringKey": "value",
         "numberKey": 1,
-        "booleanKey": true,
-        "arrayKey": ["value1", "value2"],
-        "mapKey": { "value1": "value2" }
+        "booleanKey": true
       }
-    };
+    });
   }
   else {
     console.log("denied");
-    return {
+    callback(null, {
       "principalId": "abcdef", // The principal user identification associated with the token sent by the client.
       "policyDocument": {
         "Version": "2012-10-17",
         "Statement": [{
           "Action": "execute-api:Invoke",
           "Effect": "Deny",
-          "Resource": event.routeArn
+          "Resource": "*"
         }]
       },
       "context": {
         "stringKey": "value",
         "numberKey": 1,
-        "booleanKey": true,
-        "arrayKey": ["value1", "value2"],
-        "mapKey": { "value1": "value2" }
+        "booleanKey": true
       }
-    };
+    });
   }
 };
