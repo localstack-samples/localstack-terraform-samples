@@ -9,8 +9,6 @@ services:
       - "4510-4559:4510-4559"  # external services port range
     environment:
       - DEBUG=${DEBUG:-1}
-      - ES_ENDPOINT_STRATEGY=port
-      - EDGE_BIND_HOST=0.0.0.0
     volumes:
       - "${LOCALSTACK_VOLUME_DIR:-./volume}:/var/lib/localstack"
       - "/var/run/docker.sock:/var/run/docker.sock"
