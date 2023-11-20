@@ -4,7 +4,6 @@ locals {
   account_id = data.aws_caller_identity.current.account_id
 }
 
-
 resource "random_pet" "random" {
   length    = 2
   separator = "-"
@@ -104,7 +103,6 @@ resource "aws_lambda_function" "lambda_auth" {
   }
 }
 
-
 resource "aws_lambda_function" "lambda" {
   function_name = random_pet.random.id
   filename      = "lambda.zip"
@@ -176,9 +174,8 @@ resource "aws_cloudwatch_log_group" "lambda_log_group_auth" {
   retention_in_days = 1
 }
 
-
 resource "aws_cloudwatch_log_group" "log_group" {
-  name = "/aws/api-gateway/${aws_apigatewayv2_api.api.id}"
+  name              = "/aws/api-gateway/${aws_apigatewayv2_api.api.id}"
   retention_in_days = 1
 }
 
