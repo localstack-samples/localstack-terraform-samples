@@ -25,7 +25,7 @@ resource "aws_s3_bucket_acl" "s3_bucket" {
 
 resource "aws_s3_object" "object_www" {
   depends_on   = [aws_s3_bucket.s3_bucket]
-  for_each     = fileset("${path.root}", "*.html")
+  for_each     = fileset("${path.root}", "www/*.html")
   bucket       = var.bucket_name
   key          = basename(each.value)
   source       = each.value
