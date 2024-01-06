@@ -71,6 +71,23 @@ EOF
   template_selection_expression = "default"
 }
 
+resource "aws_apigatewayv2_integration" "disconnect_sqs_integration" {
+  api_id              = aws_apigatewayv2_api.websocket_api.id
+  credentials_arn     = aws_iam_role.execution_role.arn
+  integration_type    = "AWS"
+  payload_format_version = "1.0"
+  integration_method = "POST"
+  integration_uri = "arn:aws:apigateway:${data.aws_region.current.name}:sqs:path/${data.aws_caller_identity.current.account_id}/${aws_sqs_queue.sqs_queue.name}"
+  passthrough_behavior = "NEVER"
+  request_parameters = {
+    "integration.request.header.Content-Type" = "'application/x-www-form-urlencoded'"
+  }
+  request_templates = {
+    "default" : "Action=SendMessage&MessageBody=$util.urlEncode('Client disconnected')"
+  }
+  template_selection_expression = "default"
+}
+
 resource "aws_apigatewayv2_route" "connect_route" {
   api_id    = aws_apigatewayv2_api.websocket_api.id
   route_key = "$connect"
@@ -86,7 +103,7 @@ resource "aws_apigatewayv2_route" "default_route" {
 resource "aws_apigatewayv2_route" "disconnect_route" {
   api_id    = aws_apigatewayv2_api.websocket_api.id
   route_key = "$disconnect"
-  target    = "integrations/${aws_apigatewayv2_integration.sqs_integration.id}"
+  target    = "integrations/${aws_apigatewayv2_integration.disconnect_sqs_integration.id}"
 }
 
 resource "aws_apigatewayv2_route_response" "connect_route_response" {
