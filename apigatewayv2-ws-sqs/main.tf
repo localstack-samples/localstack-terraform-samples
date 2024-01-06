@@ -41,13 +41,13 @@ resource "aws_sqs_queue" "sqs_queue" {
 }
 
 resource "aws_apigatewayv2_integration" "sqs_integration" {
-  api_id              = aws_apigatewayv2_api.websocket_api.id
-  credentials_arn     = aws_iam_role.execution_role.arn
-  integration_type    = "AWS"
+  api_id                 = aws_apigatewayv2_api.websocket_api.id
+  credentials_arn        = aws_iam_role.execution_role.arn
+  integration_type       = "AWS"
   payload_format_version = "1.0"
-  integration_method = "POST"
-  integration_uri = "arn:aws:apigateway:${data.aws_region.current.name}:sqs:path/${data.aws_caller_identity.current.account_id}/${aws_sqs_queue.sqs_queue.name}"
-  passthrough_behavior = "NEVER"
+  integration_method     = "POST"
+  integration_uri        = "arn:aws:apigateway:${data.aws_region.current.name}:sqs:path/${data.aws_caller_identity.current.account_id}/${aws_sqs_queue.sqs_queue.name}"
+  passthrough_behavior   = "NEVER"
   request_parameters = {
     "integration.request.header.Content-Type" = "'application/x-www-form-urlencoded'"
   }
@@ -72,13 +72,13 @@ EOF
 }
 
 resource "aws_apigatewayv2_integration" "disconnect_sqs_integration" {
-  api_id              = aws_apigatewayv2_api.websocket_api.id
-  credentials_arn     = aws_iam_role.execution_role.arn
-  integration_type    = "AWS"
+  api_id                 = aws_apigatewayv2_api.websocket_api.id
+  credentials_arn        = aws_iam_role.execution_role.arn
+  integration_type       = "AWS"
   payload_format_version = "1.0"
-  integration_method = "POST"
-  integration_uri = "arn:aws:apigateway:${data.aws_region.current.name}:sqs:path/${data.aws_caller_identity.current.account_id}/${aws_sqs_queue.sqs_queue.name}"
-  passthrough_behavior = "NEVER"
+  integration_method     = "POST"
+  integration_uri        = "arn:aws:apigateway:${data.aws_region.current.name}:sqs:path/${data.aws_caller_identity.current.account_id}/${aws_sqs_queue.sqs_queue.name}"
+  passthrough_behavior   = "NEVER"
   request_parameters = {
     "integration.request.header.Content-Type" = "'application/x-www-form-urlencoded'"
   }
@@ -107,8 +107,8 @@ resource "aws_apigatewayv2_route" "disconnect_route" {
 }
 
 resource "aws_apigatewayv2_route_response" "connect_route_response" {
-  api_id      = aws_apigatewayv2_api.websocket_api.id
-  route_id    = aws_apigatewayv2_route.connect_route.id
+  api_id             = aws_apigatewayv2_api.websocket_api.id
+  route_id           = aws_apigatewayv2_route.connect_route.id
   route_response_key = "$default"
 }
 
@@ -122,8 +122,8 @@ resource "aws_apigatewayv2_integration_response" "mock_response" {
 }
 
 resource "aws_apigatewayv2_route_response" "default_route_response" {
-  api_id      = aws_apigatewayv2_api.websocket_api.id
-  route_id    = aws_apigatewayv2_route.default_route.id
+  api_id             = aws_apigatewayv2_api.websocket_api.id
+  route_id           = aws_apigatewayv2_route.default_route.id
   route_response_key = "$default"
 }
 
@@ -137,7 +137,7 @@ resource "aws_apigatewayv2_integration_response" "sqs_response" {
 }
 
 resource "aws_cloudwatch_log_group" "apigw_logs" {
-  name = "/aws/apigateway/${aws_apigatewayv2_api.websocket_api.name}"
+  name              = "/aws/apigateway/${aws_apigatewayv2_api.websocket_api.name}"
   retention_in_days = 1
 }
 
@@ -168,13 +168,13 @@ EOF
 }
 
 resource "aws_apigatewayv2_stage" "stage" {
-  api_id        = aws_apigatewayv2_api.websocket_api.id
-  name          = "dev"
+  api_id      = aws_apigatewayv2_api.websocket_api.id
+  name        = "dev"
   auto_deploy = true
 
   access_log_settings {
     destination_arn = aws_cloudwatch_log_group.apigw_logs.arn
-    format = "$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] \"$context.httpMethod $context.routeKey $context.protocol\" $context.status $context.responseLength $context.requestId"
+    format          = "$context.identity.sourceIp $context.identity.caller $context.identity.user [$context.requestTime] \"$context.httpMethod $context.routeKey $context.protocol\" $context.status $context.responseLength $context.requestId"
   }
 }
 
