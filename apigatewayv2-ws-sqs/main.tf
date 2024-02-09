@@ -178,6 +178,6 @@ resource "aws_apigatewayv2_stage" "stage" {
   }
 }
 
-output "websocket_api_endpoint" {
+output "ws_endpoint" {
   value = "${aws_apigatewayv2_api.websocket_api.api_endpoint}/${aws_apigatewayv2_stage.stage.name}"
 }
