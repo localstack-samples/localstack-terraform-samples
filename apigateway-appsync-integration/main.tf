@@ -252,7 +252,7 @@ resource "aws_dynamodb_table_item" "example_item" {
   hash_key   = aws_dynamodb_table.table.hash_key
   item       = <<ITEM
   {
-    "id": { "S": "2"},
+    "id": { "S": "1"},
     "title": { "S": "Post Title" }
   }
 ITEM
