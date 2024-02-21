@@ -36,16 +36,16 @@ resource "aws_iam_role_policy_attachment" "execution_role" {
 }
 
 resource "aws_apigatewayv2_api" "api" {
-  name          = random_pet.random.id
-  protocol_type = "WEBSOCKET"
+  name                       = random_pet.random.id
+  protocol_type              = "WEBSOCKET"
   route_selection_expression = "$request.body.action"
 }
 
 resource "aws_apigatewayv2_route" "connect_route" {
-  api_id    = aws_apigatewayv2_api.api.id
-  route_key = "$connect"
-  target = "integrations/${aws_apigatewayv2_integration.mock.id}"
-  authorization_type = "NONE"
+  api_id                              = aws_apigatewayv2_api.api.id
+  route_key                           = "$connect"
+  target                              = "integrations/${aws_apigatewayv2_integration.mock.id}"
+  authorization_type                  = "NONE"
   route_response_selection_expression = "$default"
 }
 
@@ -58,13 +58,13 @@ resource "aws_apigatewayv2_route" "default_route" {
 
 # connect -> mock integration
 resource "aws_apigatewayv2_integration" "mock" {
-  api_id = aws_apigatewayv2_api.api.id
-  integration_type = "MOCK"
-  integration_method = "POST"
-  passthrough_behavior = "WHEN_NO_MATCH"
+  api_id                 = aws_apigatewayv2_api.api.id
+  integration_type       = "MOCK"
+  integration_method     = "POST"
+  passthrough_behavior   = "WHEN_NO_MATCH"
   payload_format_version = "1.0"
   request_templates = {
-    "200":"{\"statusCode\": 200}"
+    "200" : "{\"statusCode\": 200}"
   }
   template_selection_expression = "200"
 }
@@ -76,9 +76,9 @@ resource "aws_apigatewayv2_route_response" "connect_route_response" {
 }
 
 resource "aws_apigatewayv2_integration_response" "connect_integration_response" {
-  api_id                   = aws_apigatewayv2_api.api.id
-  integration_id           = aws_apigatewayv2_integration.mock.id
-  integration_response_key = "/200/"
+  api_id                        = aws_apigatewayv2_api.api.id
+  integration_id                = aws_apigatewayv2_integration.mock.id
+  integration_response_key      = "/200/"
   template_selection_expression = "default"
   response_templates = {
     "200" = "{\"statusCode\": 200, \"message\":\"order initiated\"}"
@@ -86,15 +86,15 @@ resource "aws_apigatewayv2_integration_response" "connect_integration_response" 
 }
 
 resource "aws_apigatewayv2_integration" "integration" {
-  api_id = aws_apigatewayv2_api.api.id
-  integration_type = "AWS"
-  integration_method = "POST"
-  integration_uri = "arn:aws:apigateway:${data.aws_region.current.name}:sns:action/Publish"
-  passthrough_behavior = "WHEN_NO_MATCH"
+  api_id                    = aws_apigatewayv2_api.api.id
+  integration_type          = "AWS"
+  integration_method        = "POST"
+  integration_uri           = "arn:aws:apigateway:${data.aws_region.current.name}:sns:action/Publish"
+  passthrough_behavior      = "WHEN_NO_MATCH"
   content_handling_strategy = "CONVERT_TO_TEXT"
-  payload_format_version = "1.0"
-  timeout_milliseconds = 29000
-  credentials_arn = aws_iam_role.execution_role.arn
+  payload_format_version    = "1.0"
+  timeout_milliseconds      = 29000
+  credentials_arn           = aws_iam_role.execution_role.arn
   request_parameters = {
     "integration.request.header.Content-Type" = "'application/x-www-form-urlencoded'"
   }
@@ -121,8 +121,8 @@ resource "aws_apigatewayv2_integration_response" "default_integration_response" 
 }
 
 resource "aws_apigatewayv2_stage" "stage" {
-  name = "dev"
-  api_id = aws_apigatewayv2_api.api.id
+  name          = "dev"
+  api_id        = aws_apigatewayv2_api.api.id
   deployment_id = aws_apigatewayv2_deployment.deployment.id
 
   access_log_settings {

@@ -19,23 +19,23 @@ resource "aws_apigatewayv2_route" "route" {
 }
 
 resource "aws_apigatewayv2_integration" "integration" {
-  api_id             = aws_apigatewayv2_api.api.id
-  integration_type   = "AWS_PROXY"
-  integration_subtype = "Kinesis-PutRecord"
-  passthrough_behavior = "WHEN_NO_MATCH"
+  api_id                 = aws_apigatewayv2_api.api.id
+  integration_type       = "AWS_PROXY"
+  integration_subtype    = "Kinesis-PutRecord"
+  passthrough_behavior   = "WHEN_NO_MATCH"
   payload_format_version = "1.0"
-  credentials_arn = aws_iam_role.role.arn
+  credentials_arn        = aws_iam_role.role.arn
 
   request_parameters = {
-    "Data" = "$request.body.data"
+    "Data"         = "$request.body.data"
     "PartitionKey" = "$request.body.partitionKey"
-    "StreamName" = aws_kinesis_stream.kinesis_stream.name
+    "StreamName"   = aws_kinesis_stream.kinesis_stream.name
   }
 }
 
 resource "aws_apigatewayv2_stage" "stage" {
-  api_id = aws_apigatewayv2_api.api.id
-  name   = "$default"
+  api_id      = aws_apigatewayv2_api.api.id
+  name        = "$default"
   auto_deploy = true
 }
 
