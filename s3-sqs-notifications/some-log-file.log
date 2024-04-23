@@ -1,0 +1,140 @@
+LocalStack supervisor: starting
+LocalStack supervisor: localstack process (PID 16) starting
+
+LocalStack version: 3.3.1.dev20240423092324
+LocalStack Docker container id: 0c7fea47a456
+LocalStack build date: 2024-04-23
+LocalStack build git hash: 38fe29f
+
+2024-04-23T15:26:20.942 DEBUG --- [  MainThread] stevedore._cache           : reading /root/.cache/python-entrypoints/d6aaaec2d6ffdb1316526deeaa9ff1804b47a37350bb725fd97137ec2153df48
+2024-04-23T15:26:20.967 DEBUG --- [  MainThread] stevedore._cache           : writing to /root/.cache/python-entrypoints/d6aaaec2d6ffdb1316526deeaa9ff1804b47a37350bb725fd97137ec2153df48
+2024-04-23T15:26:20.971 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='_patch_botocore_json_parser', value='localstack.aws.client:_patch_botocore_json_parser', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:20.972 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='_publish_config_as_analytics_event', value='localstack.runtime.analytics:_publish_config_as_analytics_event', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:20.973 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='_publish_container_info', value='localstack.runtime.analytics:_publish_container_info', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:20.973 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='_run_init_scripts_on_start', value='localstack.runtime.init:_run_init_scripts_on_start', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:20.974 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='deprecation_warnings', value='localstack.plugins:deprecation_warnings', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:20.975 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='register_partition_adjusting_proxy_listener', value='localstack.plugins:register_partition_adjusting_proxy_listener', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:20.975 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='setup_dns_configuration_on_host', value='localstack.dns.plugins:setup_dns_configuration_on_host', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:20.976 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='start_dns_server', value='localstack.dns.plugins:start_dns_server', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:20.976 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='validate_configuration', value='localstack.services.lambda_.plugins:validate_configuration', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:20.980 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='add_aws_request_logger', value='localstack_ext.analytics.plugins:add_aws_request_logger', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:20.985 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='add_custom_edge_routes', value='localstack_ext.plugins:add_custom_edge_routes', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:20.991 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='configure_transparent_endpoint_injection', value='localstack_ext.plugins:configure_transparent_endpoint_injection', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:20.991 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='deprecation_warnings_pro', value='localstack_ext.plugins:deprecation_warnings_pro', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:20.991 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='extensions_on_infra_start', value='localstack_ext.extensions.plugins:extensions_on_infra_start', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:20.992 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='init_stackinfo_handler', value='localstack_ext.services.internal.stackinfo.plugins:init_stackinfo_handler', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:20.994 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='platform_plugins_add_service_plugin_listener', value='localstack_ext.runtime.plugin.plugins:platform_plugins_add_service_plugin_listener', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:20.999 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='platform_plugins_on_infra_start', value='localstack_ext.runtime.plugin.plugins:platform_plugins_on_infra_start', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:20.999 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='register_ci_run_manager', value='localstack_ext.persistence.plugins:register_ci_run_manager', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:21.142 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='register_launchpad_api', value='localstack_ext.bootstrap.pods.launchpad.plugins:register_launchpad_api', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:21.143 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='register_pickle_patches_runtime', value='localstack_ext.persistence.pickling.plugins:register_pickle_patches_runtime', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:21.145 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='register_public_cloudpods_endpoints', value='localstack_ext.persistence.pods.plugins:register_public_cloudpods_endpoints', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:21.145 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='register_remotes_pods_api', value='localstack_ext.persistence.plugins:register_remotes_pods_api', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:21.146 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='register_reset_state_resource', value='localstack_ext.persistence.reset.plugins:register_reset_state_resource', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:21.146 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='register_restricted_pods_api', value='localstack_ext.persistence.plugins:register_restricted_pods_api', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:21.146 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='register_state_load_strategy', value='localstack_ext.persistence.snapshot.plugins:register_state_load_strategy', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:21.217  WARN --- [  MainThread] l.services.internal        : Enabling diagnose endpoint, please be aware that this can expose sensitive information via your network.
+2024-04-23T15:26:21.233 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='register_state_resource', value='localstack_ext.persistence.snapshot.plugins:register_state_resource', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:21.233 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='register_state_save_strategy', value='localstack_ext.persistence.snapshot.plugins:register_state_save_strategy', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:21.233 DEBUG --- [  MainThread] stevedore.extension        : found extension EntryPoint(name='setup_pro_infra', value='localstack_ext.plugins:setup_pro_infra', group='localstack.hooks.on_infra_start')
+2024-04-23T15:26:21.233 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start._patch_botocore_json_parser = <function _patch_botocore_json_parser at 0x7ff0e0f86160>)
+2024-04-23T15:26:21.233 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:_patch_botocore_json_parser
+2024-04-23T15:26:21.233 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start._publish_config_as_analytics_event = <function _publish_config_as_analytics_event at 0x7ff0e0f86520>)
+2024-04-23T15:26:21.233 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:_publish_config_as_analytics_event
+2024-04-23T15:26:21.233 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start._publish_container_info = <function _publish_container_info at 0x7ff0e0f86840>)
+2024-04-23T15:26:21.233 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:_publish_container_info
+2024-04-23T15:26:21.234 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start._run_init_scripts_on_start = <function _run_init_scripts_on_start at 0x7ff0e0f87880>)
+2024-04-23T15:26:21.234 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:_run_init_scripts_on_start
+2024-04-23T15:26:21.234 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.deprecation_warnings = <function deprecation_warnings at 0x7ff0e0fc80e0>)
+2024-04-23T15:26:21.234 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:deprecation_warnings
+2024-04-23T15:26:21.234 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.register_partition_adjusting_proxy_listener = <function register_partition_adjusting_proxy_listener at 0x7ff0e0f87f60>)
+2024-04-23T15:26:21.234 DEBUG --- [  MainThread] plux.runtime.manager       : plugin localstack.hooks.on_infra_start:register_partition_adjusting_proxy_listener is disabled, reason: Load condition for plugin was false
+2024-04-23T15:26:21.234 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.setup_dns_configuration_on_host = <function setup_dns_configuration_on_host at 0x7ff0e0fc8540>)
+2024-04-23T15:26:21.234 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:setup_dns_configuration_on_host
+2024-04-23T15:26:21.234 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.start_dns_server = <function start_dns_server at 0x7ff0e0fc8400>)
+2024-04-23T15:26:21.234 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:start_dns_server
+2024-04-23T15:26:21.234 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.validate_configuration = <function validate_configuration at 0x7ff0e0fe45e0>)
+2024-04-23T15:26:21.234 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:validate_configuration
+2024-04-23T15:26:21.234 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.add_aws_request_logger = <function add_aws_request_logger at 0x7ff0e0fe4ae0>)
+2024-04-23T15:26:21.234 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:add_aws_request_logger
+2024-04-23T15:26:21.234 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.add_custom_edge_routes = <function add_custom_edge_routes at 0x7ff0e0e191c0>)
+2024-04-23T15:26:21.234 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:add_custom_edge_routes
+2024-04-23T15:26:21.234 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.configure_transparent_endpoint_injection = <function configure_transparent_endpoint_injection at 0x7ff0e0e19bc0>)
+2024-04-23T15:26:21.234 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:configure_transparent_endpoint_injection
+2024-04-23T15:26:21.234 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.deprecation_warnings_pro = <function deprecation_warnings_pro at 0x7ff0e0e19a80>)
+2024-04-23T15:26:21.235 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:deprecation_warnings_pro
+2024-04-23T15:26:21.235 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.extensions_on_infra_start = <function extensions_on_infra_start at 0x7ff0e0e19e40>)
+2024-04-23T15:26:21.235 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:extensions_on_infra_start
+2024-04-23T15:26:21.235 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.init_stackinfo_handler = <function init_stackinfo_handler at 0x7ff0e0e1a8e0>)
+2024-04-23T15:26:21.235 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:init_stackinfo_handler
+2024-04-23T15:26:21.235 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.platform_plugins_add_service_plugin_listener = <function platform_plugins_add_service_plugin_listener at 0x7ff0e0e1ba60>)
+2024-04-23T15:26:21.235 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:platform_plugins_add_service_plugin_listener
+2024-04-23T15:26:21.235 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.platform_plugins_on_infra_start = <function platform_plugins_on_infra_start at 0x7ff0e0e1bba0>)
+2024-04-23T15:26:21.235 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:platform_plugins_on_infra_start
+2024-04-23T15:26:21.235 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.register_ci_run_manager = <function register_ci_run_manager at 0x7ff0e0b65580>)
+2024-04-23T15:26:21.235 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:register_ci_run_manager
+2024-04-23T15:26:21.235 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.register_launchpad_api = <function register_launchpad_api at 0x7ff0e0b65bc0>)
+2024-04-23T15:26:21.235 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:register_launchpad_api
+2024-04-23T15:26:21.235 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.register_pickle_patches_runtime = <function register_pickle_patches_runtime at 0x7ff0e0b65ee0>)
+2024-04-23T15:26:21.235 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:register_pickle_patches_runtime
+2024-04-23T15:26:21.235 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.register_public_cloudpods_endpoints = <function register_public_cloudpods_endpoints at 0x7ff0e0b66200>)
+2024-04-23T15:26:21.235 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:register_public_cloudpods_endpoints
+2024-04-23T15:26:21.235 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.register_remotes_pods_api = <function register_remotes_pods_api at 0x7ff0e0b65440>)
+2024-04-23T15:26:21.235 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:register_remotes_pods_api
+2024-04-23T15:26:21.235 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.register_reset_state_resource = <function register_reset_state_resource at 0x7ff0e0b66520>)
+2024-04-23T15:26:21.235 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:register_reset_state_resource
+2024-04-23T15:26:21.236 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.register_restricted_pods_api = <function register_restricted_pods_api at 0x7ff0e0b65300>)
+2024-04-23T15:26:21.236 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:register_restricted_pods_api
+2024-04-23T15:26:21.236 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.register_state_load_strategy = <function register_state_load_strategy at 0x7ff0e091de40>)
+2024-04-23T15:26:21.236 DEBUG --- [  MainThread] plux.runtime.manager       : plugin localstack.hooks.on_infra_start:register_state_load_strategy is disabled, reason: Load condition for plugin was false
+2024-04-23T15:26:21.236 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.register_state_resource = <function register_state_resource at 0x7ff0e091d1c0>)
+2024-04-23T15:26:21.236 DEBUG --- [  MainThread] plux.runtime.manager       : plugin localstack.hooks.on_infra_start:register_state_resource is disabled, reason: Load condition for plugin was false
+2024-04-23T15:26:21.236 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.register_state_save_strategy = <function register_state_save_strategy at 0x7ff0e091d9e0>)
+2024-04-23T15:26:21.236 DEBUG --- [  MainThread] plux.runtime.manager       : plugin localstack.hooks.on_infra_start:register_state_save_strategy is disabled, reason: Load condition for plugin was false
+2024-04-23T15:26:21.236 DEBUG --- [  MainThread] plux.runtime.manager       : instantiating plugin PluginSpec(localstack.hooks.on_infra_start.setup_pro_infra = <function setup_pro_infra at 0x7ff0e0e196c0>)
+2024-04-23T15:26:21.236 DEBUG --- [  MainThread] plux.runtime.manager       : loading plugin localstack.hooks.on_infra_start:setup_pro_infra
+2024-04-23T15:26:21.440 DEBUG --- [  MainThread] localstack.dns.server      : Determined fallback dns: 127.0.0.11
+2024-04-23T15:26:21.440 DEBUG --- [  MainThread] localstack.dns.server      : Starting DNS servers (tcp/udp port 53 on 0.0.0.0)...
+2024-04-23T15:26:21.440 DEBUG --- [  MainThread] localstack.dns.server      : Adding host .*localhost.localstack.cloud pointing to LocalStack
+2024-04-23T15:26:21.440 DEBUG --- [  MainThread] localstack.dns.server      : Adding host .*localhost.localstack.cloud with record DynamicRecord(record_type=<RecordType.A: 1>, record_id=None)
+2024-04-23T15:26:21.440 DEBUG --- [  MainThread] localstack.dns.server      : Adding host .*localhost.localstack.cloud with record DynamicRecord(record_type=<RecordType.AAAA: 2>, record_id=None)
+2024-04-23T15:26:21.442 DEBUG --- [-functhread1] localstack.dns.server      : DNS Server started
+2024-04-23T15:26:21.447 DEBUG --- [  MainThread] localstack.dns.server      : DNS server startup finished.
+2024-04-23T15:26:21.449  INFO --- [  MainThread] l.bootstrap.licensingv2    : Successfully activated cached license 3ca8a66a-5488-498c-a4c8-8836efc41591:enterprise from /var/lib/localstack/cache/license.json 🔑✅
+2024-04-23T15:26:22.675 DEBUG --- [  MainThread] localstack.runtime.init    : Init scripts discovered: {BOOT: [], START: [], READY: [], SHUTDOWN: []}
+2024-04-23T15:26:22.675 DEBUG --- [  MainThread] localstack.plugins         : Checking for the usage of deprecated community features and configs...
+2024-04-23T15:26:22.676 DEBUG --- [  MainThread] localstack.dns.server      : Overwriting container DNS server to point to localhost
+2024-04-23T15:26:22.706 DEBUG --- [  MainThread] localstack_ext.plugins     : setting up transparent endpoint injection
+2024-04-23T15:26:22.706 DEBUG --- [  MainThread] localstack.dns.server      : Adding host .*.amazonaws.com pointing to LocalStack
+2024-04-23T15:26:22.707 DEBUG --- [  MainThread] localstack.dns.server      : Adding host .*.amazonaws.com with record DynamicRecord(record_type=<RecordType.A: 1>, record_id=None)
+2024-04-23T15:26:22.707 DEBUG --- [  MainThread] localstack.dns.server      : Adding host .*.amazonaws.com with record DynamicRecord(record_type=<RecordType.AAAA: 2>, record_id=None)
+2024-04-23T15:26:22.707 DEBUG --- [  MainThread] localstack.dns.server      : Adding host .*aws.amazon.com pointing to LocalStack
+2024-04-23T15:26:22.707 DEBUG --- [  MainThread] localstack.dns.server      : Adding host .*aws.amazon.com with record DynamicRecord(record_type=<RecordType.A: 1>, record_id=None)
+2024-04-23T15:26:22.707 DEBUG --- [  MainThread] localstack.dns.server      : Adding host .*aws.amazon.com with record DynamicRecord(record_type=<RecordType.AAAA: 2>, record_id=None)
+2024-04-23T15:26:22.707 DEBUG --- [  MainThread] localstack.dns.server      : Adding host .*cloudfront.net pointing to LocalStack
+2024-04-23T15:26:22.707 DEBUG --- [  MainThread] localstack.dns.server      : Adding host .*cloudfront.net with record DynamicRecord(record_type=<RecordType.A: 1>, record_id=None)
+2024-04-23T15:26:22.707 DEBUG --- [  MainThread] localstack.dns.server      : Adding host .*cloudfront.net with record DynamicRecord(record_type=<RecordType.AAAA: 2>, record_id=None)
+2024-04-23T15:26:22.707 DEBUG --- [  MainThread] localstack.dns.server      : Adding skip pattern ^aws\.amazon\.com
+2024-04-23T15:26:22.707 DEBUG --- [  MainThread] localstack.dns.server      : Adding skip pattern ^aws-glue-etl-artifacts\.s3(\.[^\.]+)?\.amazonaws\.com
+2024-04-23T15:26:22.707 DEBUG --- [  MainThread] localstack.dns.server      : Adding skip pattern .*(forums|console|docs|clientvpn|sso|boto3|(signin(\-reg)?))\.([^\.]+\.)?(aws\.amazon|amazonaws)\.com
+2024-04-23T15:26:22.707 DEBUG --- [  MainThread] localstack.dns.server      : Adding skip pattern ^redshift-maven-repository\.s3(\.[^\.]+)?\.amazonaws\.com
+2024-04-23T15:26:22.707 DEBUG --- [  MainThread] localstack.dns.server      : Adding skip pattern ^localstack-pods-.*\.s3(\.[^\.]+)?\.amazonaws\.com
+2024-04-23T15:26:22.707 DEBUG --- [  MainThread] localstack.dns.server      : Adding skip pattern ^prod-registry-k8s-io-.*\.s3\.(dualstack\.)?.*\.amazonaws\.com
+2024-04-23T15:26:22.707 DEBUG --- [  MainThread] localstack.dns.server      : Adding skip pattern ^localstack-assets\.s3(\.[^\.]+)?\.amazonaws\.com
+2024-04-23T15:26:22.707 DEBUG --- [  MainThread] localstack.dns.server      : Adding skip pattern .*captcha-prod\.s3(\.[^\.]+)?\.amazonaws\.com
+2024-04-23T15:26:22.707 DEBUG --- [  MainThread] localstack.dns.server      : Adding skip pattern ^github-production-release-.*\.s3(\.[^\.]+)?\.amazonaws\.com
+2024-04-23T15:26:23.047 DEBUG --- [  MainThread] l.services.iam.router      : Adding IAM policy generation routes...
+2024-04-23T15:26:23.779  INFO --- [  MainThread] l.extensions.platform      : loaded 0 extensions
+2024-04-23T15:26:23.780 DEBUG --- [  MainThread] l.extensions.platform      : calling extensions on_platform_start
+2024-04-23T15:26:23.780 DEBUG --- [  MainThread] l.extensions.platform      : calling extensions update_gateway_routes
+2024-04-23T15:26:23.780 DEBUG --- [  MainThread] l.extensions.platform      : calling extensions update_request_handlers
+2024-04-23T15:26:23.780 DEBUG --- [  MainThread] l.extensions.platform      : calling extensions update_response_handlers
+2024-04-23T15:26:23.780 DEBUG --- [  MainThread] l.extensions.platform      : calling extensions update_exception_handlers
+2024-04-23T15:26:23.780 DEBUG --- [  MainThread] localstack.utils.threads   : start_thread called without providing a custom name
+2024-04-23T15:26:23.781 DEBUG --- [-functhread5] localstack.utils.run       : Executing command: whoami
+2024-04-23T15:26:24.025 DEBUG --- [-functhread5] localstack.utils.ssl       : Attempting to download local SSL certificate file
+2024-04-23T15:26:24.185 DEBUG --- [-functhread5] localstack.utils.http      : Starting download from https://github.com/localstack/localstack-artifacts/raw/master/local-certs/server.key to /var/lib/localstack/cache/server.test.pem
+2024-04-23T15:26:24.186 DEBUG --- [-functhread5] localstack.utils.http      : Downloaded 100% (total 4K of 4K) to /var/lib/localstack/cache/server.test.pem
+2024-04-23T15:26:24.189 DEBUG --- [-functhread5] localstack.utils.http      : Done downloading https://github.com/localstack/localstack-artifacts/raw/master/local-certs/server.key, response code 200, total 4K
+2024-04-23T15:26:24.383  INFO --- [  MainThread] localstack.utils.bootstrap : Execution of "start_runtime_components" took 603.14ms
+Ready.
