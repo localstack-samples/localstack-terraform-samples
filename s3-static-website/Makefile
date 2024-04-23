@@ -15,8 +15,9 @@ install:    ## Install dependencies
 run:        
 	awslocal s3api create-bucket --bucket testwebsite
 	awslocal s3api put-bucket-policy --bucket testwebsite --policy file://bucket_policy.json
-	awslocal s3 sync ./ s3://testwebsite
-	awslocal s3 website s3://testwebsite/ --index-document www/index.html --error-document www/error.html
+	awslocal s3 sync ./www/ s3://testwebsite
+	awslocal s3 website s3://testwebsite/ --index-document index.html --error-document error.html
+	@echo -e "\n\nWebsite is available at  https://testwebsite.s3-website.localhost.localstack.cloud:4566/"
 
 start:
 	localstack start -d
