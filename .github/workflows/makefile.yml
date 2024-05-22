@@ -1,0 +1,50 @@
+name: Makefile CI
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+  schedule:
+    - cron: '0 13 * * 1' 
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
+
+    - name: Setup Nodejs
+      uses: actions/setup-node@v3
+      with:
+        node-version: 18
+
+    - name: Setup Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.9'
+
+    - uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.5.7
+        terraform_wrapper: false
+
+    - name: Install LocalStack
+      run:  pip install localstack awscli-local[ver1] terraform-local
+
+    - name: Setup config
+      run: |
+        echo "Configuring git for codecommit sample"
+        git config --global user.email "localstack.sample@localstack.cloud"
+        git config --global user.name "Localstack Pro-Samples"
+
+    - name: Pull the latest docker image
+      run: docker pull localstack/localstack-pro
+
+    - name: Execute tests
+      env:
+        LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
+        DEBUG: 1
+      timeout-minutes: 30
+      run: make test-ci-all
