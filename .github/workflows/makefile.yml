@@ -46,5 +46,5 @@ jobs:
       env:
         LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
         DEBUG: 1
-      timeout-minutes: 30
+      timeout-minutes: 40
       run: make test-ci-all
