@@ -1,9 +1,18 @@
 #!/usr/bin/env sh
 
-export TF_LOG=debug
-rm terraformstate* || true
+# Get the API Gateway ID
+restapi=$(aws --endpoint-url=http://localhost:4566 apigateway get-rest-apis | jq -r .items[0].id)
 
-terraform init; terraform plan; terraform apply --auto-approve
+# Make the curl request and capture the response
+response=$(curl -s -X POST "$restapi.execute-api.localhost.localstack.cloud:4566/local/test" -H 'content-type: application/json')
 
-restapi=$(aws --endpoint-url=http://localhost:4566 apigateway  get-rest-apis | jq -r .items[0].id)
-curl -X POST "$restapi.execute-api.localhost.localstack.cloud:4566/local/test" -H 'content-type: application/json'
+# Output the response for debugging purposes
+echo "API Response: $response"
+
+# Smoke test to validate the output
+if echo "$response" | grep -q "Hello from Lambda!"; then
+    echo "Smoke test passed: The response contains 'Hello from Lambda!'."
+else
+    echo "Smoke test failed: The response does not contain 'Hello from Lambda!'."
+    exit 1
+fi
