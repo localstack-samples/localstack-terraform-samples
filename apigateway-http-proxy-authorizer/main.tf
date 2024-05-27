@@ -39,7 +39,7 @@ resource "aws_lambda_function" "authorizer" {
 
   source_code_hash = filebase64sha256("authorizer-function.zip")
 
-  runtime = "nodejs12.x"
+  runtime = "nodejs18.x"
 }
 
 resource "aws_api_gateway_integration" "integration" {
@@ -69,7 +69,7 @@ resource "aws_lambda_function" "lambda" {
 
   source_code_hash = filebase64sha256("lambda.zip")
 
-  runtime = "nodejs12.x"
+  runtime = "nodejs18.x"
 
   environment {
     variables = {
