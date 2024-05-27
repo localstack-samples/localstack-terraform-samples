@@ -12,7 +12,7 @@ Execute the following commands to run the example:
 ```bash
 make init
 make deploy
-make run
+make test
 ```
 
 ## Notes

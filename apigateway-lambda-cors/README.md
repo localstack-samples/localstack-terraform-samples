@@ -15,7 +15,7 @@ This sample shows how to create a lambda function and expose it through an API G
 ```
 make init
 make deploy
-make run
+make test
 ```
 
 ## Notes
