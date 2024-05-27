@@ -13,7 +13,9 @@ Localstack sample using Apigateway with DynamoDB backend
 ### Run
 
 ```
-./run.sh
+make init
+make deploy
+make test
 ```
 
 ## Notes
