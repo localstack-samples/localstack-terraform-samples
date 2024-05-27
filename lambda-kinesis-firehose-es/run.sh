@@ -1,21 +1,28 @@
 #!/usr/bin/env bash
 # fail on errors
 set -eo pipefail
-# enable alias in script
-shopt -s expand_aliases
 
-if [ $# -eq 1 ] && [ $1 = "aws" ]; then
-  echo "Deploying on AWS."
-else
-  echo "Deploying on LocalStack."
-  alias aws='awslocal'
-  alias terraform='tflocal'
-fi
+# Get the function URL
+function_url=$(awslocal lambda get-function-url-config --function-name demolambda | jq -r .FunctionUrl)
 
-terraform init; terraform plan; terraform apply --auto-approve
-function_url=$(aws lambda get-function-url-config --function-name demolambda --region eu-west-1 | jq -r .FunctionUrl)
-elasticsearch_endpoint=$(aws es describe-elasticsearch-domain --domain-name demo-domain --region eu-west-1 | jq -r .DomainStatus.Endpoint)
+# Get the Elasticsearch endpoint
+elasticsearch_endpoint=$(awslocal es describe-elasticsearch-domain --domain-name demo-domain | jq -r .DomainStatus.Endpoint)
+
+# Output the endpoints for debugging purposes
 echo "Elasticsearch Endpoint: $elasticsearch_endpoint"
 echo "Function URL: $function_url"
+
+# Invoke the function and capture the response
 echo "Invoking function..."
-curl $function_url
+response=$(curl -s $function_url)
+
+# Output the response for debugging purposes
+echo "Function Response: $response"
+
+# Smoke test to validate the output
+if echo "$response" | grep -q "Hello World!"; then
+    echo "Smoke test passed: The response contains 'Hello World!'."
+else
+    echo "Smoke test failed: The response does not contain 'Hello World!'."
+    exit 1
+fi
