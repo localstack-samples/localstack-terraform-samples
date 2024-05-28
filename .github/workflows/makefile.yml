@@ -15,10 +15,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    # - name: Free Disk Space (Ubuntu)
-    #   uses: jlumbroso/free-disk-space@main
-    #   with:
-    #     tool-cache: false
+    - name: Free Disk Space (Ubuntu)
+      uses: jlumbroso/free-disk-space@main
+      with:
+        tool-cache: false
 
     - name: Setup Nodejs
       uses: actions/setup-node@v3
@@ -38,12 +38,6 @@ jobs:
     - name: Install LocalStack
       run:  pip install localstack awscli-local[ver1] terraform-local
 
-    - name: Setup config
-      run: |
-        echo "Configuring git for codecommit sample"
-        git config --global user.email "localstack.sample@localstack.cloud"
-        git config --global user.name "Localstack Pro-Samples"
-
     - name: Pull the latest docker image
       run: docker pull localstack/localstack-pro
 
@@ -51,5 +45,5 @@ jobs:
       env:
         LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
         DEBUG: 1
-      timeout-minutes: 40
-      run: cd apigateway-stage-variables && make test-ci
+      timeout-minutes: 100
+      run: make test-ci-all
