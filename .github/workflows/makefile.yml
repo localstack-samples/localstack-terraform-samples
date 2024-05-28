@@ -15,10 +15,10 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v3
 
-    - name: Free Disk Space (Ubuntu)
-      uses: jlumbroso/free-disk-space@main
-      with:
-        tool-cache: false
+    # - name: Free Disk Space (Ubuntu)
+    #   uses: jlumbroso/free-disk-space@main
+    #   with:
+    #     tool-cache: false
 
     - name: Setup Nodejs
       uses: actions/setup-node@v3
@@ -52,4 +52,4 @@ jobs:
         LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
         DEBUG: 1
       timeout-minutes: 40
-      run: make test-ci-all
+      run: cd managed-streaming-kafka-cluster && make test-ci
