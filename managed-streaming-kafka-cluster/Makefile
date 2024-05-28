@@ -30,7 +30,8 @@ init:
 	tflocal init
 
 deploy:
-	tflocal apply --auto-approve
+	tflocal apply --auto-approve; \
+	awslocal awslocal kafka list-clusters;
 
 run: start install init deploy
 
