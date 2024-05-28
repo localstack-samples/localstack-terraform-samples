@@ -1,5 +1,3 @@
-# https://docs.aws.amazon.com/sns/latest/api/API_Publish.html#API_Publish_Examples
-
 data "aws_region" "current" {}
 
 resource "aws_api_gateway_rest_api" "rest" {
@@ -50,7 +48,8 @@ resource "aws_api_gateway_integration_response" "integration_response" {
   http_method = aws_api_gateway_method.method.http_method
   status_code = aws_api_gateway_method_response.response_200.status_code
 
-  # Transforms the backend JSON response to XML
+  depends_on = [aws_api_gateway_integration.integration]
+
   response_templates = {
     "application/json" = <<EOF
 {"status": "message published"}
@@ -61,7 +60,6 @@ EOF
 resource "aws_sns_topic" "topic" {
   name = "event-topic"
 }
-
 
 resource "aws_iam_role" "sns_publish" {
   name               = "sns-publish-role"
