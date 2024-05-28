@@ -1,7 +1,5 @@
 #!/usr/bin/env sh
 
-set -eo pipefail
-
 # Get the API Gateway ID
 http_api=$(aws --endpoint-url=http://localhost:4566 apigatewayv2 get-apis | jq -r .Items[0].ApiId)
 
