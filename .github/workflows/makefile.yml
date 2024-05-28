@@ -52,4 +52,4 @@ jobs:
         LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
         DEBUG: 1
       timeout-minutes: 40
-      run: cd apigateway-sns-deploy && make test-ci
+      run: cd apigateway-rest-cors && make test-ci

@@ -46,7 +46,6 @@ resource "aws_api_gateway_method_response" "options_200" {
     "method.response.header.Access-Control-Allow-Methods" = true,
     "method.response.header.Access-Control-Allow-Origin"  = true
   }
-  depends_on = [aws_api_gateway_method.options_method]
 }
 
 resource "aws_api_gateway_integration" "options_integration" {
@@ -54,27 +53,33 @@ resource "aws_api_gateway_integration" "options_integration" {
   resource_id = aws_api_gateway_resource.cors_resource.id
   http_method = aws_api_gateway_method.options_method.http_method
   type        = "MOCK"
-  depends_on  = [aws_api_gateway_method.options_method]
 
   request_templates = {
     "application/json" = <<-EOF
     {"statusCode": 200}
-    #set($context.requestOverride.header.Auth = "$input.params().header.get('Access-Control-Request-Headers')")
     EOF
   }
+
+  depends_on = [aws_api_gateway_method.options_method]
 }
 
 resource "aws_api_gateway_integration_response" "options_integration_response" {
-  rest_api_id = aws_api_gateway_rest_api.cors_api.id
-  resource_id = aws_api_gateway_resource.cors_resource.id
-  http_method = aws_api_gateway_method.options_method.http_method
-  status_code = aws_api_gateway_method_response.options_200.status_code
+  rest_api_id   = aws_api_gateway_rest_api.cors_api.id
+  resource_id   = aws_api_gateway_resource.cors_resource.id
+  http_method   = aws_api_gateway_method.options_method.http_method
+  status_code   = aws_api_gateway_method_response.options_200.status_code
+
   response_parameters = {
-    "method.response.header.Access-Control-Allow-Headers" = "context.requestOverride.header.Auth",
+    "method.response.header.Access-Control-Allow-Headers" = "'*'",
     "method.response.header.Access-Control-Allow-Methods" = "'GET,OPTIONS,POST,PUT'",
     "method.response.header.Access-Control-Allow-Origin"  = "'*'"
   }
-  depends_on = [aws_api_gateway_method_response.options_200]
+
+  depends_on = [
+    aws_api_gateway_method.options_method,
+    aws_api_gateway_method_response.options_200,
+    aws_api_gateway_integration.options_integration
+  ]
 }
 
 resource "aws_api_gateway_deployment" "deployment" {
@@ -91,6 +96,7 @@ resource "aws_api_gateway_deployment" "deployment" {
   depends_on = [
     aws_api_gateway_method.options_method,
     aws_api_gateway_integration.options_integration,
+    aws_api_gateway_integration_response.options_integration_response,
   ]
 }
 
