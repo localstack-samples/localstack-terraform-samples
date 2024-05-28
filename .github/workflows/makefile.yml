@@ -52,4 +52,4 @@ jobs:
         LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
         DEBUG: 1
       timeout-minutes: 40
-      run: cd apigatewayv2-lambda-request-authorizer-1.0 && make test-ci
+      run: cd apigateway-stage-variables && make test-ci

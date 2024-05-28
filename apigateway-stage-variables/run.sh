@@ -1,7 +1,5 @@
 #!/usr/bin/env sh
 
-set -eo pipefail
-
 # Get the API Gateway ID
 restapi=$(aws --endpoint-url=http://localhost:4566 apigateway get-rest-apis | jq -r .items[0].id)
 
