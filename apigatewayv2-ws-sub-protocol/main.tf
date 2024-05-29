@@ -1,5 +1,5 @@
 variable "region" {
-  default = "eu-west-1"
+  default = "us-east-1"
 }
 
 resource "aws_iam_role" "role_auth" {
@@ -30,7 +30,7 @@ resource "aws_lambda_function" "lambda_auth" {
 
   source_code_hash = filebase64sha256("lambda-auth.zip")
 
-  runtime = "nodejs12.x"
+  runtime = "nodejs20.x"
 
   environment {
     variables = {
@@ -69,7 +69,7 @@ resource "aws_lambda_function" "lambda" {
   function_name = "lambda"
   role          = aws_iam_role.role.arn
   handler       = "lambda.handler"
-  runtime       = "nodejs12.x"
+  runtime       = "nodejs20.x"
 
   source_code_hash = filebase64sha256("lambda.zip")
 

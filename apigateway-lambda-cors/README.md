@@ -13,7 +13,9 @@ This sample shows how to create a lambda function and expose it through an API G
 ### Run
 
 ```
-./run.sh
+make init
+make deploy
+make test
 ```
 
 ## Notes

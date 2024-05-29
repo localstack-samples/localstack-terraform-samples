@@ -1,4 +1,5 @@
 data "aws_region" "current" {}
+
 data "aws_caller_identity" "current" {}
 
 resource "random_pet" "random" {
@@ -23,6 +24,27 @@ resource "aws_api_gateway_method" "method" {
   authorization = "NONE"
 }
 
+resource "aws_api_gateway_integration" "integration" {
+  type                    = "AWS"
+  rest_api_id             = aws_api_gateway_rest_api.api.id
+  resource_id             = aws_api_gateway_resource.resource.id
+  http_method             = aws_api_gateway_method.method.http_method
+  integration_http_method = "POST" # Must be POST for invoking Lambda function
+
+  uri = "arn:aws:apigateway:${data.aws_region.current.name}:lambda:path/2015-03-31/functions/arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:$${stageVariables.lambdaFunction}/invocations"
+
+  request_templates = {
+    "application/json" = <<EOF
+#set($inputRoot = $input.json('$'))
+{
+  "version": "$stageVariables.version"
+}
+EOF
+  }
+
+  depends_on = [aws_api_gateway_method.method]
+}
+
 resource "aws_api_gateway_method_response" "response_200" {
   rest_api_id = aws_api_gateway_rest_api.api.id
   resource_id = aws_api_gateway_resource.resource.id
@@ -38,6 +60,11 @@ resource "aws_api_gateway_integration_response" "integration_response_200" {
   resource_id = aws_api_gateway_resource.resource.id
   http_method = aws_api_gateway_method.method.http_method
   status_code = aws_api_gateway_method_response.response_200.status_code
+
+  depends_on = [
+    aws_api_gateway_integration.integration,
+    aws_api_gateway_method_response.response_200
+  ]
 }
 
 resource "aws_lambda_permission" "apigw_lambda" {
@@ -45,29 +72,7 @@ resource "aws_lambda_permission" "apigw_lambda" {
   action        = "lambda:InvokeFunction"
   function_name = aws_lambda_function.lambda.function_name
   principal     = "apigateway.amazonaws.com"
-
-  # More: http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-control-access-using-iam-policies-to-invoke-api.html
-  #  source_arn = "arn:aws:execute-api:${local.region}:${local.account_id}:${aws_api_gateway_rest_api.demo.id}/*/${aws_api_gateway_method.any.http_method}${aws_api_gateway_resource.demo.path}"
-  source_arn = "${aws_api_gateway_rest_api.api.execution_arn}/*/*/*"
-}
-
-resource "aws_api_gateway_integration" "integration" {
-  type                    = "AWS"
-  rest_api_id             = aws_api_gateway_rest_api.api.id
-  resource_id             = aws_api_gateway_resource.resource.id
-  http_method             = aws_api_gateway_method.method.http_method
-  integration_http_method = "POST" # Must be POST for invoking Lambda function
-
-  # http://docs.aws.amazon.com/apigateway/api-reference/resource/integration/#uri
-  uri = "arn:aws:apigateway:${data.aws_region.current.name}:lambda:path/2015-03-31/functions/arn:aws:lambda:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:function:$${stageVariables.lambdaFunction}/invocations"
-  request_templates = {
-    "application/json" = <<EOF
-#set($inputRoot = $input.json('$'))
-{
-  "version": "$stageVariables.version"
-}
-EOF
-  }
+  source_arn    = "${aws_api_gateway_rest_api.api.execution_arn}/*/*/*"
 }
 
 resource "aws_lambda_function" "lambda" {
@@ -77,7 +82,7 @@ resource "aws_lambda_function" "lambda" {
   handler          = "lambda.handler"
   source_code_hash = filebase64sha256("lambda.zip")
 
-  runtime = "nodejs12.x"
+  runtime = "nodejs20.x"
 
   environment {
     variables = {
@@ -107,7 +112,10 @@ POLICY
 }
 
 resource "aws_api_gateway_deployment" "dev" {
-  depends_on = [aws_api_gateway_integration.integration]
+  depends_on = [
+    aws_api_gateway_integration.integration,
+    aws_api_gateway_integration_response.integration_response_200
+  ]
 
   rest_api_id = aws_api_gateway_rest_api.api.id
   stage_name  = "dev"

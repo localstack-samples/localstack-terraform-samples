@@ -10,7 +10,9 @@ This project contains an example of an API Gateway with Kinesis Integration usin
 Execute the following commands to run the example:
 
 ```bash
-./run.sh
+make init
+make deploy
+make test
 ```
 
 ## Notes
