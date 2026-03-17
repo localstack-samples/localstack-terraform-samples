@@ -20,7 +20,8 @@ run:
 	@echo -e "\n\nWebsite is available at  https://testwebsite.s3-website.localhost.localstack.cloud:4566/"
 
 start:
-	localstack start -d
+	@test -n "${LOCALSTACK_AUTH_TOKEN}" || (echo "LOCALSTACK_AUTH_TOKEN is not set" && exit 1);
+	DEBUG=1 LOCALSTACK_AUTH_TOKEN=$(LOCALSTACK_AUTH_TOKEN) localstack start -d
 
 stop:
 	@echo
