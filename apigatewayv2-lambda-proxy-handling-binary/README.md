@@ -1,11 +1,6 @@
-## API Gateway with stage variables
+# APIgatewayv2 Lambda Proxy Handling Binary
 
-![LocalStack](https://img.shields.io/static/v1?label=Works&message=@LocalStack&color=purple)
-![AWS](https://img.shields.io/static/v1?label=Works&message=@AWS&color=orange)
-
-This project contains an example of an API Gateway with stage variables. 
-
-Refer to the [AWS documentation](https://docs.aws.amazon.com/apigateway/latest/developerguide/amazon-api-gateway-using-stage-variables.html) for more information.
+This sample demonstrates Terraform-based AWS service emulation with LocalStack.
 
 ## Prerequisites
 
@@ -24,14 +19,11 @@ make start
 make ready
 ```
 
-### Run
-
-Execute the following commands to run the example:
+## Run Sample
 
 ```bash
-./run.sh
+make install
+make init
+make deploy
+make test
 ```
-
-## Notes
-
-Use `tfswitch` or `tfenv` to install the required provider version

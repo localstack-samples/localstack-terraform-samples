@@ -1,11 +1,11 @@
-## API Gateway with stage variables
+# S3-SQS-Notifications
 
-![LocalStack](https://img.shields.io/static/v1?label=Works&message=@LocalStack&color=purple)
-![AWS](https://img.shields.io/static/v1?label=Works&message=@AWS&color=orange)
+## Description
 
-This project contains an example of an API Gateway with stage variables. 
-
-Refer to the [AWS documentation](https://docs.aws.amazon.com/apigateway/latest/developerguide/amazon-api-gateway-using-stage-variables.html) for more information.
+- This sample deploys a Terraform configuration
+- Copies a log file into an S3 bucket
+- Sends a notification to an SQS queue
+- Retrieves a message from an SQS queue
 
 ## Prerequisites
 
@@ -24,14 +24,15 @@ make start
 make ready
 ```
 
-### Run
+## Deployment
 
-Execute the following commands to run the example:
+1. Clone the repository and navigate to the sample directory.
 
-```bash
-./run.sh
-```
+- Run the `./deploy.sh` script to deploy the full sample.
 
-## Notes
+## Files
 
-Use `tfswitch` or `tfenv` to install the required provider version
+- `./deploy.sh`:  Deployment script
+- `main.tf`: Terraform configuration file
+- `provider.tf`: Terraform provider configuration file
+- `some-log-file.log`: Sample log file
