@@ -65,7 +65,7 @@ resource "aws_dynamodb_table" "MyDynamoDBTable" {
   }
 
   global_secondary_index {
-    name               = "PetType-index"
+    name = "PetType-index"
     key_schema {
       attribute_name = "PetType"
       key_type       = "HASH"
