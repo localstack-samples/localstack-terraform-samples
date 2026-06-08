@@ -29,7 +29,7 @@ function Deploy-Website {
             pip install localstack
             Write-Host "LocalStack CLI installed successfully!"
         }
-        if (-not (Get-Command -Name 'awslocal' -ErrorAction SilentlyContinue)) {
+        if (-not (Get-Command -Name 'lstk' -ErrorAction SilentlyContinue)) {
             pip install awscli-local
             Write-Host "AWS CLI installed successfully!"
         }
@@ -51,10 +51,10 @@ function Deploy-Website {
     }
 
     if ($Deploy) {
-        awslocal s3api create-bucket --bucket testwebsite
-        awslocal s3api put-bucket-policy --bucket testwebsite --policy file://bucket_policy.json
-        awslocal s3 sync ./www/ s3://testwebsite
-        awslocal s3 website s3://testwebsite/ --index-document index.html --error-document error.html
+        lstk aws s3api create-bucket --bucket testwebsite
+        lstk aws s3api put-bucket-policy --bucket testwebsite --policy file://bucket_policy.json
+        lstk aws s3 sync ./www/ s3://testwebsite
+        lstk aws s3 website s3://testwebsite/ --index-document index.html --error-document error.html
         Write-Host "`n`nWebsite is available at  https://testwebsite.s3-website.localhost.localstack.cloud:4566/"
     }
 

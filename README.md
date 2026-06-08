@@ -7,8 +7,7 @@ Each example in the repository is prefixed with the AWS service being used. For 
 ## Prerequisites
 
 - [Docker](https://docs.docker.com/get-docker/)
-- [`localstack` CLI](https://docs.localstack.cloud/getting-started/installation/#localstack-cli)
-- [`awslocal` CLI](https://docs.localstack.cloud/user-guide/integrations/aws-cli/)
+- [`lstk` CLI](https://docs.localstack.cloud/aws/tooling/lstk/) — provides `lstk aws` and `lstk terraform` wrappers
 - [Terraform](https://developer.hashicorp.com/terraform/downloads)
 - `make` and `jq`
 
@@ -22,10 +21,10 @@ Set it before running any sample:
 export LOCALSTACK_AUTH_TOKEN=<your-auth-token>
 ```
 
-Alternatively, use the LocalStack CLI to persist the token:
+Alternatively, use the `lstk` CLI to log in and store your credentials in the system keyring:
 
 ```bash
-localstack auth set-token <your-auth-token>
+lstk login
 ```
 
 You can find your auth token in the [LocalStack Web Application](https://app.localstack.cloud/workspace/auth-token).

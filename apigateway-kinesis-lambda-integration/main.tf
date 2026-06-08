@@ -48,7 +48,7 @@ resource "aws_lambda_permission" "apigw_lambda" {
   principal     = "apigateway.amazonaws.com"
 
   # More: http://docs.aws.amazon.com/apigateway/latest/developerguide/api-gateway-control-access-using-iam-policies-to-invoke-api.html
-  source_arn = "arn:aws:execute-api:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.rest.id}/*/${aws_api_gateway_method.method.http_method}${aws_api_gateway_resource.root.path}"
+  source_arn = "arn:aws:execute-api:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.rest.id}/*/${aws_api_gateway_method.method.http_method}${aws_api_gateway_resource.root.path}"
 }
 
 #
@@ -152,8 +152,21 @@ resource "aws_api_gateway_integration_response" "integration_error_response" {
 
 resource "aws_api_gateway_deployment" "deployment" {
   rest_api_id = aws_api_gateway_rest_api.rest.id
-  stage_name  = "dev"
-  depends_on  = [aws_api_gateway_integration.integration]
+  depends_on = [
+    aws_api_gateway_integration.integration,
+    aws_api_gateway_integration_response.integration_success_response,
+    aws_api_gateway_integration_response.integration_error_response,
+  ]
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_api_gateway_stage" "stage" {
+  rest_api_id   = aws_api_gateway_rest_api.rest.id
+  deployment_id = aws_api_gateway_deployment.deployment.id
+  stage_name    = "dev"
 }
 
 #

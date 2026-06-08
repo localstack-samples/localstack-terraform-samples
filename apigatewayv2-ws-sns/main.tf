@@ -89,7 +89,7 @@ resource "aws_apigatewayv2_integration" "integration" {
   api_id                    = aws_apigatewayv2_api.api.id
   integration_type          = "AWS"
   integration_method        = "POST"
-  integration_uri           = "arn:aws:apigateway:${data.aws_region.current.name}:sns:action/Publish"
+  integration_uri           = "arn:aws:apigateway:${data.aws_region.current.region}:sns:action/Publish"
   passthrough_behavior      = "WHEN_NO_MATCH"
   content_handling_strategy = "CONVERT_TO_TEXT"
   payload_format_version    = "1.0"

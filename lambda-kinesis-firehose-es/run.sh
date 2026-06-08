@@ -3,10 +3,10 @@
 set -eo pipefail
 
 # Get the function URL
-function_url=$(awslocal lambda get-function-url-config --function-name demolambda | jq -r .FunctionUrl)
+function_url=$(lstk aws lambda get-function-url-config --function-name demolambda | jq -r .FunctionUrl)
 
 # Get the Elasticsearch endpoint
-elasticsearch_endpoint=$(awslocal es describe-elasticsearch-domain --domain-name demo-domain | jq -r .DomainStatus.Endpoint)
+elasticsearch_endpoint=$(lstk aws es describe-elasticsearch-domain --domain-name demo-domain | jq -r .DomainStatus.Endpoint)
 
 # Output the endpoints for debugging purposes
 echo "Elasticsearch Endpoint: $elasticsearch_endpoint"

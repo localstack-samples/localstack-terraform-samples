@@ -48,7 +48,7 @@ resource "aws_api_gateway_integration" "integration" {
   credentials = aws_iam_role.apigateway.arn
   http_method = aws_api_gateway_method.method.http_method
   type        = "AWS"
-  uri         = "arn:aws:apigateway:${data.aws_region.current.name}:states:action/StartExecution"
+  uri         = "arn:aws:apigateway:${data.aws_region.current.region}:states:action/StartExecution"
 
   integration_http_method = "POST"
   request_templates = {
@@ -116,7 +116,7 @@ resource "aws_api_gateway_deployment" "deployment" {
     create_before_destroy = true
   }
 
-  depends_on = [aws_api_gateway_rest_api.api, aws_api_gateway_method.method, aws_api_gateway_integration.integration]
+  depends_on = [aws_api_gateway_rest_api.api, aws_api_gateway_method.method, aws_api_gateway_integration.integration, aws_api_gateway_integration_response.response_200]
 }
 
 data "aws_iam_policy_document" "sfn_assume" {
@@ -189,7 +189,7 @@ resource "aws_lambda_function" "lambda" {
 
   source_code_hash = filebase64sha256("lambda.zip")
 
-  runtime = "nodejs14.x"
+  runtime = "nodejs18.x"
 }
 
 resource "aws_iam_role" "lambda_role" {

@@ -1,3 +1,5 @@
+LSTK := lstk --non-interactive
+
 lint:
 	@echo "==> Linting terraform code"
 	@terraform fmt -diff=true -recursive -write=true
@@ -12,13 +14,10 @@ lint:          ## Run code linter for all projects
 	MAKE_TARGET='lint' make for-each-dir
 
 start:         ## Start LocalStack infrastructure
-	localstack start -d
-
-ready:         ## Check if the LocalStack container is up and running.
-	localstack wait -t 20 && echo "LocalStack is ready to use!"
+	$(LSTK) start
 
 stop:          ## Stop LocalStack infrastructure
-	localstack stop
+	$(LSTK) stop
 
 for-each-dir:
 	./make-for-each.sh $$MAKE_TARGET $$CMD
@@ -26,4 +25,4 @@ for-each-dir:
 test-ci-all:
 	MAKE_TARGET='test-ci' make for-each-dir
 
-.PHONY: usage install lint start ready stop for-each-dir test-ci-all
+.PHONY: usage install lint start stop for-each-dir test-ci-all

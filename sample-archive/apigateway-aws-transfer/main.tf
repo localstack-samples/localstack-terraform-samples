@@ -9,7 +9,7 @@ variable "stage" {
 
 locals {
   auth_source_name  = "SecretsManagerRegion"
-  auth_source_value = data.aws_region.current.name
+  auth_source_value = data.aws_region.current.region
 }
 
 data "template_file" "api-definition" {
@@ -72,7 +72,7 @@ resource "aws_iam_policy" "sftp-idp" {
             {
                 "Effect": "Allow",
                 "Action": "secretsmanager:GetSecretValue",
-                "Resource": "arn:aws:secretsmanager:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:secret:SFTP/*"
+                "Resource": "arn:aws:secretsmanager:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:secret:SFTP/*"
             }
         ]
     }
@@ -208,7 +208,7 @@ resource "aws_iam_role_policy" "sftp" {
           "Action": [
             "execute-api:Invoke"
           ],
-          "Resource": "arn:aws:execute-api:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.sftp-idp-secrets.id}/${var.stage}/GET/*"
+          "Resource": "arn:aws:execute-api:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:${aws_api_gateway_rest_api.sftp-idp-secrets.id}/${var.stage}/GET/*"
         },
         {
           "Sid": "ReadApi",

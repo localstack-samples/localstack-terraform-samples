@@ -6,8 +6,7 @@ This project contains a script to deploy a static website to an S3 bucket on Loc
 
 - A valid [LocalStack for AWS license](https://localstack.cloud/pricing). Your license provides a [`LOCALSTACK_AUTH_TOKEN`](https://docs.localstack.cloud/getting-started/auth-token/).
 - [Docker](https://docs.docker.com/get-docker/)
-- [`localstack` CLI](https://docs.localstack.cloud/getting-started/installation/#localstack-cli)
-- [`awslocal` CLI](https://docs.localstack.cloud/user-guide/integrations/aws-cli/)
+- [`lstk` CLI](https://docs.localstack.cloud/aws/tooling/lstk/)
 - [Terraform](https://developer.hashicorp.com/terraform/downloads)
 - `make` and `jq`
 
@@ -16,7 +15,6 @@ This project contains a script to deploy a static website to an S3 bucket on Loc
 ```bash
 export LOCALSTACK_AUTH_TOKEN=<your-auth-token>
 make start
-make ready
 ```
 
 ## Setup
@@ -51,7 +49,6 @@ You can also use the Makefile to automate the process. The Makefile supports the
 - `make run`: Creates a bucket, sets a bucket policy, syncs a local directory to the bucket, and sets up a website on the bucket.
 - `make start`: Starts LocalStack in detached mode.
 - `make stop:` Stops LocalStack.
-- `make ready`: Waits for LocalStack to be ready for use.
 - `make logs`: Writes LocalStack logs to a text file.
 - `make test-ci`: Runs all the commands in sequence to test the CI process.
 

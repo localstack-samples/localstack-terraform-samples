@@ -96,7 +96,7 @@ resource "aws_lambda_permission" "apigw_to_lambda" {
 
 resource "aws_apigatewayv2_stage" "testing" {
   api_id      = aws_apigatewayv2_api.apigw.id
-  name        = "testing"
+  name        = "$default"
   auto_deploy = true
 
   access_log_settings {

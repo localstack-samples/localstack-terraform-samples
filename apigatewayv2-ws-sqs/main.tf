@@ -46,7 +46,7 @@ resource "aws_apigatewayv2_integration" "sqs_integration" {
   integration_type       = "AWS"
   payload_format_version = "1.0"
   integration_method     = "POST"
-  integration_uri        = "arn:aws:apigateway:${data.aws_region.current.name}:sqs:path/${data.aws_caller_identity.current.account_id}/${aws_sqs_queue.sqs_queue.name}"
+  integration_uri        = "arn:aws:apigateway:${data.aws_region.current.region}:sqs:path/${data.aws_caller_identity.current.account_id}/${aws_sqs_queue.sqs_queue.name}"
   passthrough_behavior   = "NEVER"
   request_parameters = {
     "integration.request.header.Content-Type" = "'application/x-www-form-urlencoded'"
@@ -77,7 +77,7 @@ resource "aws_apigatewayv2_integration" "disconnect_sqs_integration" {
   integration_type       = "AWS"
   payload_format_version = "1.0"
   integration_method     = "POST"
-  integration_uri        = "arn:aws:apigateway:${data.aws_region.current.name}:sqs:path/${data.aws_caller_identity.current.account_id}/${aws_sqs_queue.sqs_queue.name}"
+  integration_uri        = "arn:aws:apigateway:${data.aws_region.current.region}:sqs:path/${data.aws_caller_identity.current.account_id}/${aws_sqs_queue.sqs_queue.name}"
   passthrough_behavior   = "NEVER"
   request_parameters = {
     "integration.request.header.Content-Type" = "'application/x-www-form-urlencoded'"

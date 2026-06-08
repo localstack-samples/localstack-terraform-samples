@@ -66,7 +66,10 @@ resource "aws_dynamodb_table" "MyDynamoDBTable" {
 
   global_secondary_index {
     name               = "PetType-index"
-    hash_key           = "PetType"
+    key_schema {
+      attribute_name = "PetType"
+      key_type       = "HASH"
+    }
     write_capacity     = 5
     read_capacity      = 5
     projection_type    = "INCLUDE"
@@ -103,7 +106,7 @@ resource "aws_api_gateway_rest_api" "MyApiGatewayRestApi" {
             "type" : "aws",
             "credentials" : "${aws_iam_role.APIGWRole.arn}",
             "httpMethod" : "POST",
-            "uri" : "arn:aws:apigateway:${data.aws_region.current.name}:dynamodb:action/PutItem",
+            "uri" : "arn:aws:apigateway:${data.aws_region.current.region}:dynamodb:action/PutItem",
             "responses" : {
               "default" : {
                 "statusCode" : "200",
@@ -141,7 +144,7 @@ resource "aws_api_gateway_rest_api" "MyApiGatewayRestApi" {
             "type" : "aws",
             "credentials" : "${aws_iam_role.APIGWRole.arn}",
             "httpMethod" : "POST",
-            "uri" : "arn:aws:apigateway:${data.aws_region.current.name}:dynamodb:action/Query",
+            "uri" : "arn:aws:apigateway:${data.aws_region.current.region}:dynamodb:action/Query",
             "responses" : {
               "default" : {
                 "statusCode" : "200",

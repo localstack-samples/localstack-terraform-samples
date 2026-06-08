@@ -6,8 +6,7 @@ This example shows how to generate an ACM certificate for a domain via Terraform
 
 - A valid [LocalStack for AWS license](https://localstack.cloud/pricing). Your license provides a [`LOCALSTACK_AUTH_TOKEN`](https://docs.localstack.cloud/getting-started/auth-token/).
 - [Docker](https://docs.docker.com/get-docker/)
-- [`localstack` CLI](https://docs.localstack.cloud/getting-started/installation/#localstack-cli)
-- [`awslocal` CLI](https://docs.localstack.cloud/user-guide/integrations/aws-cli/)
+- [`lstk` CLI](https://docs.localstack.cloud/aws/tooling/lstk/)
 - [Terraform](https://developer.hashicorp.com/terraform/downloads)
 - `make` and `jq`
 
@@ -16,7 +15,6 @@ This example shows how to generate an ACM certificate for a domain via Terraform
 ```bash
 export LOCALSTACK_AUTH_TOKEN=<your-auth-token>
 make start
-make ready
 ```
 
 ## Run
@@ -24,9 +22,9 @@ make ready
 To run this example you need to execute:
 
 ```bash
-tflocal init
-tflocal plan
-tflocal apply --auto-approve
+lstk tf init
+lstk tf plan
+lstk tf apply --auto-approve
 ```
 
 ## Testing
@@ -34,7 +32,7 @@ tflocal apply --auto-approve
 Run the following command to test the example:
 
 ```bash
-awslocal acm list-certificates
+lstk aws acm list-certificates
 ```
 
 You will see the following output:

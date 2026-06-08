@@ -75,6 +75,10 @@ resource "aws_api_gateway_integration_response" "options_integration_response" {
     "method.response.header.Access-Control-Allow-Origin"  = "'*'"
   }
 
+  response_templates = {
+    "application/json" = jsonencode({ statusCode = 200 })
+  }
+
   depends_on = [
     aws_api_gateway_method.options_method,
     aws_api_gateway_method_response.options_200,
