@@ -11,3 +11,4 @@ __pycache__
 .idea
 logs.txt
 cluster_info.json
+full-log
