@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 # Get the API Gateway ID
-restapi=$(aws --endpoint-url=http://localhost:4566 apigateway get-rest-apis | jq -r .items[0].id)
+restapi=$(lstk aws apigateway get-rest-apis | jq -r .items[0].id)
 
 # Make the curl request and capture the response
 response=$(curl -s -X POST "$restapi.execute-api.localhost.localstack.cloud:4566/dev/test")

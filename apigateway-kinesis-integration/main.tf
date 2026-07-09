@@ -73,7 +73,7 @@ resource "aws_iam_policy" "put-record-policy" {
         {
             "Effect": "Allow",
             "Action": "kinesis:PutRecord",
-            "Resource": "arn:aws:kinesis:${data.aws_region.current.name}:${data.aws_caller_identity.current
+            "Resource": "arn:aws:kinesis:${data.aws_region.current.region}:${data.aws_caller_identity.current
 .account_id}:stream/${aws_kinesis_stream.stream.name}"
         }
     ]
@@ -93,7 +93,7 @@ resource "aws_api_gateway_integration" "integration" {
   integration_http_method = "POST"
   type                    = "AWS"
   credentials             = aws_iam_role.apigw-role.arn
-  uri                     = "arn:aws:apigateway:${data.aws_region.current.name}:kinesis:action/PutRecord"
+  uri                     = "arn:aws:apigateway:${data.aws_region.current.region}:kinesis:action/PutRecord"
 
   passthrough_behavior = "NEVER"
 
@@ -187,8 +187,17 @@ resource "aws_api_gateway_integration_response" "integration_error_response" {
 
 resource "aws_api_gateway_deployment" "deployment" {
   rest_api_id = aws_api_gateway_rest_api.rest.id
-  stage_name  = "dev"
-  depends_on  = [aws_api_gateway_integration.integration]
+  depends_on = [
+    aws_api_gateway_integration.integration,
+    aws_api_gateway_integration_response.integration_success_response,
+    aws_api_gateway_integration_response.integration_error_response,
+  ]
+}
+
+resource "aws_api_gateway_stage" "stage" {
+  rest_api_id   = aws_api_gateway_rest_api.rest.id
+  deployment_id = aws_api_gateway_deployment.deployment.id
+  stage_name    = "dev"
 }
 
 
@@ -211,10 +220,9 @@ resource "aws_kinesis_stream" "stream" {
 }
 
 resource "aws_iam_role" "role" {
-  name                = random_pet.random.id
-  path                = "/"
-  managed_policy_arns = ["arn:aws:iam::aws:policy/AmazonKinesisFullAccess"]
-  assume_role_policy  = <<POLICY
+  name               = random_pet.random.id
+  path               = "/"
+  assume_role_policy = <<POLICY
 {
   "Version": "2012-10-17",
   "Statement": [
@@ -229,4 +237,9 @@ resource "aws_iam_role" "role" {
   ]
 }
 POLICY
+}
+
+resource "aws_iam_role_policy_attachment" "kinesis_full_access" {
+  role       = aws_iam_role.role.name
+  policy_arn = "arn:aws:iam::aws:policy/AmazonKinesisFullAccess"
 }

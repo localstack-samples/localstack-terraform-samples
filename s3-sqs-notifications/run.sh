@@ -1,12 +1,12 @@
 #!/usr/bin/env sh
 
 echo "Copying file into bucket"
-aws s3 cp some-log-file.log s3://your-bucket-name/ --endpoint-url http://localhost:4566
+lstk aws s3 cp some-log-file.log s3://your-bucket-name/
 
 sleep 1
 
 echo "SQS notification record:"
-MESSAGE=$(aws sqs receive-message --queue-url http://localhost:4566/000000000000/s3-event-notification-queue --endpoint-url http://localhost:4566 | jq -r '.Messages[0].Body')
+MESSAGE=$(lstk aws sqs receive-message --queue-url http://localhost:4566/000000000000/s3-event-notification-queue | jq -r '.Messages[0].Body')
 
 validate_json() {
   echo "$1" | jq -e '

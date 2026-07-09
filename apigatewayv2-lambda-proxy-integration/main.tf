@@ -70,7 +70,7 @@ resource "aws_lambda_permission" "default" {
   function_name = aws_lambda_function.package.function_name
   principal     = "apigateway.amazonaws.com"
 
-  source_arn = "arn:aws:execute-api:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_apigatewayv2_api.api.id}/$default/$default"
+  source_arn = "arn:aws:execute-api:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:${aws_apigatewayv2_api.api.id}/$default/$default"
 }
 
 resource "aws_lambda_permission" "package" {
@@ -79,7 +79,7 @@ resource "aws_lambda_permission" "package" {
   function_name = aws_lambda_function.package.function_name
   principal     = "apigateway.amazonaws.com"
 
-  source_arn = "arn:aws:execute-api:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_apigatewayv2_api.api.id}/*/*"
+  source_arn = "arn:aws:execute-api:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:${aws_apigatewayv2_api.api.id}/*/*"
 }
 
 resource "aws_lambda_permission" "package_payload" {
@@ -88,7 +88,7 @@ resource "aws_lambda_permission" "package_payload" {
   function_name = aws_lambda_function.package_payload.function_name
   principal     = "apigateway.amazonaws.com"
 
-  source_arn = "arn:aws:execute-api:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:${aws_apigatewayv2_api.api.id}/*/*"
+  source_arn = "arn:aws:execute-api:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:${aws_apigatewayv2_api.api.id}/*/*"
 }
 
 resource "aws_lambda_function" "package_payload" {
@@ -158,7 +158,7 @@ resource "aws_cloudwatch_log_group" "access_logs" {
 
 resource "aws_apigatewayv2_stage" "stage" {
   api_id = aws_apigatewayv2_api.api.id
-  name   = "dev"
+  name   = "$default"
 
   auto_deploy = true
 

@@ -38,14 +38,6 @@ resource "aws_apigatewayv2_integration" "lambda_main" {
   integration_type   = "HTTP"
   integration_method = "POST"
   integration_uri    = "http://httpbin.org/anything"
-
-  template_selection_expression = "$default"
-
-  request_parameters = {
-    "connectionId" : "$context.connectionId",
-    "payload" : "$util.escapeJavaScript($input.json('$.message'))",
-    "userAgent" : "$context.identity.userAgent"
-  }
 }
 
 resource "aws_lambda_function" "lambda" {

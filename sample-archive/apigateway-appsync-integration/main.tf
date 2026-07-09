@@ -40,7 +40,7 @@ resource "aws_api_gateway_integration" "integration" {
   type                    = "AWS"
   integration_http_method = "POST"
 
-  uri = "arn:aws:apigateway:${data.aws_region.current.name}:${local.subdomain[0]}.appsync-api:path/graphql"
+  uri = "arn:aws:apigateway:${data.aws_region.current.region}:${local.subdomain[0]}.appsync-api:path/graphql"
 
   request_parameters = {
     "integration.request.header.x-api-key" = "'${aws_appsync_api_key.apikey.key}'"
@@ -162,7 +162,7 @@ resource "aws_iam_role_policy" "apigateway_appsync" {
       ],
       "Effect": "Allow",
       "Resource": [
-        "arn:aws:appsync:${data.aws_region.current.name}:${data.aws_caller_identity.current.account_id}:apis/${aws_appsync_graphql_api.api.id}/*"
+        "arn:aws:appsync:${data.aws_region.current.region}:${data.aws_caller_identity.current.account_id}:apis/${aws_appsync_graphql_api.api.id}/*"
       ]
     }
   ]

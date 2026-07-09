@@ -35,15 +35,12 @@ jobs:
         terraform_version: 1.8.4
         terraform_wrapper: false
 
-    - name: Install LocalStack
-      run:  pip install localstack awscli-local[ver1] terraform-local
-
-    - name: Pull the latest docker image
-      run: docker pull localstack/localstack-pro
+    - name: Install lstk
+      run: npm install -g @localstack/lstk
 
     - name: Execute tests
       env:
-        LOCALSTACK_API_KEY: ${{ secrets.LOCALSTACK_API_KEY }}
+        LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
         DEBUG: 1
       timeout-minutes: 100
       run: make test-ci-all

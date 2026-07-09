@@ -148,10 +148,6 @@ resource "aws_apigatewayv2_integration" "lambda" {
   integration_type   = "AWS_PROXY"
   integration_uri    = aws_lambda_function.lambda.invoke_arn
   integration_method = "POST"
-
-  request_parameters = {
-    "integration.request.header.authToken" = "route.request.querystring.q1"
-  }
 }
 
 resource "aws_apigatewayv2_integration" "lambda_disconnect" {

@@ -56,7 +56,7 @@ resource "aws_apigatewayv2_integration" "integration" {
   api_id             = aws_apigatewayv2_api.websocket.id
   integration_type   = "AWS"
   integration_method = "POST"
-  integration_uri    = "arn:aws:apigateway:${data.aws_region.current.name}:kinesis:action/PutRecord"
+  integration_uri    = "arn:aws:apigateway:${data.aws_region.current.region}:kinesis:action/PutRecord"
   credentials_arn    = aws_iam_role.execution_role.arn
   request_templates = {
     "default" = <<TEMPLATE

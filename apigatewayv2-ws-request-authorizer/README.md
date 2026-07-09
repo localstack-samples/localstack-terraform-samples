@@ -6,8 +6,7 @@ This sample demonstrates a WebSocket API with request authorization and Cognito 
 
 - A valid [LocalStack for AWS license](https://localstack.cloud/pricing). Your license provides a [`LOCALSTACK_AUTH_TOKEN`](https://docs.localstack.cloud/getting-started/auth-token/).
 - [Docker](https://docs.docker.com/get-docker/)
-- [`localstack` CLI](https://docs.localstack.cloud/getting-started/installation/#localstack-cli)
-- [`awslocal` CLI](https://docs.localstack.cloud/user-guide/integrations/aws-cli/)
+- [`lstk` CLI](https://docs.localstack.cloud/aws/tooling/lstk/)
 - [Terraform](https://developer.hashicorp.com/terraform/downloads)
 - `make` and `jq`
 
@@ -16,7 +15,6 @@ This sample demonstrates a WebSocket API with request authorization and Cognito 
 ```bash
 export LOCALSTACK_AUTH_TOKEN=<your-auth-token>
 make start
-make ready
 ```
 
 ## Run Terraform
@@ -28,7 +26,7 @@ make ready
 Using the outputs run the following commands,
 
 ```
- awslocal cognito-idp sign-up \
+ lstk aws cognito-idp sign-up \
       --client-id <user_pool_client_id> \
       --username "user@domain.com" \
       --password "Ppassword123!"
@@ -37,7 +35,7 @@ Using the outputs run the following commands,
 then,
 
 ```
-awslocal cognito-idp admin-confirm-sign-up \
+lstk aws cognito-idp admin-confirm-sign-up \
       --user-pool-id <user_pool_id> \
       --username "user@domain.com"
 ```
@@ -45,7 +43,7 @@ awslocal cognito-idp admin-confirm-sign-up \
 then,
 
 ```
-awslocal cognito-idp initiate-auth \
+lstk aws cognito-idp initiate-auth \
       --auth-flow USER_PASSWORD_AUTH \
       --auth-parameters USERNAME="user@domain.com",PASSWORD="password" \
       --client-id <user_pool_client_id>

@@ -1,6 +1,4 @@
-lint:
-	@echo "==> Linting terraform code"
-	@terraform fmt -diff=true -recursive -write=true
+LSTK := lstk --non-interactive
 
 usage:         ## Show this help
 	@fgrep -h "##" $(MAKEFILE_LIST) | fgrep -v fgrep | sed -e 's/\\$$//' | sed -e 's/##//'
@@ -8,17 +6,15 @@ usage:         ## Show this help
 install:       ## Install dependencies for all projects
 	MAKE_TARGET='install' make for-each-dir
 
-lint:          ## Run code linter for all projects
-	MAKE_TARGET='lint' make for-each-dir
+lint:          ## Run code linter for all projects (skips sample-archive)
+	@echo "==> Linting terraform code"
+	@find . -name '*.tf' -not -path './sample-archive/*' -exec dirname {} \; | sort -u | xargs -I{} terraform fmt -diff=true -write=true {}
 
 start:         ## Start LocalStack infrastructure
-	localstack start -d
-
-ready:         ## Check if the LocalStack container is up and running.
-	localstack wait -t 20 && echo "LocalStack is ready to use!"
+	$(LSTK) start
 
 stop:          ## Stop LocalStack infrastructure
-	localstack stop
+	$(LSTK) stop
 
 for-each-dir:
 	./make-for-each.sh $$MAKE_TARGET $$CMD
@@ -26,4 +22,4 @@ for-each-dir:
 test-ci-all:
 	MAKE_TARGET='test-ci' make for-each-dir
 
-.PHONY: usage install lint start ready stop for-each-dir test-ci-all
+.PHONY: usage install lint start stop for-each-dir test-ci-all

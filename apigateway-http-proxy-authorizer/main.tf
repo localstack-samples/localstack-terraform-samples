@@ -48,7 +48,7 @@ resource "aws_api_gateway_integration" "integration" {
   http_method = aws_api_gateway_method.method_get.http_method
 
   type                    = "HTTP_PROXY"
-  integration_http_method = "POST"
+  integration_http_method = "GET"
   uri                     = "http://httpbin.org/anything/{proxy}"
 }
 
@@ -96,4 +96,28 @@ resource "aws_iam_role" "role" {
   ]
 }
 POLICY
+}
+
+resource "aws_api_gateway_deployment" "deployment" {
+  rest_api_id = aws_api_gateway_rest_api.rest.id
+
+  triggers = {
+    redeployment = sha1(jsonencode([
+      aws_api_gateway_resource.proxy.id,
+      aws_api_gateway_method.method_get.id,
+      aws_api_gateway_method.method_post.id,
+      aws_api_gateway_integration.integration.id,
+      aws_api_gateway_integration.integration_post.id,
+    ]))
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_api_gateway_stage" "local" {
+  rest_api_id   = aws_api_gateway_rest_api.rest.id
+  deployment_id = aws_api_gateway_deployment.deployment.id
+  stage_name    = "local"
 }

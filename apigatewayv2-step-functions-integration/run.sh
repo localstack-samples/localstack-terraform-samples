@@ -1,7 +1,7 @@
 #!/usr/bin/env sh
 
 # Get the API Gateway ID
-httpapi=$(aws --endpoint-url=http://localhost:4566 apigatewayv2 get-apis | jq -r .Items[0].ApiId)
+httpapi=$(lstk aws apigatewayv2 get-apis | jq -r .Items[0].ApiId)
 
 # Make the curl request and capture the response
 response=$(curl -s "$httpapi.execute-api.localhost.localstack.cloud:4566/test" -H 'content-type: application/json' -d '{ "IsHelloWorldExample": "Yes" }')
@@ -22,7 +22,7 @@ fi
 sleep 10
 
 # Describe the execution and capture the response
-execution_response=$(awslocal stepfunctions describe-execution --execution-arn "$execution_arn")
+execution_response=$(lstk aws stepfunctions describe-execution --execution-arn "$execution_arn")
 
 # Output the execution response for debugging purposes
 echo "Execution Response: $execution_response"

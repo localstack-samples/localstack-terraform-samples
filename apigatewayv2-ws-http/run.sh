@@ -1,5 +1,5 @@
 #!/usr/bin/env sh
 
-tflocal init; tflocal apply -auto-approve
+lstk tf init; lstk tf apply -auto-approve
 
 wscat -c localhost:4510

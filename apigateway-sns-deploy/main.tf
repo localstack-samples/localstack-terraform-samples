@@ -24,7 +24,7 @@ resource "aws_api_gateway_integration" "integration" {
   integration_http_method = "POST"
   type                    = "AWS"
   credentials             = aws_iam_role.sns_publish.arn
-  uri                     = "arn:aws:apigateway:${data.aws_region.current.name}:sns:path//"
+  uri                     = "arn:aws:apigateway:${data.aws_region.current.region}:sns:path//"
 
   request_parameters = {
     "integration.request.header.Content-Type" = "'application/x-www-form-urlencoded'"
@@ -95,4 +95,27 @@ data "aws_iam_policy_document" "sns_publish" {
       aws_sns_topic.topic.arn
     ]
   }
+}
+
+resource "aws_api_gateway_deployment" "deployment" {
+  rest_api_id = aws_api_gateway_rest_api.rest.id
+
+  triggers = {
+    redeployment = sha1(jsonencode([
+      aws_api_gateway_resource.ingest.id,
+      aws_api_gateway_method.method.id,
+      aws_api_gateway_integration.integration.id,
+      aws_api_gateway_integration_response.integration_response.id,
+    ]))
+  }
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_api_gateway_stage" "local" {
+  rest_api_id   = aws_api_gateway_rest_api.rest.id
+  deployment_id = aws_api_gateway_deployment.deployment.id
+  stage_name    = "local"
 }
