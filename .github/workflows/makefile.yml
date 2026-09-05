@@ -41,6 +41,6 @@ jobs:
     - name: Execute tests
       env:
         LOCALSTACK_AUTH_TOKEN: ${{ secrets.LOCALSTACK_AUTH_TOKEN }}
-        DEBUG: 1
+        LOCALSTACK_DEBUG: 1
       timeout-minutes: 100
       run: make test-ci-all
