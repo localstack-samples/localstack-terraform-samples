@@ -2,7 +2,7 @@
 
 rm -rf terraform.tfstate* || true
 
-tflocal init; tflocal plan; tflocal apply --auto-approve
+lstk tf init; lstk tf plan; lstk tf apply --auto-approve
 
 secret_token=$(terraform output -raw secret_token)
 user_pool_client_id=$(terraform output -raw user_pool_client_id)
