@@ -2,7 +2,7 @@
 
 terraform init; terraform plan; terraform apply --auto-approve
 
-awslocal lambda invoke --function-name bash-runtime --payload '{"text":"Hello"}' response.txt
+lstk aws lambda invoke --function-name bash-runtime --payload '{"text":"Hello"}' response.txt
 
 
 api_id=$(aws --endpoint-url=http://localhost:4566 apigatewayv2 get-apis | jq -r .Items[0].ApiId)

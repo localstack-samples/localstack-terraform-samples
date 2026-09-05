@@ -1,12 +1,11 @@
 # This script is used to deploy the static website to LocalStack S3 bucket.
-# It uses the LocalStack CLI to start the LocalStack container, wait for it to be ready, create an S3 bucket, upload the website files to the bucket, and configure the bucket as a static website.
+# It uses the lstk CLI to start the LocalStack container, create an S3 bucket, upload the website files to the bucket, and configure the bucket as a static website.
 
 param(
     [switch]$InstallDependencies,
     [switch]$Deploy,
     [switch]$Start,
     [switch]$Stop,
-    [switch]$Ready,
     [switch]$Logs
 )
 
@@ -20,34 +19,18 @@ function Deploy-Website {
         [switch]$Deploy,
         [switch]$Start,
         [switch]$Stop,
-        [switch]$Ready,
-        [switch]$Logs
+            [switch]$Logs
     )
 
     if ($InstallDependencies) {
-        if (-not (Get-Command -Name 'localstack' -ErrorAction SilentlyContinue)) {
-            pip install localstack
-            Write-Host "LocalStack CLI installed successfully!"
-        }
         if (-not (Get-Command -Name 'lstk' -ErrorAction SilentlyContinue)) {
-            pip install awscli-local
-            Write-Host "AWS CLI installed successfully!"
+            npm install -g @localstack/lstk
+            Write-Host "lstk CLI installed successfully!"
         }
     }
 
     if ($Start) {
-        localstack start -d
-    }
-
-    if ($Ready) {
-        Write-Host "Waiting on the LocalStack container..."
-        localstack wait -t 30
-        if ($?) {
-            Write-Host "Localstack is ready to use!"
-        } else {
-            Write-Host "Gave up waiting on LocalStack, exiting."
-            exit 1
-        }
+        lstk start
     }
 
     if ($Deploy) {
@@ -59,15 +42,15 @@ function Deploy-Website {
     }
 
     if ($Stop) {
-        localstack stop
+        lstk stop
     }
     if ($Logs){
-        localstack logs > logs.txt
+        lstk logs > logs.txt
     }
 }
 
 # You can just run all the tasks in one go by calling the function with all the switches set to $true.
-#  .\deploy.ps1 -InstallDependencies -Start -Ready -Deploy -Logs -Stop
-Deploy-Website -InstallDependencies:$InstallDependencies -Deploy:$Deploy -Start:$Start -Stop:$Stop -Ready:$Ready -Logs:$Logs
+#  .\deploy.ps1 -InstallDependencies -Start -Deploy -Logs -Stop
+Deploy-Website -InstallDependencies:$InstallDependencies -Deploy:$Deploy -Start:$Start -Stop:$Stop -Logs:$Logs
 
 

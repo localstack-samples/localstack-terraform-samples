@@ -31,7 +31,7 @@ Both routes do the exact same thing: Return a JSON object of the form
 
 1. Get the LocalStack API Gateway endpoint for the API:
    ```
-   $ awslocal apigatewayv2 get-apis
+   $ lstk aws apigatewayv2 get-apis
    {
        "Items": [
            {

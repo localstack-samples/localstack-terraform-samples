@@ -32,7 +32,8 @@ usage:       ## Show this help
 
 start:       ## Start LocalStack
 	@test -n "${LOCALSTACK_AUTH_TOKEN}" || (echo "LOCALSTACK_AUTH_TOKEN is not set" && exit 1);
-	DEBUG=1 LOCALSTACK_AUTH_TOKEN=$(LOCALSTACK_AUTH_TOKEN) $(LSTK) start
+	LOCALSTACK_DEBUG=1 LOCALSTACK_AUTH_TOKEN=$(LOCALSTACK_AUTH_TOKEN) $(LSTK) start
+	$(LSTK) setup aws --force
 
 stop:        ## Stop LocalStack
 	$(LSTK) stop

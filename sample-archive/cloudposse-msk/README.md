@@ -13,7 +13,7 @@ This example requires LocalStack Pro.
 Once you have started LocalStack, proceed to prepare a route53 zone:
 
 ```sh
-awslocal route53 create-hosted-zone \
+lstk aws route53 create-hosted-zone \
 	--name my-kafka.localhost.localstack.cloud \
 	--caller-reference cli-invocation-0
 ```

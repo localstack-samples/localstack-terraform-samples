@@ -32,13 +32,12 @@ The `deploy.ps1` script supports the following switches:
 - `-Deploy`: Creates a bucket, sets a bucket policy, syncs a local directory to the bucket, and sets up a website on the bucket.
 - `-Start`: Starts LocalStack in detached mode.
 - `-Stop`: Stops LocalStack.
-- `-Ready`: Waits for LocalStack to be ready for use.
 - `-Logs`: Writes LocalStack logs to a text file.
 
 For example, to install dependencies and start LocalStack, you would run:
 
 ```powershell
-.\deploy.ps1 -InstallDependencies -Start -Ready -Deploy
+.\deploy.ps1 -InstallDependencies -Start -Deploy
 ```
 
 ### Makefile
