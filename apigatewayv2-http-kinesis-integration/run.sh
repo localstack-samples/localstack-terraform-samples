@@ -14,9 +14,10 @@ response=$(curl -s -X POST "$httpapi.execute-api.localhost.localstack.cloud:4566
 # Output the response for debugging purposes
 echo "API Response: $response"
 
-# Smoke test to validate the output
-if echo "$response" | jq -e '.ShardId and .SequenceNumber and .EncryptionType' > /dev/null; then
-    echo "Smoke test passed: The response contains 'ShardId', 'SequenceNumber', and 'EncryptionType'."
+# Smoke test to validate the output. PutRecord returns EncryptionType only for encrypted streams,
+# and this stream is not encrypted, so AWS answers with ShardId and SequenceNumber.
+if echo "$response" | jq -e '.ShardId and .SequenceNumber' > /dev/null; then
+    echo "Smoke test passed: The response contains 'ShardId' and 'SequenceNumber'."
 else
     echo "Smoke test failed: The response does not contain the expected fields."
     exit 1
